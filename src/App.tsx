@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Menu, Calculator, FileText, User, Settings, Eye, Bell } from 'lucide-react';
+import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package } from 'lucide-react';
 import { OfferProvider } from '@/context/OfferContext';
 import { HomePage } from '@/pages/HomePage';
 import { OfferView } from '@/pages/OfferView';
 import { OfferAcceptance } from '@/pages/OfferAcceptance';
 import { PublicOffer } from '@/pages/PublicOffer';
 import { Calculator as CalculatorPage } from '@/components/quotation/Calculator';
+import Dashboard from './Dashboard';
 import { salespeople } from '@/constants/materials';
+import { createClient } from '@supabase/supabase-js';
+
+// Import komponentów (dodaj je jako osobne pliki)
+// import ClientsPage from './pages/ClientsPage';
+// import ProductsPage from './pages/ProductsPage';
+// import SettingsPage from './pages/SettingsPage';
 
 interface Notification {
   id: number;
@@ -15,6 +22,11 @@ interface Notification {
   message: string;
   date: string;
 }
+
+// Inicjalizacja Supabase
+const supabaseUrl = 'https://lsyclgolxakaxqtxwmgk.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeWNsZ29seGFrYXhxdHh3bWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDIzMzQsImV4cCI6MjA1MjI3ODMzNH0.VTKDv_hCmXJJdQ7sBO8Si7fvCZCFXDJQNgZA24PdkBw';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<'salesperson' | 'client'>('salesperson');
@@ -28,8 +40,72 @@ const App: React.FC = () => {
       date: new Date().toISOString(),
     },
   ]);
+  const [stats, setStats] = useState({
+    totalOffers: 0,
+    acceptedOffers: 0,
+    pendingOffers: 0,
+    totalClients: 0
+  });
 
   const isPublicRoute = window.location.pathname.startsWith('/offer/accept/') || window.location.pathname.startsWith('/oferta/');
+
+  useEffect(() => {
+    fetchQuickStats();
+    checkExpiringOffers();
+  }, []);
+
+  const fetchQuickStats = async () => {
+    try {
+      // Pobierz statystyki ofert
+      const { data: offersData } = await supabase
+        .from('offers')
+        .select('status', { count: 'exact' });
+
+      // Pobierz liczbę klientów
+      const { data: clientsData } = await supabase
+        .from('clients')
+        .select('id', { count: 'exact' });
+
+      if (offersData) {
+        setStats({
+          totalOffers: offersData.length,
+          acceptedOffers: offersData.filter(o => o.status === 'accepted').length,
+          pendingOffers: offersData.filter(o => o.status === 'sent').length,
+          totalClients: clientsData?.length || 0
+        });
+      }
+    } catch (error) {
+      console.error('Błąd pobierania statystyk:', error);
+    }
+  };
+
+  const checkExpiringOffers = async () => {
+    try {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const { data: expiringOffers } = await supabase
+        .from('offers')
+        .select('offer_number, valid_until')
+        .eq('status', 'sent')
+        .lte('valid_until', tomorrow.toISOString())
+        .gte('valid_until', new Date().toISOString());
+
+      if (expiringOffers && expiringOffers.length > 0) {
+        setNotifications(prev => [
+          ...prev,
+          {
+            id: Date.now(),
+            type: 'warning',
+            message: `⏰ Masz ${expiringOffers.length} ofert(y) wygasające w ciągu 24h!`,
+            date: new Date().toISOString()
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Błąd sprawdzania wygasających ofert:', error);
+    }
+  };
 
   // Dla publicznych linków nie pokazuj nawigacji
   if (isPublicRoute) {
@@ -43,6 +119,11 @@ const App: React.FC = () => {
     );
   }
 
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `px-4 py-2 rounded-lg transition-all flex items-center gap-2 ${
+      isActive ? 'bg-orange-500 text-white' : 'hover:bg-zinc-700'
+    }`;
+
   return (
     <OfferProvider>
       <Router>
@@ -53,7 +134,7 @@ const App: React.FC = () => {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-6">
                   <h1 className="text-2xl font-bold text-orange-500">PlexiSystem</h1>
-                  <nav className="flex gap-4">
+                  <nav className="flex gap-2">
                     <a
                       href="/"
                       className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
@@ -62,16 +143,62 @@ const App: React.FC = () => {
                       Oferty
                     </a>
                     <a
+                      href="/dashboard"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    >
+                      <BarChart2 className="w-4 h-4" />
+                      Dashboard
+                    </a>
+                    <a
+                      href="/clients"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    >
+                      <Users className="w-4 h-4" />
+                      Klienci
+                    </a>
+                    <a
                       href="/calculator"
                       className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
                     >
                       <Calculator className="w-4 h-4" />
                       Kalkulator
                     </a>
+                    <a
+                      href="/products"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    >
+                      <Package className="w-4 h-4" />
+                      Produkty
+                    </a>
+                    <a
+                      href="/settings"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Ustawienia
+                    </a>
                   </nav>
                 </div>
 
                 <div className="flex items-center gap-4">
+                  {/* Mini statystyki */}
+                  <div className="hidden lg:flex items-center gap-4 text-sm">
+                    <div className="bg-zinc-700 px-3 py-1 rounded-lg">
+                      <span className="text-gray-400">Oferty: </span>
+                      <span className="font-semibold">{stats.totalOffers}</span>
+                    </div>
+                    <div className="bg-green-900 px-3 py-1 rounded-lg">
+                      <span className="text-green-400">Zaakceptowane: </span>
+                      <span className="font-semibold">{stats.acceptedOffers}</span>
+                    </div>
+                    {stats.pendingOffers > 0 && (
+                      <div className="bg-yellow-900 px-3 py-1 rounded-lg">
+                        <span className="text-yellow-400">Oczekujące: </span>
+                        <span className="font-semibold">{stats.pendingOffers}</span>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Przełącznik trybu widoku */}
                   <div className="flex items-center gap-2 bg-zinc-700 rounded-lg px-3 py-2">
                     <button
@@ -205,6 +332,28 @@ const App: React.FC = () => {
           <main className="container mx-auto px-4 py-8">
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/clients" element={
+                <div className="text-center py-20">
+                  <Users className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+                  <h2 className="text-2xl font-bold mb-2">Moduł Klienci</h2>
+                  <p className="text-gray-400">Wkrótce dostępny - zarządzanie bazą klientów z integracją GUS</p>
+                </div>
+              } />
+              <Route path="/products" element={
+                <div className="text-center py-20">
+                  <Package className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+                  <h2 className="text-2xl font-bold mb-2">Moduł Produkty</h2>
+                  <p className="text-gray-400">Wkrótce dostępny - zarządzanie katalogiem produktów</p>
+                </div>
+              } />
+              <Route path="/settings" element={
+                <div className="text-center py-20">
+                  <Settings className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+                  <h2 className="text-2xl font-bold mb-2">Ustawienia</h2>
+                  <p className="text-gray-400">Wkrótce dostępny - konfiguracja systemu</p>
+                </div>
+              } />
               <Route path="/offer/new" element={<OfferView />} />
               <Route path="/offer/:id" element={<OfferView />} />
               <Route
