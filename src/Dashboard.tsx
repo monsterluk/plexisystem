@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, FileText, Users, DollarSign, Calendar, Package, CheckCircle } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
-
-// Inicjalizacja Supabase
-const supabaseUrl = 'https://lsyclgolxakaxqtxwmgk.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeWNsZ29seGFrYXhxdHh3bWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDIzMzQsImV4cCI6MjA1MjI3ODMzNH0.VTKDv_hCmXJJdQ7sBO8Si7fvCZCFXDJQNgZA24PdkBw';
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from '@/lib/supabaseClient';
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 

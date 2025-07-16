@@ -9,7 +9,7 @@ import { PublicOffer } from '@/pages/PublicOffer';
 import { Calculator as CalculatorPage } from '@/components/quotation/Calculator';
 import Dashboard from './Dashboard';
 import { salespeople } from '@/constants/materials';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabaseClient';
 
 // Import komponentów (dodaj je jako osobne pliki)
 // import ClientsPage from './pages/ClientsPage';
@@ -22,11 +22,6 @@ interface Notification {
   message: string;
   date: string;
 }
-
-// Inicjalizacja Supabase
-const supabaseUrl = 'https://lsyclgolxakaxqtxwmgk.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeWNsZ29seGFrYXhxdHh3bWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDIzMzQsImV4cCI6MjA1MjI3ODMzNH0.VTKDv_hCmXJJdQ7sBO8Si7fvCZCFXDJQNgZA24PdkBw';
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<'salesperson' | 'client'>('salesperson');
@@ -118,11 +113,6 @@ const App: React.FC = () => {
       </Router>
     );
   }
-
-  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `px-4 py-2 rounded-lg transition-all flex items-center gap-2 ${
-      isActive ? 'bg-orange-500 text-white' : 'hover:bg-zinc-700'
-    }`;
 
   return (
     <OfferProvider>
