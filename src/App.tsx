@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon } from 'lucide-react';
+import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity } from 'lucide-react';
 import { OfferProvider } from '@/context/OfferContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { HomePage } from '@/pages/HomePage';
@@ -13,10 +13,9 @@ import { salespeople } from '@/constants/materials';
 import { supabase } from '@/lib/supabaseClient';
 import { ClientsPage } from '@/pages/ClientsPage';
 import { ProductsPage } from '@/pages/ProductsPage';
-
-// Import komponentów (dodaj je jako osobne pliki)
-// import { ReportsPage } from '@/pages/ReportsPage';
-// import SettingsPage from './pages/SettingsPage';
+import { ReportsPage } from '@/pages/ReportsPage';
+import { AutomationSettings } from '@/pages/AutomationSettings';
+import { AIAssistant } from '@/pages/AIAssistant';
 
 interface Notification {
   id: number;
@@ -48,6 +47,15 @@ const AppContent: React.FC = () => {
   const isPublicRoute = window.location.pathname.startsWith('/offer/accept/') || window.location.pathname.startsWith('/oferta/');
 
   useEffect(() => {
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => console.log('SW registered: ', registration))
+          .catch(registrationError => console.log('SW registration failed: ', registrationError));
+      });
+    }
+
     fetchQuickStats();
     checkExpiringOffers();
   }, []);
@@ -126,7 +134,7 @@ const AppContent: React.FC = () => {
             <div className="container mx-auto px-4 py-4">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-6">
-                  <h1 className="text-2xl font-bold text-orange-500">PlexiSystem</h1>
+                  <h1 className="text-2xl font-bold text-orange-500 gradient-text">PlexiSystem</h1>
                   <nav className="flex gap-2">
                     <a
                       href="/"
@@ -162,6 +170,23 @@ const AppContent: React.FC = () => {
                     >
                       <Package className="w-4 h-4" />
                       Produkty
+                    </a>
+                    <a
+                      href="/reports"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    >
+                      <Activity className="w-4 h-4" />
+                      Raporty
+                    </a>
+                    <a
+                      href="/ai"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative"
+                    >
+                      <Brain className="w-4 h-4" />
+                      AI
+                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-orange-500 text-xs rounded-full animate-pulse">
+                        NEW
+                      </span>
                     </a>
                     <a
                       href="/settings"
@@ -341,13 +366,9 @@ const AppContent: React.FC = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/clients" element={<ClientsPage />} />
               <Route path="/products" element={<ProductsPage />} />
-              <Route path="/settings" element={
-                <div className="text-center py-20">
-                  <Settings className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-                  <h2 className="text-2xl font-bold mb-2">Ustawienia</h2>
-                  <p className="text-gray-400">Wkrótce dostępny - konfiguracja systemu</p>
-                </div>
-              } />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/ai" element={<AIAssistant />} />
+              <Route path="/settings" element={<AutomationSettings />} />
               <Route path="/offer/new" element={<OfferView />} />
               <Route path="/offer/:id" element={<OfferView />} />
               <Route
