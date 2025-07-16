@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package } from 'lucide-react';
+import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon } from 'lucide-react';
 import { OfferProvider } from '@/context/OfferContext';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { HomePage } from '@/pages/HomePage';
 import { OfferView } from '@/pages/OfferView';
 import { OfferAcceptance } from '@/pages/OfferAcceptance';
@@ -10,10 +11,11 @@ import { Calculator as CalculatorPage } from '@/components/quotation/Calculator'
 import Dashboard from './Dashboard';
 import { salespeople } from '@/constants/materials';
 import { supabase } from '@/lib/supabaseClient';
+import { ClientsPage } from '@/pages/ClientsPage';
+import { ProductsPage } from '@/pages/ProductsPage';
 
 // Import komponentów (dodaj je jako osobne pliki)
-// import ClientsPage from './pages/ClientsPage';
-// import ProductsPage from './pages/ProductsPage';
+// import { ReportsPage } from '@/pages/ReportsPage';
 // import SettingsPage from './pages/SettingsPage';
 
 interface Notification {
@@ -337,13 +339,7 @@ const AppContent: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/clients" element={
-                <div className="text-center py-20">
-                  <Users className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-                  <h2 className="text-2xl font-bold mb-2">Moduł Klienci</h2>
-                  <p className="text-gray-400">Wkrótce dostępny - zarządzanie bazą klientów z integracją GUS</p>
-                </div>
-              } />
+              <Route path="/clients" element={<ClientsPage />} />
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/settings" element={
                 <div className="text-center py-20">
