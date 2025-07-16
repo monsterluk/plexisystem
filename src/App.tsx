@@ -10,6 +10,7 @@ import { Calculator as CalculatorPage } from '@/components/quotation/Calculator'
 import Dashboard from './Dashboard';
 import { salespeople } from '@/constants/materials';
 import { supabase } from '@/lib/supabaseClient';
+import { ClientsPage } from '@/pages/ClientsPage';
 
 // Import komponentów (dodaj je jako osobne pliki)
 // import ClientsPage from './pages/ClientsPage';
@@ -323,7 +324,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/clients" element={
+              <Route path="/clients" element={<ClientsPage />} />
                 <div className="text-center py-20">
                   <Users className="w-16 h-16 mx-auto mb-4 text-gray-600" />
                   <h2 className="text-2xl font-bold mb-2">Moduł Klienci</h2>
