@@ -4,6 +4,7 @@ module.exports = {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class', // <-- Tylko to dodajemy!
   theme: {
     extend: {
       colors: {
@@ -31,7 +32,23 @@ module.exports = {
           800: '#9a3412',
           900: '#7c2d12',
         },
+        // Opcjonalnie możesz dodać kolory dla dark mode
+        dark: {
+          bg: '#0a0a0a',
+          surface: '#1a1a1a',
+          border: '#2a2a2a',
+        }
       },
+      // Opcjonalnie animacje dla płynnego przejścia
+      animation: {
+        'theme-transition': 'themeTransition 0.3s ease-in-out',
+      },
+      keyframes: {
+        themeTransition: {
+          '0%': { opacity: '0.8' },
+          '100%': { opacity: '1' },
+        }
+      }
     },
   },
   plugins: [],

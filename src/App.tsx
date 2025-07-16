@@ -23,7 +23,8 @@ interface Notification {
   date: string;
 }
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { theme, toggleTheme } = useTheme();
   const [viewMode, setViewMode] = useState<'salesperson' | 'client'>('salesperson');
   const [currentUser, setCurrentUser] = useState(salespeople[0]);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -117,7 +118,7 @@ const App: React.FC = () => {
   return (
     <OfferProvider>
       <Router>
-        <div className="min-h-screen bg-zinc-900 text-white">
+        <div className="min-h-screen bg-zinc-900 dark:bg-zinc-950 text-white transition-colors duration-300">
           {/* Header */}
           <header className="bg-zinc-800 border-b border-zinc-700">
             <div className="container mx-auto px-4 py-4">
@@ -188,6 +189,19 @@ const App: React.FC = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Przełącznik motywu */}
+                  <button
+                    onClick={toggleTheme}
+                    className="p-2 hover:bg-zinc-700 dark:hover:bg-zinc-600 rounded-lg transition-all"
+                    title={theme === 'dark' ? 'Włącz jasny motyw' : 'Włącz ciemny motyw'}
+                  >
+                    {theme === 'dark' ? (
+                      <Sun className="w-5 h-5 text-yellow-400" />
+                    ) : (
+                      <Moon className="w-5 h-5 text-gray-700" />
+                    )}
+                  </button>
 
                   {/* Przełącznik trybu widoku */}
                   <div className="flex items-center gap-2 bg-zinc-700 rounded-lg px-3 py-2">
@@ -363,6 +377,14 @@ const App: React.FC = () => {
         </div>
       </Router>
     </OfferProvider>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 };
 
