@@ -19,6 +19,7 @@ import { getOffers } from '@/api/quotations';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { deliveryRegions } from '@/constants/materials';
+import { printPDF } from '@/utils/generatePDF';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -314,7 +315,7 @@ export const HomePage: React.FC = () => {
                         <Link className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => navigate(`/offer/${offer.id}`)}
+                        onClick={() => printPDF(offer, true)}
                         className="p-2 hover:bg-zinc-600 rounded transition-all"
                         title="Drukuj PDF"
                       >

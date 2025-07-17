@@ -96,18 +96,20 @@ export function ClientsPage() {
   const fetchFromGUS = async (nip: string) => {
     setGusLoading(true);
     try {
-      // Tutaj normalnie byłoby wywołanie do backendu
-      // Symulacja odpowiedzi z GUS
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await gusService.searchByNIP(nip);
       
-      setNewClient(prev => ({
-        ...prev,
-        name: 'Firma Przykładowa Sp. z o.o.',
-        address: 'ul. Testowa 123, 00-001 Warszawa',
-        regon: '123456789'
-      }));
-      
-      showNotification('success', 'Dane pobrane z GUS');
+      if (result) {
+        setNewClient(prev => ({
+          ...prev,
+          name: result.Nazwa,
+          address: gusService.formatAddress(result),
+          regon: result.Regon
+        }));
+        
+        showNotification('success', 'Dane pobrane z GUS');
+      } else {
+        showNotification('error', 'Nie znaleziono firmy w bazie GUS');
+      }
     } catch (error) {
       showNotification('error', 'Błąd podczas pobierania danych z GUS');
     } finally {
