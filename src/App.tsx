@@ -47,14 +47,14 @@ const AppContent: React.FC = () => {
   const isPublicRoute = window.location.pathname.startsWith('/offer/accept/') || window.location.pathname.startsWith('/oferta/');
 
   useEffect(() => {
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(registration => console.log('SW registered: ', registration))
-          .catch(registrationError => console.log('SW registration failed: ', registrationError));
-      });
-    }
+    // Register service worker for PWA - wyłączone tymczasowo
+    // if ('serviceWorker' in navigator) {
+    //   window.addEventListener('load', () => {
+    //     navigator.serviceWorker.register('/service-worker.js')
+    //       .then(registration => console.log('SW registered: ', registration))
+    //       .catch(registrationError => console.log('SW registration failed: ', registrationError));
+    //   });
+    // }
 
     fetchQuickStats();
     checkExpiringOffers();
