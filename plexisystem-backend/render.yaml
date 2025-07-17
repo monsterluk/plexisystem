@@ -8,9 +8,17 @@ services:
       - key: NODE_ENV
         value: production
       - key: BASE_URL
-        value: https://plexisystem.vercel.app
+        value: https://oferty.plexisystem.pl
       - key: DATABASE_PATH
         value: /var/data/plexisystem.db
+      - key: SMTP_HOST
+        value: s44.cyber-folks.pl
+      - key: SMTP_PORT
+        value: 465
+      - key: SMTP_USER
+        value: oferty@plexisystem.pl
+      - key: SMTP_PASS
+        value: 36ZVvm^D-E-Zi_-D
     disk:
       name: sqlite-data
       mountPath: /var/data

@@ -1,157 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Package, Users, FileText, Calendar, ArrowUp, ArrowDown, Target, Activity, CheckCircle } from 'lucide-react';
-import { supabase } from './lib/supabaseClient';
-
-interface DashboardStats {
-  totalRevenue: number;
-  revenueChange: number;
-  totalOffers: number;
-  offersChange: number;
-  totalClients: number;
-  clientsChange: number;
-  conversionRate: number;
-  conversionChange: number;
-}
 
 const Dashboard: React.FC = () => {
-  const [stats, setStats] = useState<DashboardStats>({
-    totalRevenue: 0,
-    revenueChange: 0,
-    totalOffers: 0,
-    offersChange: 0,
-    totalClients: 0,
-    clientsChange: 0,
-    conversionRate: 0,
-    conversionChange: 0
-  });
-
-  const [revenueData, setRevenueData] = useState<any[]>([]);
-  const [productData, setProductData] = useState<any[]>([]);
-  const [statusData, setStatusData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    try {
-      // Pobierz dane o ofertach
-      const { data: offers } = await supabase
-        .from('offers')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      // Pobierz dane o klientach
-      const { data: clients } = await supabase
-        .from('clients')
-        .select('*');
-
-      // Pobierz powiadomienia o akceptacjach
-    const { data: notifications } = await supabase
-      .from('offer_statistics')
-      .select('*')
-      .like('user_agent', 'ACCEPTED:%')
-      .order('viewed_at', { ascending: false })
-      .limit(10);
-
-    if (offers && clients) {
-        // Oblicz statystyki
-        const acceptedOffers = offers.filter(o => o.status === 'accepted');
-        const totalRevenue = acceptedOffers.reduce((sum, o) => sum + (o.total_net || 0), 0);
-        const conversionRate = offers.length > 0 ? (acceptedOffers.length / offers.length) * 100 : 0;
-
-        setStats({
-          totalRevenue,
-          revenueChange: 15.3, // Symulacja
-          totalOffers: offers.length,
-          offersChange: 8.2,
-          totalClients: clients.length,
-          clientsChange: 12.5,
-          conversionRate,
-          conversionChange: -2.4
-        });
-
-        // Przygotuj dane do wykresów
-        prepareChartData(offers);
-      }
-    } catch (error) {
-      console.error('Błąd pobierania danych:', error);
-    } finally {
-      setLoading(false);
-    }
+  // Dane przykładowe
+  const stats = {
+    totalRevenue: 125400,
+    revenueChange: 15.3,
+    totalOffers: 42,
+    offersChange: 8.2,
+    totalClients: 28,
+    clientsChange: 12.5,
+    conversionRate: 68.5,
+    conversionChange: -2.4
   };
 
-  const prepareChartData = (offers: any[]) => {
-    // Dane przychodów z ostatnich 7 dni
-    const last7Days = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (6 - i));
-      return {
-        date: date.toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' }),
-        dateObj: date,
-        revenue: 0,
-        offers: 0
-      };
-    });
+  const revenueData = [
+    { date: '11 sty', revenue: 12500, offers: 3 },
+    { date: '12 sty', revenue: 8200, offers: 2 },
+    { date: '13 sty', revenue: 15300, offers: 4 },
+    { date: '14 sty', revenue: 21000, offers: 5 },
+    { date: '15 sty', revenue: 18500, offers: 4 },
+    { date: '16 sty', revenue: 25400, offers: 6 },
+    { date: '17 sty', revenue: 24500, offers: 5 }
+  ];
 
-    offers.forEach(offer => {
-      const offerDate = new Date(offer.created_at);
-      const dayData = last7Days.find(day => 
-        day.dateObj.toDateString() === offerDate.toDateString()
-      );
-      
-      if (dayData) {
-        dayData.offers += 1;
-        if (offer.status === 'accepted') {
-          dayData.revenue += offer.total_net || 0;
-        }
-      }
-    });
+  const productData = [
+    { name: 'Ekspozytor A4', value: 45000, count: 12 },
+    { name: 'Ekspozytor A5', value: 32000, count: 18 },
+    { name: 'Stojak na ulotki', value: 28500, count: 8 },
+    { name: 'Display A3', value: 22000, count: 5 },
+    { name: 'Ekspozytor Premium', value: 18000, count: 3 }
+  ];
 
-    setRevenueData(last7Days);
-
-    // Dane produktów
-    const productMap = new Map();
-    offers.forEach(offer => {
-      if (offer.items && Array.isArray(offer.items)) {
-        offer.items.forEach((item: any) => {
-          const current = productMap.get(item.productName) || { name: item.productName, value: 0, count: 0 };
-          current.value += item.totalPrice || 0;
-          current.count += 1;
-          productMap.set(item.productName, current);
-        });
-      }
-    });
-
-    const products = Array.from(productMap.values())
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5);
-    
-    setProductData(products);
-
-    // Dane statusów
-    const statusCounts = {
-      draft: 0,
-      sent: 0,
-      accepted: 0,
-      rejected: 0
-    };
-
-    offers.forEach(offer => {
-      if (statusCounts.hasOwnProperty(offer.status)) {
-        statusCounts[offer.status as keyof typeof statusCounts] += 1;
-      }
-    });
-
-    setStatusData([
-      { name: 'Szkic', value: statusCounts.draft, color: '#6B7280' },
-      { name: 'Wysłane', value: statusCounts.sent, color: '#3B82F6' },
-      { name: 'Zaakceptowane', value: statusCounts.accepted, color: '#10B981' },
-      { name: 'Odrzucone', value: statusCounts.rejected, color: '#EF4444' }
-    ]);
-  };
+  const statusData = [
+    { name: 'Szkic', value: 8, color: '#6B7280' },
+    { name: 'Wysłane', value: 12, color: '#3B82F6' },
+    { name: 'Zaakceptowane', value: 18, color: '#10B981' },
+    { name: 'Odrzucone', value: 4, color: '#EF4444' }
+  ];
 
   const StatCard = ({ icon: Icon, title, value, change, color }: any) => (
     <div className="bg-zinc-800 rounded-lg p-6 border border-zinc-700">
@@ -177,14 +64,6 @@ const Dashboard: React.FC = () => {
       </div>
     </div>
   );
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -349,8 +228,8 @@ const Dashboard: React.FC = () => {
         <h3 className="text-lg font-semibold text-white mb-4">Ostatnie aktywności</h3>
         <div className="space-y-3">
           {[
-            { icon: FileText, text: 'Nowa oferta OF/2024/07/018 dla Firma ABC', time: '5 minut temu', color: 'text-blue-500' },
-            { icon: CheckCircle, text: 'Oferta OF/2024/07/015 została zaakceptowana', time: '1 godzinę temu', color: 'text-green-500' },
+            { icon: FileText, text: 'Nowa oferta DB-2025-0018 dla Firma ABC', time: '5 minut temu', color: 'text-blue-500' },
+            { icon: CheckCircle, text: 'Oferta LS-2025-0015 została zaakceptowana', time: '1 godzinę temu', color: 'text-green-500' },
             { icon: Users, text: 'Dodano nowego klienta: XYZ Sp. z o.o.', time: '3 godziny temu', color: 'text-purple-500' },
             { icon: TrendingUp, text: 'Wzrost konwersji o 5% w tym tygodniu', time: '1 dzień temu', color: 'text-orange-500' }
           ].map((activity, index) => (

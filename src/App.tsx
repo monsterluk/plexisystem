@@ -8,6 +8,7 @@ import { HomePage } from '@/pages/HomePage';
 import { OfferView } from '@/pages/OfferView';
 import { OfferAcceptance } from '@/pages/OfferAcceptance';
 import { PublicOffer } from '@/pages/PublicOffer';
+import { ClientPanel } from '@/pages/ClientPanel';
 import { Calculator as CalculatorPage } from '@/components/quotation/Calculator';
 import Dashboard from './Dashboard';
 import { salespeople } from '@/constants/materials';
@@ -47,7 +48,7 @@ const AppContent: React.FC = () => {
     totalClients: 0
   });
 
-  const isPublicRoute = window.location.pathname.startsWith('/offer/accept/') || window.location.pathname.startsWith('/oferta/');
+  const isPublicRoute = window.location.pathname.startsWith('/offer/accept/') || window.location.pathname.startsWith('/oferta/') || window.location.pathname.startsWith('/panel/');
 
   useEffect(() => {
     // Register service worker for PWA - wyłączone tymczasowo
@@ -92,6 +93,7 @@ const AppContent: React.FC = () => {
         <Routes>
           <Route path="/offer/accept/:shareId" element={<OfferAcceptance />} />
           <Route path="/oferta/:token" element={<PublicOffer />} />
+          <Route path="/panel/:token" element={<ClientPanel />} />
         </Routes>
       </Router>
     );
@@ -473,6 +475,7 @@ const AppContent: React.FC = () => {
               />
               <Route path="/offer/accept/:shareId" element={<OfferAcceptance />} />
               <Route path="/oferta/:token" element={<PublicOffer />} />
+              <Route path="/panel/:token" element={<ClientPanel />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>

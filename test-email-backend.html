@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Backend - PlexiSystem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        .container {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #f97316;
+        }
+        button {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #ea580c;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .result {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            border-left: 4px solid #10b981;
+        }
+        .error {
+            border-left: 4px solid #ef4444;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: white;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Backend PlexiSystem</h1>
+    
+    <div class="container">
+        <h2>1. Test zdrowia backendu</h2>
+        <button onclick="testHealth()">Sprawdź /api/health</button>
+        <div id="healthResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="container">
+        <h2>2. Test wysyłania emaili</h2>
+        <label>Email docelowy:</label>
+        <input type="email" id="testEmail" value="lukasz@plexisystem.pl" placeholder="Wpisz adres email">
+        
+        <button onclick="testEmail()">Wyślij testowy email</button>
+        <div id="emailResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="container">
+        <h2>3. Ustawienia testowe</h2>
+        <label>URL Backendu:</label>
+        <input type="text" id="backendUrl" value="https://plexisystem-backend.onrender.com">
+        
+        <h3>Status połączenia:</h3>
+        <div id="connectionStatus">Nie sprawdzono</div>
+    </div>
+
+    <script>
+        const getBackendUrl = () => document.getElementById('backendUrl').value;
+
+        async function testHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            const statusDiv = document.getElementById('connectionStatus');
+            const button = event.target;
+            
+            button.disabled = true;
+            button.textContent = 'Sprawdzanie...';
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Łączenie z backendem...';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch(getBackendUrl() + '/api/health');
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = 'result success';
+                statusDiv.textContent = '✅ Backend dostępny';
+                statusDiv.style.color = '#10b981';
+                
+            } catch (error) {
+                resultDiv.textContent = 'Błąd: ' + error.message;
+                resultDiv.className = 'result error';
+                statusDiv.textContent = '❌ Backend niedostępny';
+                statusDiv.style.color = '#ef4444';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Sprawdź /api/health';
+            }
+        }
+
+        async function testEmail() {
+            const resultDiv = document.getElementById('emailResult');
+            const button = event.target;
+            const email = document.getElementById('testEmail').value;
+            
+            if (!email) {
+                alert('Wpisz adres email!');
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Wysyłanie...';
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Wysyłanie testowego emaila...';
+            resultDiv.className = 'result';
+
+            const emailData = {
+                to: email,
+                subject: 'Test Email - PlexiSystem Backend',
+                html: `
+                    <h1>🎉 Test Email</h1>
+                    <p>To jest testowy email z PlexiSystem backend!</p>
+                    <p><strong>Czas wysłania:</strong> ${new Date().toLocaleString('pl-PL')}</p>
+                    <p>Jeśli otrzymujesz ten email, backend działa poprawnie! 🚀</p>
+                    <hr>
+                    <p><small>PlexiSystem S.C. - Test Backend</small></p>
+                `
+            };
+
+            try {
+                console.log('Wysyłanie emaila do:', getBackendUrl() + '/api/send-email');
+                const response = await fetch(getBackendUrl() + '/api/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(emailData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.textContent = `✅ Email wysłany pomyślnie!\n\nMessage ID: ${data.messageId}\nAdresat: ${email}`;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `❌ Błąd wysyłania:\n\n${data.error || 'Nieznany błąd'}`;
+                    resultDiv.className = 'result error';
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ Błąd połączenia:\n\n${error.message}`;
+                resultDiv.className = 'result error';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Wyślij testowy email';
+            }
+        }
+
+        // Test automatyczny przy załadowaniu strony
+        window.addEventListener('load', () => {
+            console.log('🔄 Auto-test health przy załadowaniu strony...');
+            setTimeout(testHealth, 500);
+        });
+    </script>
+</body>
+</html>

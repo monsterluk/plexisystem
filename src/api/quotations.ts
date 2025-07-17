@@ -481,70 +481,21 @@ export const acceptOffer = async (offerId: string): Promise<boolean> => {
     
     if (error) throw error;
     
-    // Wyślij email do handlowca
-    try {
-      const emailData = {
-        to: salespersonEmail,
-        subject: `✅ Oferta ${offerData.offer_number} została zaakceptowana!`,
-        html: `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <style>
-              body { font-family: Arial, sans-serif; line-height: 1.6; }
-              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-              .header { background: #10b981; color: white; padding: 20px; border-radius: 8px; text-align: center; }
-              .content { background: #f9f9f9; padding: 30px; margin-top: 20px; border-radius: 8px; }
-              .client-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
-              .highlight { color: #10b981; font-weight: bold; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <h1>🎉 Oferta zaakceptowana!</h1>
-              </div>
-              <div class="content">
-                <h2>Gratulacje!</h2>
-                
-                <p>Oferta <span class="highlight">${offerData.offer_number}</span> została właśnie zaakceptowana przez klienta.</p>
-                
-                <div class="client-info">
-                  <h3>Dane klienta:</h3>
-                  <p><strong>${offerData.clients.name}</strong><br>
-                  ${offerData.clients.address || ''}<br>
-                  NIP: ${offerData.clients.nip}<br>
-                  ${offerData.clients.email ? `Email: ${offerData.clients.email}<br>` : ''}
-                  ${offerData.clients.phone ? `Tel: ${offerData.clients.phone}` : ''}</p>
-                  
-                  ${offerData.project_name ? `<p><strong>Projekt:</strong> ${offerData.project_name}</p>` : ''}
-                  
-                  <p><strong>Wartość zamówienia:</strong> ${offerData.total_net_after_discount.toFixed(2)} zł netto</p>
-                </div>
-                
-                <p><strong>Data akceptacji:</strong> ${new Date().toLocaleString('pl-PL')}</p>
-                
-                <hr style="margin: 30px 0; border: 1px solid #e5e7eb;">
-                
-                <p style="text-align: center; color: #666;">
-                  Skontaktuj się z klientem w celu ustalenia szczegółów realizacji zamówienia.
-                </p>
-              </div>
-            </div>
-          </body>
-          </html>
-        `
-      };
-      
-      await fetch(API_ENDPOINTS.sendEmail, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(emailData)
+    // Dodaj wpis do statystyk (jako powiadomienie)
+    await supabase
+      .from('offer_statistics')
+      .insert({
+        offer_id: offerId,
+        viewed_at: new Date().toISOString(),
+        ip_address: '0.0.0.0',
+        user_agent: `ACCEPTED: Oferta ${offerData.offer_number} została zaakceptowana przez ${offerData.clients.name}`
       });
-    } catch (emailError) {
-      console.error('Error sending notification email:', emailError);
-      // Nie blokuj akceptacji jeśli email nie działa
-    }
+    
+    console.log('✅ Oferta zaakceptowana:', offerData.offer_number);
+    console.log('Email handlowca:', salespersonEmail);
+    
+    // TODO: Konfiguracja emaili w ustawieniach
+    // Na razie tylko logujemy
     
     return true;
   } catch (error) {

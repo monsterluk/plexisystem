@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, TrendingUp, Sparkles, Calculator, FileText, Lightbulb, BarChart, Target, Zap, RefreshCw, MessageSquare, ChevronRight, DollarSign, Percent } from 'lucide-react';
+import { Brain, TrendingUp, Sparkles, Calculator, FileText, Lightbulb, BarChart, Target, Zap, RefreshCw, MessageSquare, ChevronRight, DollarSign, Percent, Clock, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { AIService } from '@/services/aiService';
+import { formatDate } from '@/utils/dateHelpers';
 
 interface PriceSuggestion {
   productId: string;

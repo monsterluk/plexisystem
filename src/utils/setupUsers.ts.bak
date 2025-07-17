@@ -1,0 +1,57 @@
+// TYMCZASOWY PLIK - USUŃ PO UŻYCIU!
+import { supabase } from '@/lib/supabaseClient';
+
+export const setupUserPasswords = async () => {
+  console.log('Setting up user passwords...');
+  
+  // Lista użytkowników z hasłami
+  const users = [
+    { email: 'lukasz@plexisystem.pl', password: 'demo123' },
+    { email: 'dorota@plexisystem.pl', password: 'demo123' }
+  ];
+  
+  for (const user of users) {
+    try {
+      // Spróbuj zalogować - jeśli się uda, hasło jest OK
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: user.password
+      });
+      
+      if (signInError) {
+        console.log(`❌ Cannot sign in ${user.email}:`, signInError.message);
+        
+        // Jeśli użytkownik nie istnieje, stwórz go
+        if (signInError.message.includes('Invalid login credentials')) {
+          const { data, error: signUpError } = await supabase.auth.signUp({
+            email: user.email,
+            password: user.password,
+            options: {
+              data: {
+                email_confirmed: true
+              }
+            }
+          });
+          
+          if (signUpError) {
+            console.error(`❌ Failed to create ${user.email}:`, signUpError);
+          } else {
+            console.log(`✅ Created user ${user.email}`);
+          }
+        }
+      } else {
+        console.log(`✅ ${user.email} can login successfully`);
+        await supabase.auth.signOut();
+      }
+    } catch (error) {
+      console.error(`Error processing ${user.email}:`, error);
+    }
+  }
+  
+  console.log('Setup complete!');
+};
+
+// Eksportuj do window żeby można było wywołać z konsoli
+if (typeof window !== 'undefined') {
+  (window as any).setupUserPasswords = setupUserPasswords;
+}
