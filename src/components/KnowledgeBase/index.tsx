@@ -29,21 +29,21 @@ const KnowledgeBase: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-zinc-900">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-zinc-800 shadow-sm border-b border-zinc-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <BookOpen className="w-8 h-8 text-blue-600 mr-3" />
-              <h1 className="text-2xl font-semibold text-gray-900">Baza Wiedzy Plexisystem</h1>
+              <h1 className="text-2xl font-semibold text-white">Baza Wiedzy Plexisystem</h1>
             </div>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b">
+      <div className="bg-zinc-800 border-b border-zinc-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8" aria-label="Tabs">
             {tabs.map((tab) => (
@@ -54,7 +54,7 @@ const KnowledgeBase: React.FC = () => {
                   py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2
                   ${activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-400 hover:text-white hover:border-gray-500'
                   }
                 `}
               >

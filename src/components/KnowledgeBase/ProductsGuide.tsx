@@ -11,23 +11,23 @@ const ProductsGuide: React.FC = () => {
 
       {/* Galeria inspiracji */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold text-blue-900 mb-6 text-center">Galeria Inspiracji</h2>
+        <h2 className="text-3xl font-bold text-white mb-6 text-center">Galeria Inspiracji</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((num) => (
-            <div key={num} className="bg-gray-200 h-48 rounded-lg flex items-center justify-center">
-              <span className="text-gray-500 italic">Zdjęcie realizacji {num}</span>
+            <div key={num} className="bg-zinc-800 h-48 rounded-lg flex items-center justify-center hover:bg-zinc-700 transition-colors cursor-pointer">
+              <span className="text-gray-400 italic">Zdjęcie realizacji {num}</span>
             </div>
           ))}
         </div>
       </section>
 
       {/* Katalog produktów */}
-      <section className="bg-gray-50 p-8 rounded-lg">
-        <h2 className="text-3xl font-bold text-blue-900 mb-8 text-center">Katalog Produktów</h2>
+      <section className="bg-zinc-800 p-8 rounded-lg">
+        <h2 className="text-3xl font-bold text-white mb-8 text-center">Katalog Produktów</h2>
 
         {/* Reklama i Identyfikacja Wizualna */}
         <div className="mb-12">
-          <h3 className="text-2xl font-bold text-blue-700 border-b-2 border-gray-300 pb-3 mb-6">
+          <h3 className="text-2xl font-bold text-blue-400 border-b-2 border-zinc-700 pb-3 mb-6">
             Reklama i Identyfikacja Wizualna
           </h3>
 
@@ -35,18 +35,18 @@ const ProductsGuide: React.FC = () => {
             {/* Szyldy i Tablice */}
             <div className="grid md:grid-cols-3 gap-6 items-start">
               <div className="text-center">
-                <MessageSquare className="w-20 h-20 text-blue-700 mx-auto mb-4" />
+                <MessageSquare className="w-20 h-20 text-blue-500 mx-auto mb-4" />
               </div>
               <div className="md:col-span-2">
-                <h4 className="text-xl font-bold text-blue-900 mb-3">Szyldy i Tablice Reklamowe</h4>
-                <p className="text-gray-700 mb-4">
+                <h4 className="text-xl font-bold text-white mb-3">Szyldy i Tablice Reklamowe</h4>
+                <p className="text-gray-300 mb-4">
                   Wycinane w dowolnym kształcie, grawerowane lub z grafiką. Idealne do oznakowania biur, 
                   sklepów i budynków. Najczęściej wykonujemy je z Dibondu (trwałość na zewnątrz) 
                   lub PCV (opcja ekonomiczna).
                 </p>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-                  <p className="text-sm">
-                    <strong className="text-blue-700">Case Study:</strong> Dla lokalnej kancelarii prawnej 
+                <div className="bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
+                  <p className="text-sm text-gray-300">
+                    <strong className="text-blue-400">Case Study:</strong> Dla lokalnej kancelarii prawnej 
                     wykonaliśmy elegancki szyld z czarnego, szczotkowanego Dibondu z frezowanymi literami, 
                     co podkreśliło prestiż i profesjonalizm firmy.
                   </p>
@@ -57,18 +57,18 @@ const ProductsGuide: React.FC = () => {
             {/* Litery 3D */}
             <div className="grid md:grid-cols-3 gap-6 items-start">
               <div className="text-center">
-                <div className="text-6xl font-bold text-blue-700 mx-auto">ABC</div>
+                <div className="text-6xl font-bold text-blue-500 mx-auto">ABC</div>
               </div>
               <div className="md:col-span-2">
-                <h4 className="text-xl font-bold text-blue-900 mb-3">Litery i Znaki 3D</h4>
-                <p className="text-gray-700 mb-4">
+                <h4 className="text-xl font-bold text-white mb-3">Litery i Znaki 3D</h4>
+                <p className="text-gray-300 mb-4">
                   Efektowne litery przestrzenne, które wyróżnią każdą markę. Mogą być podświetlane 
                   od tyłu (efekt halo). Używamy plexi na lico dla uzyskania głębi koloru i PCV 
                   na boki i tył.
                 </p>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-                  <p className="text-sm">
-                    <strong className="text-blue-700">Case Study:</strong> Dla nowej kawiarni stworzyliśmy 
+                <div className="bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
+                  <p className="text-sm text-gray-300">
+                    <strong className="text-blue-400">Case Study:</strong> Dla nowej kawiarni stworzyliśmy 
                     podświetlany napis "COFFEE" z białej plexi. Po zmroku napis tworzy ciepłą, 
                     zachęcającą poświatę, która przyciąga klientów.
                   </p>
@@ -80,7 +80,7 @@ const ProductsGuide: React.FC = () => {
 
         {/* Przemysł i Technika */}
         <div className="mb-12">
-          <h3 className="text-2xl font-bold text-blue-700 border-b-2 border-gray-300 pb-3 mb-6">
+          <h3 className="text-2xl font-bold text-blue-400 border-b-2 border-zinc-700 pb-3 mb-6">
             Przemysł i Technika
           </h3>
 
@@ -88,18 +88,18 @@ const ProductsGuide: React.FC = () => {
             {/* Osłony do maszyn */}
             <div className="grid md:grid-cols-3 gap-6 items-start">
               <div className="text-center">
-                <ShieldCheck className="w-20 h-20 text-blue-700 mx-auto mb-4" />
+                <ShieldCheck className="w-20 h-20 text-green-500 mx-auto mb-4" />
               </div>
               <div className="md:col-span-2">
-                <h4 className="text-xl font-bold text-blue-900 mb-3">Osłony do Maszyn</h4>
-                <p className="text-gray-700 mb-4">
+                <h4 className="text-xl font-bold text-white mb-3">Osłony do Maszyn</h4>
+                <p className="text-gray-300 mb-4">
                   Trwałe i odporne na uderzenia osłony zapewniające bezpieczeństwo operatorów. 
                   Standardem jest tu poliwęglan lity (PC) ze względu na jego ekstremalną wytrzymałość. 
                   PETG jest alternatywą przy kontakcie z chemią.
                 </p>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-                  <p className="text-sm">
-                    <strong className="text-blue-700">Case Study:</strong> Dla zakładu produkcyjnego 
+                <div className="bg-green-900/30 border-l-4 border-green-500 p-4 rounded">
+                  <p className="text-sm text-gray-300">
+                    <strong className="text-green-400">Case Study:</strong> Dla zakładu produkcyjnego 
                     dostarczyliśmy komplet osłon do nowej linii montażowej. Wykonane z PC o grubości 8mm, 
                     chronią pracowników przed odpryskami, nie ograniczając widoczności.
                   </p>
@@ -110,17 +110,17 @@ const ProductsGuide: React.FC = () => {
             {/* Elementy konstrukcyjne */}
             <div className="grid md:grid-cols-3 gap-6 items-start">
               <div className="text-center">
-                <Settings className="w-20 h-20 text-blue-700 mx-auto mb-4" />
+                <Settings className="w-20 h-20 text-orange-500 mx-auto mb-4" />
               </div>
               <div className="md:col-span-2">
-                <h4 className="text-xl font-bold text-blue-900 mb-3">Elementy Konstrukcyjne i Prototypy</h4>
-                <p className="text-gray-700 mb-4">
+                <h4 className="text-xl font-bold text-white mb-3">Elementy Konstrukcyjne i Prototypy</h4>
+                <p className="text-gray-300 mb-4">
                   Precyzyjnie wykonane części maszyn, obudowy urządzeń oraz funkcjonalne prototypy. 
                   Tekstolit i polipropylen (PP) są idealne na elementy ślizgowe i konstrukcyjne.
                 </p>
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-                  <p className="text-sm">
-                    <strong className="text-blue-700">Case Study:</strong> Dla startupu technologicznego 
+                <div className="bg-orange-900/30 border-l-4 border-orange-500 p-4 rounded">
+                  <p className="text-sm text-gray-300">
+                    <strong className="text-orange-400">Case Study:</strong> Dla startupu technologicznego 
                     wykonaliśmy serię prototypów obudowy do urządzenia IoT z frezowanego HIPS, 
                     co pozwoliło im na szybkie testy i prezentację produktu inwestorom.
                   </p>
@@ -132,26 +132,26 @@ const ProductsGuide: React.FC = () => {
 
         {/* Dodatkowe kategorie */}
         <div className="grid md:grid-cols-3 gap-6 mt-12">
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <Palette className="w-12 h-12 text-blue-700 mb-4" />
-            <h4 className="text-lg font-bold text-blue-900 mb-2">Dekoracje i Wystrój Wnętrz</h4>
-            <p className="text-sm text-gray-600">
+          <div className="bg-zinc-700 p-6 rounded-lg shadow-lg hover:bg-zinc-600 transition-all cursor-pointer">
+            <Palette className="w-12 h-12 text-purple-400 mb-4" />
+            <h4 className="text-lg font-bold text-white mb-2">Dekoracje i Wystrój Wnętrz</h4>
+            <p className="text-sm text-gray-300">
               Panele ścienne, przegrody, elementy mebli, tablice informacyjne
             </p>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <Package className="w-12 h-12 text-blue-700 mb-4" />
-            <h4 className="text-lg font-bold text-blue-900 mb-2">Opakowania i Displayе</h4>
-            <p className="text-sm text-gray-600">
+          <div className="bg-zinc-700 p-6 rounded-lg shadow-lg hover:bg-zinc-600 transition-all cursor-pointer">
+            <Package className="w-12 h-12 text-blue-400 mb-4" />
+            <h4 className="text-lg font-bold text-white mb-2">Opakowania i Displayе</h4>
+            <p className="text-sm text-gray-300">
               Stojaki POS, ekspozytory, pudełka prezentowe, organizery
             </p>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <Cpu className="w-12 h-12 text-blue-700 mb-4" />
-            <h4 className="text-lg font-bold text-blue-900 mb-2">Elektronika i Technika</h4>
-            <p className="text-sm text-gray-600">
+          <div className="bg-zinc-700 p-6 rounded-lg shadow-lg hover:bg-zinc-600 transition-all cursor-pointer">
+            <Cpu className="w-12 h-12 text-red-400 mb-4" />
+            <h4 className="text-lg font-bold text-white mb-2">Elektronika i Technika</h4>
+            <p className="text-sm text-gray-300">
               Obudowy urządzeń, panele czołowe, podstawki, uchwyty
             </p>
           </div>

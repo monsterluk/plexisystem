@@ -63,6 +63,30 @@ src/
 - ✅ Integracja z GUS API
 - ✅ System powiadomień
 - ✅ Tryby widoku (handlowiec/klient)
+- ✅ Baza wiedzy technicznej
+- ✅ AI Assistant
+- ✅ System autoryzacji i ról
+
+## 🗄️ Baza danych - Supabase
+
+### Wymagane migracje SQL:
+
+1. **Dodaj kolumny do tabeli offers**:
+```sql
+ALTER TABLE offers 
+ADD COLUMN salesperson_email TEXT,
+ADD COLUMN salesperson_phone TEXT;
+```
+
+2. **System autoryzacji** - wykonaj migrację z pliku:
+```
+supabase/migrations/003_auth_system.sql
+```
+
+3. **Utworz użytkowników w Supabase Dashboard**:
+- Admin: admin@plexisystem.pl (role: admin)
+- Dorota: dorota@plexisystem.pl (role: salesperson, salesperson_id: dorota)
+- Łukasz: lukasz@plexisystem.pl (role: salesperson, salesperson_id: lukasz)
 
 ## 🔧 Skrypty
 

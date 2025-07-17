@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity, Book } from 'lucide-react';
+import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity, Book, LogOut } from 'lucide-react';
 import { OfferProvider } from '@/context/OfferContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { HomePage } from '@/pages/HomePage';
 import { OfferView } from '@/pages/OfferView';
 import { OfferAcceptance } from '@/pages/OfferAcceptance';
@@ -17,6 +18,7 @@ import { ReportsPage } from '@/pages/ReportsPage';
 import { AutomationSettings } from '@/pages/AutomationSettings';
 import { AIAssistant } from '@/pages/AIAssistant';
 import { KnowledgeBase } from '@/pages/KnowledgeBase';
+import { LoginPage } from '@/pages/LoginPage';
 
 interface Notification {
   id: number;
