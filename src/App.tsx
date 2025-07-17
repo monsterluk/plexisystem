@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity, Book, LogOut, X } from 'lucide-react';
+import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity, Book, LogOut, X, ShoppingBag } from 'lucide-react';
 import { OfferProvider } from '@/context/OfferContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { UserProvider, useUser, users } from '@/context/UserContext';
@@ -18,6 +18,7 @@ import { ReportsPage } from '@/pages/ReportsPage';
 import { AutomationSettings } from '@/pages/AutomationSettings';
 import { AIAssistant } from '@/pages/AIAssistant';
 import { KnowledgeBase } from '@/pages/KnowledgeBase';
+import { Marketplace } from '@/pages/Marketplace';
 // import { LoginPage } from '@/pages/LoginPage';
 
 interface Notification {
@@ -174,6 +175,16 @@ const AppContent: React.FC = () => {
                     >
                       <Book className="w-4 h-4" />
                       Wiedza
+                    </a>
+                    <a
+                      href="/marketplace"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative whitespace-nowrap"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      Marketplace
+                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-purple-500 text-xs rounded-full animate-pulse">
+                        HOT
+                      </span>
                     </a>
                     <a
                       href="/settings"
@@ -431,6 +442,17 @@ const AppContent: React.FC = () => {
                   Wiedza
                 </a>
                 <a
+                  href="/marketplace"
+                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  Marketplace
+                  <span className="absolute top-2 left-20 px-1.5 py-0.5 bg-purple-500 text-xs rounded-full animate-pulse">
+                    HOT
+                  </span>
+                </a>
+                <a
                   href="/settings"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
                   onClick={() => setShowMobileMenu(false)}
@@ -455,6 +477,7 @@ const AppContent: React.FC = () => {
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/ai" element={<AIAssistant />} />
               <Route path="/knowledge" element={<KnowledgeBase />} />
+              <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/settings" element={<AutomationSettings />} />
               <Route path="/offer/new" element={<OfferView />} />
               <Route path="/offer/:id" element={<OfferView />} />
