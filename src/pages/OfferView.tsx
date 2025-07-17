@@ -7,6 +7,7 @@ import { generatePDF } from '@/utils/generatePDF';
 import { sendOfferEmail } from '@/utils/sendEmail';
 import { deliveryRegions, salespeople } from '@/constants/materials';
 import { useOffer } from '@/context/OfferContext';
+import { useUser } from '@/context/UserContext';
 import { ClientForm } from '@/components/client/ClientForm';
 import { Calculator } from '@/components/quotation/Calculator';
 import { ItemSummary } from '@/components/quotation/ItemSummary';
@@ -17,6 +18,7 @@ export const OfferView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentOffer, setCurrentOffer, updateClient } = useOffer();
+  const { currentUser } = useUser();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
@@ -66,7 +68,12 @@ export const OfferView: React.FC = () => {
           validity: '7 dni',
         },
         status: 'draft',
-        salesperson: salespeople[0],
+        salesperson: {
+          id: currentUser.id,
+          name: currentUser.name,
+          email: currentUser.email,
+          phone: currentUser.id === 'LS' ? '884 042 107' : '884 042 109'
+        },
         comment: '',
         internalNotes: '',
         totalNet: 0,
@@ -102,7 +109,7 @@ export const OfferView: React.FC = () => {
 
   const generateOfferNumber = () => {
     const year = new Date().getFullYear();
-    const userPrefix = 'DB'; // TODO: Get from current user
+    const userPrefix = currentUser.id;
     const nextNumber = Math.floor(Math.random() * 9999) + 1;
     return `${userPrefix}-${year}-${String(nextNumber).padStart(4, '0')}`;
   };
@@ -318,6 +325,9 @@ export const OfferView: React.FC = () => {
             <p className="text-gray-400">Handlowiec</p>
             <p className="font-medium">{currentOffer.salesperson.name}</p>
             <p className="text-sm text-gray-400">{currentOffer.salesperson.phone}</p>
+            {currentUser.role === 'admin' && currentOffer.salesperson.id !== currentUser.id && (
+              <p className="text-xs text-yellow-400 mt-1">⚠️ Oferta innego handlowca</p>
+            )}
           </div>
         </div>
 

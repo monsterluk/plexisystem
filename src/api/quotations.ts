@@ -28,7 +28,7 @@ export const saveOffer = async (offer: Offer): Promise<Offer> => {
       .from('clients')
       .select('*')
       .eq('nip', offer.client.nip)
-      .single();
+      .maybeSingle();
     
     if (checkError && checkError.code !== 'PGRST116') {
       console.error('Error checking client:', checkError);
@@ -142,11 +142,12 @@ export const saveOffer = async (offer: Offer): Promise<Offer> => {
     console.log('Offer saved:', savedOffer);
     
     // 4. Zapisz pozycje oferty
-    const offerItems = offer.items.map(item => ({
+    const offerItems = offer.items.map((item, index) => ({
       offer_id: savedOffer.id!,
+      position: index + 1,
       product: item.product,
       product_name: item.productName,
-      expositor_type: item.expositorType,
+      expositor_type: item.expositorType || null,
       material: item.material,
       material_name: item.materialName,
       thickness: item.thickness,
@@ -157,16 +158,17 @@ export const saveOffer = async (offer: Offer): Promise<Offer> => {
       unit_price: item.unitPrice,
       total_price: item.totalPrice,
       surface: item.calculations?.surface || 0,
-      weight: item.calculations?.weight || 0,
+      weight: item.calculations?.totalWeight || item.calculations?.weight || 0,
       options: item.options || {},
       calculations: item.calculations || {}
     }));
     
     console.log('Saving offer items:', offerItems.length);
     
-    const { error: itemsError } = await supabase
+    const { data: insertedItems, error: itemsError } = await supabase
       .from('offer_items')
-      .insert(offerItems);
+      .insert(offerItems)
+      .select();
     
     if (itemsError) {
       console.error('Error saving offer items:', itemsError);
