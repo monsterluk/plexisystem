@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: plexisystem-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BASE_URL
+        value: https://plexisystem.vercel.app
+      - key: DATABASE_PATH
+        value: /var/data/plexisystem.db
+    disk:
+      name: sqlite-data
+      mountPath: /var/data
+      sizeGB: 1

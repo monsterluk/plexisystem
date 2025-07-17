@@ -1,21 +1,22 @@
 {
-    "name": "plexisystem-email-pdf-backend",
-    "version": "1.0.0",
-    "description": "Backend do wysyłania maili i generowania PDF",
-    "main": "simple-backend.js",
-    "scripts": {
-        "start": "node simple-backend.js",
-        "dev": "nodemon simple-backend.js"
-    },
-    "dependencies": {
-        "cors": "^2.8.5",
-        "dotenv": "^16.6.1",
-        "express": "^4.21.2",
-        "node-fetch": "^3.3.2",
-        "nodemailer": "^6.9.7",
-        "puppeteer": "^21.6.1"
-    },
-    "devDependencies": {
-        "nodemon": "^3.0.2"
-    }
+  "name": "plexisystem-backend",
+  "version": "1.0.0",
+  "description": "PlexiSystem Backend API",
+  "main": "minimal-server-simple.js",
+  "scripts": {
+    "start": "node minimal-server-simple.js",
+    "dev": "nodemon minimal-server-simple.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

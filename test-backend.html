@@ -1,0 +1,123 @@
+// test-backend.html - Prosty test backendu
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Backend</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test { margin: 20px 0; padding: 10px; border: 1px solid #ddd; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Test PlexiSystem Backend</h1>
+    
+    <div>
+        <input id="backendUrl" type="text" placeholder="https://plexisystem-backend.onrender.com" style="width: 400px; padding: 5px;">
+        <button onclick="updateUrl()">Ustaw URL</button>
+    </div>
+    
+    <div class="test">
+        <h3>1. Health Check</h3>
+        <button onclick="testHealth()">Test Health</button>
+        <div id="health-result"></div>
+    </div>
+    
+    <div class="test">
+        <h3>2. Test Email</h3>
+        <input id="email" type="email" placeholder="test@example.com" value="">
+        <button onclick="testEmail()">Wyślij Test Email</button>
+        <div id="email-result"></div>
+    </div>
+    
+    <div class="test">
+        <h3>3. Test GUS</h3>
+        <input id="nip" type="text" placeholder="NIP" value="1234567890">
+        <button onclick="testGus()">Pobierz dane</button>
+        <div id="gus-result"></div>
+    </div>
+
+    <script>
+        let API_URL = 'https://plexisystem-backend.onrender.com';
+        
+        function updateUrl() {
+            API_URL = document.getElementById('backendUrl').value || API_URL;
+            alert('URL ustawiony na: ' + API_URL);
+        }
+        
+        async function testHealth() {
+            const resultDiv = document.getElementById('health-result');
+            try {
+                const response = await fetch(`${API_URL}/api/health`);
+                const data = await response.json();
+                resultDiv.className = 'success';
+                resultDiv.innerHTML = `✅ Status: ${data.status}<br>Message: ${data.message}<br>Time: ${data.timestamp}`;
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        async function testEmail() {
+            const resultDiv = document.getElementById('email-result');
+            const email = document.getElementById('email').value;
+            
+            if (!email) {
+                alert('Podaj email!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/send-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: email,
+                        subject: 'Test Email z PlexiSystem',
+                        html: '<h1>Test Email</h1><p>Jeśli widzisz tę wiadomość, backend działa poprawnie! 🎉</p>'
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `✅ Email wysłany!<br>Message ID: ${data.messageId}`;
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `❌ Błąd: ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        async function testGus() {
+            const resultDiv = document.getElementById('gus-result');
+            const nip = document.getElementById('nip').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/gus/${nip}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `✅ Znaleziono:<br>
+                        Nazwa: ${data.name}<br>
+                        Adres: ${data.address}<br>
+                        REGON: ${data.regon}`;
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `❌ ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

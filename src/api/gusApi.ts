@@ -1,5 +1,6 @@
 // src/api/gusApi.ts
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 interface GusData {
   nip: string;
@@ -15,13 +16,13 @@ interface GusData {
 
 export const fetchCompanyByNip = async (nip: string): Promise<GusData | null> => {
   try {
-    // Opcja 1: Twój backend
-    const response = await axios.get(`http://localhost:3001/api/gus/${nip}`);
+    // Używamy konfiguracji z api.ts
+    const response = await axios.get(API_ENDPOINTS.gus(nip));
     return response.data;
   } catch (error) {
     console.error('Error fetching from GUS:', error);
     
-    // Opcja 2: Dane testowe
+    // Opcja 2: Dane testowe (gdy API nie działa)
     const testData: Record<string, GusData> = {
       '5882396272': {
         nip: '5882396272',
