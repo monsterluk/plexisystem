@@ -4,13 +4,10 @@
 const isDevelopment = import.meta.env.DEV;
 const isProduction = import.meta.env.PROD;
 
-// Automatyczne przełączanie między lokalnym a produkcyjnym API
+// Konfiguracja API - zawsze używaj Render w produkcji
 export const API_URL = isProduction 
   ? 'https://plexisystem-backend.onrender.com'  // Twój backend na Render
   : 'http://localhost:3001';                     // Lokalny backend
-
-// Możesz też użyć zmiennej środowiskowej
-// export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export const API_ENDPOINTS = {
   // Health check

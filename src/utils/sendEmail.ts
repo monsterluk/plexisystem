@@ -1,5 +1,6 @@
 // src/utils/sendEmail.ts
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 interface EmailData {
   to: string;
@@ -83,7 +84,7 @@ export const sendOfferEmail = async (
     };
 
     const response = await axios.post(
-      import.meta.env.VITE_EMAIL_SERVICE_URL || 'http://localhost:3002/api/send-email',
+      API_ENDPOINTS.sendEmail,
       emailData
     );
 
