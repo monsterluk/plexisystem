@@ -1,6 +1,8 @@
 // src/api/quotations.ts
 import { supabase, DbClient, DbOffer, DbOfferItem } from '@/lib/supabaseClient';
 import { Offer } from '@/types/Offer';
+import { salespeople } from '@/constants/materials';
+import { API_ENDPOINTS } from '@/config/api';
 
 // Zapisz nową ofertę
 export const saveOffer = async (offer: Offer): Promise<Offer> => {
@@ -102,6 +104,8 @@ export const saveOffer = async (offer: Offer): Promise<Offer> => {
       client_id: client.id!,
       salesperson_id: offer.salesperson.id,
       salesperson_name: offer.salesperson.name,
+      salesperson_email: offer.salesperson.email,
+      salesperson_phone: offer.salesperson.phone,
       project_name: offer.projectName,
       status: offer.status || 'draft',
       total_net: offer.totalNet,
@@ -206,6 +210,14 @@ export const getOffer = async (id: string): Promise<Offer> => {
     
     if (itemsError) throw itemsError;
     
+    // Znajdź pełne dane handlowca
+    const salesperson = salespeople.find(sp => sp.id === offerData.salesperson_id) || {
+      id: offerData.salesperson_id,
+      name: offerData.salesperson_name,
+      phone: offerData.salesperson_phone || '',
+      email: offerData.salesperson_email || ''
+    };
+    
     // Mapuj do formatu Offer
     return {
       id: offerData.id,
@@ -252,12 +264,7 @@ export const getOffer = async (id: string): Promise<Offer> => {
         validity: offerData.terms_validity
       },
       status: offerData.status,
-      salesperson: {
-        id: offerData.salesperson_id,
-        name: offerData.salesperson_name,
-        phone: '',
-        email: ''
-      },
+      salesperson: salesperson,
       comment: offerData.comment || '',
       internalNotes: offerData.internal_notes || '',
       totalNet: offerData.total_net,
@@ -304,6 +311,12 @@ export const getOffers = async (): Promise<Offer[]> => {
     
     return offersData.map(offer => {
       const client = clientsMap.get(offer.client_id);
+      const salesperson = salespeople.find(sp => sp.id === offer.salesperson_id) || {
+        id: offer.salesperson_id,
+        name: offer.salesperson_name,
+        phone: '',
+        email: ''
+      };
       
       return {
         id: offer.id,
@@ -326,12 +339,7 @@ export const getOffers = async (): Promise<Offer[]> => {
           validity: offer.terms_validity
         },
         status: offer.status,
-        salesperson: {
-          id: offer.salesperson_id,
-          name: offer.salesperson_name,
-          phone: '',
-          email: ''
-        },
+        salesperson: salesperson,
         comment: '',
         internalNotes: '',
         totalNet: offer.total_net,
@@ -367,6 +375,14 @@ export const getOfferByToken = async (token: string): Promise<Offer> => {
     
     if (error) throw error;
     if (!offerData) throw new Error('Oferta nie znaleziona');
+    
+    // Znajdź pełne dane handlowca
+    const salesperson = salespeople.find(sp => sp.id === offerData.salesperson_id) || {
+      id: offerData.salesperson_id,
+      name: offerData.salesperson_name,
+      phone: offerData.salesperson_phone || '',
+      email: offerData.salesperson_email || ''
+    };
     
     // Zwróć ofertę bez danych wewnętrznych
     return {
@@ -414,12 +430,7 @@ export const getOfferByToken = async (token: string): Promise<Offer> => {
         validity: offerData.terms_validity
       },
       status: offerData.status,
-      salesperson: {
-        id: '',
-        name: offerData.salesperson_name,
-        phone: '',
-        email: ''
-      },
+      salesperson: salesperson,
       comment: offerData.comment || '',
       internalNotes: '', // Nie pokazuj klientowi
       totalNet: offerData.total_net,
@@ -453,6 +464,10 @@ export const acceptOffer = async (offerId: string): Promise<boolean> => {
     
     if (!offerData) throw new Error('Offer not found');
     
+    // Znajdź dane handlowca
+    const salesperson = salespeople.find(sp => sp.id === offerData.salesperson_id);
+    const salespersonEmail = salesperson?.email || offerData.salesperson_email || 'biuro@plexisystem.pl';
+    
     // Aktualizuj status
     const { error } = await supabase
       .from('offers')
@@ -467,7 +482,7 @@ export const acceptOffer = async (offerId: string): Promise<boolean> => {
     // Wyślij email do handlowca
     try {
       const emailData = {
-        to: offerData.salesperson_email || 'biuro@plexisystem.pl', // Domyślny email
+        to: salespersonEmail,
         subject: `✅ Oferta ${offerData.offer_number} została zaakceptowana!`,
         html: `
           <!DOCTYPE html>
@@ -519,7 +534,7 @@ export const acceptOffer = async (offerId: string): Promise<boolean> => {
         `
       };
       
-      await fetch(import.meta.env.VITE_EMAIL_SERVICE_URL || 'http://localhost:3002/api/send-email', {
+      await fetch(API_ENDPOINTS.sendEmail, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(emailData)
@@ -539,6 +554,22 @@ export const acceptOffer = async (offerId: string): Promise<boolean> => {
 // Odrzuć ofertę
 export const rejectOffer = async (offerId: number, reason?: string): Promise<boolean> => {
   try {
+    // Pobierz dane oferty
+    const { data: offerData } = await supabase
+      .from('offers')
+      .select(`
+        *,
+        clients (*)
+      `)
+      .eq('id', offerId)
+      .single();
+    
+    if (!offerData) throw new Error('Offer not found');
+    
+    // Znajdź dane handlowca
+    const salesperson = salespeople.find(sp => sp.id === offerData.salesperson_id);
+    const salespersonEmail = salesperson?.email || offerData.salesperson_email || 'biuro@plexisystem.pl';
+    
     const updateData: any = {
       status: 'rejected',
       rejected_at: new Date().toISOString()
@@ -555,7 +586,67 @@ export const rejectOffer = async (offerId: number, reason?: string): Promise<boo
     
     if (error) throw error;
     
-    // TODO: Opcjonalnie wyślij powiadomienie email do handlowca
+    // Wyślij powiadomienie email do handlowca
+    try {
+      const emailData = {
+        to: salespersonEmail,
+        subject: `❌ Oferta ${offerData.offer_number} została odrzucona`,
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: #ef4444; color: white; padding: 20px; border-radius: 8px; text-align: center; }
+              .content { background: #f9f9f9; padding: 30px; margin-top: 20px; border-radius: 8px; }
+              .client-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+              .reason { background: #fee2e2; padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>Oferta odrzucona</h1>
+              </div>
+              <div class="content">
+                <p>Oferta <strong>${offerData.offer_number}</strong> została odrzucona przez klienta.</p>
+                
+                <div class="client-info">
+                  <h3>Dane klienta:</h3>
+                  <p><strong>${offerData.clients.name}</strong><br>
+                  NIP: ${offerData.clients.nip}</p>
+                </div>
+                
+                ${reason ? `
+                <div class="reason">
+                  <h4>Powód odrzucenia:</h4>
+                  <p>${reason}</p>
+                </div>
+                ` : ''}
+                
+                <p><strong>Data odrzucenia:</strong> ${new Date().toLocaleString('pl-PL')}</p>
+                
+                <hr style="margin: 30px 0; border: 1px solid #e5e7eb;">
+                
+                <p style="text-align: center; color: #666;">
+                  Rozważ kontakt z klientem w celu poznania szczegółów i ewentualnej modyfikacji oferty.
+                </p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `
+      };
+      
+      await fetch(API_ENDPOINTS.sendEmail, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailData)
+      });
+    } catch (emailError) {
+      console.error('Error sending notification email:', emailError);
+    }
     
     return true;
   } catch (error) {

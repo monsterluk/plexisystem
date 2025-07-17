@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity } from 'lucide-react';
+import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity, Book } from 'lucide-react';
 import { OfferProvider } from '@/context/OfferContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { HomePage } from '@/pages/HomePage';
@@ -16,6 +16,7 @@ import { ProductsPage } from '@/pages/ProductsPage';
 import { ReportsPage } from '@/pages/ReportsPage';
 import { AutomationSettings } from '@/pages/AutomationSettings';
 import { AIAssistant } from '@/pages/AIAssistant';
+import { KnowledgeBase } from '@/pages/KnowledgeBase';
 
 interface Notification {
   id: number;
@@ -187,6 +188,13 @@ const AppContent: React.FC = () => {
                       <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-orange-500 text-xs rounded-full animate-pulse">
                         NEW
                       </span>
+                    </a>
+                    <a
+                      href="/knowledge"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    >
+                      <Book className="w-4 h-4" />
+                      Wiedza
                     </a>
                     <a
                       href="/settings"
@@ -368,6 +376,7 @@ const AppContent: React.FC = () => {
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/ai" element={<AIAssistant />} />
+              <Route path="/knowledge" element={<KnowledgeBase />} />
               <Route path="/settings" element={<AutomationSettings />} />
               <Route path="/offer/new" element={<OfferView />} />
               <Route path="/offer/:id" element={<OfferView />} />
