@@ -494,6 +494,35 @@ export const acceptOffer = async (offerId: string): Promise<boolean> => {
     console.log('✅ Oferta zaakceptowana:', offerData.offer_number);
     console.log('Email handlowca:', salespersonEmail);
     
+    // Wyślij push notification jeśli handlowiec ma włączone powiadomienia
+    try {
+      await fetch(API_ENDPOINTS.notifications.send, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: offerData.salesperson_id,
+          title: '🎉 Oferta zaakceptowana!',
+          body: `${offerData.clients.name} zaakceptował ofertę ${offerData.offer_number}`,
+          icon: '/icons/icon-192x192.png',
+          badge: '/icons/badge-72x72.png',
+          tag: `offer-accepted-${offerId}`,
+          data: {
+            type: 'offer-accepted',
+            offerId: offerId,
+            offerNumber: offerData.offer_number,
+            clientName: offerData.clients.name,
+            url: `/offer/${offerId}`
+          },
+          actions: [
+            { action: 'view', title: 'Zobacz ofertę' },
+            { action: 'contact', title: 'Kontakt z klientem' }
+          ]
+        })
+      });
+    } catch (error) {
+      console.error('Error sending push notification:', error);
+    }
+    
     // Wyślij email do handlowca
     try {
       const emailToSalesperson = {

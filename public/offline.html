@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlexiSystem - Offline</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #18181b;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+        }
+        .icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            background-color: #27272a;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon svg {
+            width: 60px;
+            height: 60px;
+            fill: #f97316;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #f97316;
+        }
+        p {
+            font-size: 1.125rem;
+            color: #a1a1aa;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .button {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background-color: #f97316;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .button:hover {
+            background-color: #ea580c;
+        }
+        .status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #27272a;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #71717a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
+            </svg>
+        </div>
+        <h1>Jesteś offline</h1>
+        <p>
+            Wygląda na to, że nie masz połączenia z internetem. 
+            PlexiSystem zapisał Twoje dane lokalnie i zsynchronizuje je, 
+            gdy połączenie zostanie przywrócone.
+        </p>
+        <a href="#" class="button" onclick="window.location.reload()">Spróbuj ponownie</a>
+        
+        <div class="status">
+            <strong>Status:</strong> <span id="status">Sprawdzanie połączenia...</span>
+        </div>
+    </div>
+
+    <script>
+        // Check connection status
+        function updateOnlineStatus() {
+            const statusEl = document.getElementById('status');
+            if (navigator.onLine) {
+                statusEl.textContent = 'Połączenie przywrócone! Odśwież stronę.';
+                statusEl.style.color = '#10b981';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                statusEl.textContent = 'Brak połączenia z internetem';
+                statusEl.style.color = '#ef4444';
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+
+        // Check every 5 seconds
+        setInterval(updateOnlineStatus, 5000);
+    </script>
+</body>
+</html>

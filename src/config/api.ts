@@ -26,6 +26,16 @@ export const API_ENDPOINTS = {
     create: `${API_URL}/api/offers`,
     updateStatus: (id: number) => `${API_URL}/api/offers/${id}/status`,
     share: (token: string) => `${API_URL}/api/offers/share/${token}`
+  },
+  
+  // Notifications
+  notifications: {
+    vapidPublicKey: `${API_URL}/api/notifications/vapid-public-key`,
+    subscribe: `${API_URL}/api/notifications/subscribe`,
+    unsubscribe: `${API_URL}/api/notifications/unsubscribe`,
+    send: `${API_URL}/api/notifications/send`,
+    test: `${API_URL}/api/notifications/test`,
+    check: `${API_URL}/api/notifications/check`
   }
 };
 
