@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, ShieldCheck, Settings, Palette, Package, Cpu, Store, Eye, Book, Gift, Lightbulb, Mirror, ChevronDown, ChevronUp, Sparkles, Layers, Box, FileText } from 'lucide-react';
+import { MessageSquare, ShieldCheck, Settings, Palette, Package, Cpu, Store, Eye, Book, Gift, Lightbulb, Square, ChevronDown, ChevronUp, Sparkles, Layers, Box, FileText } from 'lucide-react';
 
 const ProductsGuide: React.FC = () => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
@@ -342,7 +342,7 @@ const ProductsGuide: React.FC = () => {
                 className="w-full p-6 flex items-center justify-between hover:bg-zinc-600 transition-colors"
               >
                 <div className="flex items-center">
-                  <Mirror className="w-10 h-10 text-pink-400 mr-4" />
+                  <Square className="w-10 h-10 text-pink-400 mr-4" />
                   <h4 className="text-xl font-bold text-white">Ekspozytory z Lustrem</h4>
                 </div>
                 {expandedSection === 'lustrzane' ? <ChevronUp className="text-gray-400" /> : <ChevronDown className="text-gray-400" />}
