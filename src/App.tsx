@@ -4,6 +4,7 @@ import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users
 import { OfferProvider } from '@/context/OfferContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { HomePage } from '@/pages/HomePage';
 import { OfferView } from '@/pages/OfferView';
 import { OfferAcceptance } from '@/pages/OfferAcceptance';
@@ -29,6 +30,7 @@ interface Notification {
 
 const AppContent: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
   const [viewMode, setViewMode] = useState<'salesperson' | 'client'>('salesperson');
   const [currentUser, setCurrentUser] = useState(salespeople[0]);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -364,6 +366,18 @@ const AppContent: React.FC = () => {
                       ))}
                     </select>
                   </div>
+
+                  {/* Wylogowanie */}
+                  {user && (
+                    <button
+                      onClick={() => signOut()}
+                      className="p-2 hover:bg-zinc-700 rounded-lg transition-all flex items-center gap-2"
+                      title="Wyloguj"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="text-sm">Wyloguj</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -372,16 +386,57 @@ const AppContent: React.FC = () => {
           {/* Main content */}
           <main className="container mx-auto px-4 py-8">
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/clients" element={<ClientsPage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/ai" element={<AIAssistant />} />
-              <Route path="/knowledge" element={<KnowledgeBase />} />
-              <Route path="/settings" element={<AutomationSettings />} />
-              <Route path="/offer/new" element={<OfferView />} />
-              <Route path="/offer/:id" element={<OfferView />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/clients" element={
+                <ProtectedRoute>
+                  <ClientsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/products" element={
+                <ProtectedRoute>
+                  <ProductsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/reports" element={
+                <ProtectedRoute>
+                  <ReportsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/ai" element={
+                <ProtectedRoute>
+                  <AIAssistant />
+                </ProtectedRoute>
+              } />
+              <Route path="/knowledge" element={
+                <ProtectedRoute>
+                  <KnowledgeBase />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute requiredRole="admin">
+                  <AutomationSettings />
+                </ProtectedRoute>
+              } />
+              <Route path="/offer/new" element={
+                <ProtectedRoute>
+                  <OfferView />
+                </ProtectedRoute>
+              } />
+              <Route path="/offer/:id" element={
+                <ProtectedRoute>
+                  <OfferView />
+                </ProtectedRoute>
+              } />
               <Route
                 path="/calculator"
                 element={
@@ -411,7 +466,9 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </ThemeProvider>
   );
 };

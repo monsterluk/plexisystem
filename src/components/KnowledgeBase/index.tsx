@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import MillingGuide from './MillingGuide';
 import MaterialsGuide from './MaterialsGuide';
 import ProductsGuide from './ProductsGuide';
-import { BookOpen, Wrench, Layers, Package } from 'lucide-react';
+import SalesGuide from './SalesGuide';
+import { BookOpen, Wrench, Layers, Package, Briefcase } from 'lucide-react';
 
 const KnowledgeBase: React.FC = () => {
   const [activeTab, setActiveTab] = useState('milling');
@@ -13,6 +14,12 @@ const KnowledgeBase: React.FC = () => {
       label: 'Frezowanie',
       icon: <Wrench className="w-5 h-5" />,
       component: <MillingGuide />
+    },
+    {
+      id: 'sales',
+      label: 'Przewodnik Handlowca',
+      icon: <Briefcase className="w-5 h-5" />,
+      component: <SalesGuide />
     },
     {
       id: 'materials',
