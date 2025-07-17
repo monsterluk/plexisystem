@@ -35,10 +35,20 @@ export const PublicOffer: React.FC = () => {
     
     setAccepting(true);
     try {
-      // TODO: Implementuj akceptację oferty
-      alert('Dziękujemy za akceptację oferty! Skontaktujemy się wkrótce.');
+      // Wywołaj funkcję acceptOffer z API
+      const { acceptOffer } = await import('@/api/quotations');
+      const success = await acceptOffer(String(offer.id));
+      
+      if (success) {
+        // Zaktualizuj lokalny stan
+        setOffer({ ...offer, status: 'accepted' });
+        alert('Dziękujemy za akceptację oferty! Otrzymał Pan/Pani potwierdzenie na adres email, a nasz handlowiec wkrótce się z Panem/Panią skontaktuje.');
+      } else {
+        alert('Wystąpił błąd podczas akceptacji oferty. Prosimy spróbować ponownie.');
+      }
     } catch (error) {
       console.error('Error accepting offer:', error);
+      alert('Wystąpił błąd podczas akceptacji oferty. Prosimy o kontakt telefoniczny.');
     } finally {
       setAccepting(false);
     }

@@ -494,8 +494,141 @@ export const acceptOffer = async (offerId: string): Promise<boolean> => {
     console.log('✅ Oferta zaakceptowana:', offerData.offer_number);
     console.log('Email handlowca:', salespersonEmail);
     
-    // TODO: Konfiguracja emaili w ustawieniach
-    // Na razie tylko logujemy
+    // Wyślij email do handlowca
+    try {
+      const emailToSalesperson = {
+        to: salespersonEmail,
+        subject: `✅ Oferta ${offerData.offer_number} została zaakceptowana!`,
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: #10b981; color: white; padding: 20px; border-radius: 8px; text-align: center; }
+              .content { background: #f9f9f9; padding: 30px; margin-top: 20px; border-radius: 8px; }
+              .client-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+              .action-required { background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; }
+              .offer-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🎉 Gratulacje! Oferta zaakceptowana</h1>
+              </div>
+              <div class="content">
+                <p>Oferta <strong>${offerData.offer_number}</strong> została właśnie zaakceptowana przez klienta!</p>
+                
+                <div class="client-info">
+                  <h3>Dane klienta:</h3>
+                  <p><strong>${offerData.clients.name}</strong><br>
+                  ${offerData.clients.address || ''}<br>
+                  NIP: ${offerData.clients.nip}<br>
+                  ${offerData.clients.email ? `Email: ${offerData.clients.email}<br>` : ''}
+                  ${offerData.clients.phone ? `Tel: ${offerData.clients.phone}` : ''}</p>
+                </div>
+                
+                <div class="offer-details">
+                  <h3>Szczegóły oferty:</h3>
+                  <p><strong>Projekt:</strong> ${offerData.project_name || 'Brak nazwy'}<br>
+                  <strong>Wartość netto:</strong> ${offerData.total_net_after_discount.toFixed(2)} zł<br>
+                  <strong>Data akceptacji:</strong> ${new Date().toLocaleString('pl-PL')}</p>
+                </div>
+                
+                <div class="action-required">
+                  <h4>⚠️ Wymagane działania:</h4>
+                  <ol>
+                    <li>Skontaktuj się z klientem w celu potwierdzenia szczegółów zamówienia</li>
+                    <li>Ustal termin płatności i dostawy</li>
+                    <li>Przekaż zamówienie do realizacji</li>
+                  </ol>
+                </div>
+                
+                <hr style="margin: 30px 0; border: 1px solid #e5e7eb;">
+                
+                <p style="text-align: center; color: #666;">
+                  Wiadomość wygenerowana automatycznie przez system PlexiSystem
+                </p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `
+      };
+      
+      await fetch(API_ENDPOINTS.sendEmail, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailToSalesperson)
+      });
+      
+      // Wyślij także email do klienta z potwierdzeniem (jeśli ma email)
+      if (offerData.clients.email) {
+        const emailToClient = {
+          to: offerData.clients.email,
+          subject: `Potwierdzenie akceptacji oferty ${offerData.offer_number} - PlexiSystem`,
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #f97316; color: white; padding: 20px; border-radius: 8px; text-align: center; }
+                .content { background: #f9f9f9; padding: 30px; margin-top: 20px; border-radius: 8px; }
+                .next-steps { background: #e0f2fe; padding: 15px; border-radius: 8px; margin: 20px 0; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>Dziękujemy za akceptację oferty!</h1>
+                </div>
+                <div class="content">
+                  <p>Szanowni Państwo,</p>
+                  
+                  <p>Potwierdzamy przyjęcie akceptacji oferty <strong>${offerData.offer_number}</strong>.</p>
+                  
+                  <div class="next-steps">
+                    <h3>Co dalej?</h3>
+                    <ul>
+                      <li>Nasz handlowiec skontaktuje się z Państwem w ciągu 24 godzin</li>
+                      <li>Omówimy szczegóły realizacji zamówienia</li>
+                      <li>Potwierdzimy termin dostawy</li>
+                    </ul>
+                  </div>
+                  
+                  <p><strong>Dane kontaktowe handlowca:</strong><br>
+                  ${salesperson?.name || offerData.salesperson_name}<br>
+                  Tel: ${salesperson?.phone || ''}<br>
+                  Email: ${salespersonEmail}</p>
+                  
+                  <hr style="margin: 30px 0; border: 1px solid #e5e7eb;">
+                  
+                  <p style="text-align: center; color: #666;">
+                    PlexiSystem S.C.<br>
+                    Ks. Dr. Leona Heyke 11, 84-206 Nowy Dwór Wejherowski<br>
+                    Tel: 884 042 107 | Email: biuro@plexisystem.pl
+                  </p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `
+        };
+        
+        await fetch(API_ENDPOINTS.sendEmail, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailToClient)
+        });
+      }
+    } catch (emailError) {
+      console.error('Error sending acceptance emails:', emailError);
+      // Nie przerywaj procesu jeśli email się nie wysłał
+    }
     
     return true;
   } catch (error) {
