@@ -1,5 +1,5 @@
 import React from 'react';
-import { HelpCircle, DollarSign, AlertTriangle, CheckCircle, Shield, MessageSquare, TrendingUp, Lightbulb } from 'lucide-react';
+import { HelpCircle, DollarSign, AlertTriangle, CheckCircle, Shield, MessageSquare, TrendingUp, Lightbulb, Store, Eye, Package, Sparkles, Box } from 'lucide-react';
 
 const SalesGuide: React.FC = () => {
   return (
@@ -254,6 +254,228 @@ const SalesGuide: React.FC = () => {
                     całej reklamy i ułatwia montaż, jednocześnie redukując koszty bez utraty jakości widocznej części."
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NOWA SEKCJA: Ekspozytory reklamowe */}
+      <section className="mb-12">
+        <div className="bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-700 to-cyan-900 text-white p-6 flex items-center gap-4">
+            <Store className="w-12 h-12" />
+            <div>
+              <h2 className="text-2xl font-bold">Produkt: Ekspozytory Reklamowe z Plexi</h2>
+              <p className="text-cyan-200">Narzędzia do zwiększania sprzedaży i widoczności</p>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            <p className="text-gray-300 mb-6">
+              <strong>Opis:</strong> Ekspozytory reklamowe to niezbędne narzędzia merchandisingu. Od małych stojaków na lady 
+              po imponujące konstrukcje wolnostojące - każdy służy zwiększeniu sprzedaży i budowaniu wizerunku marki.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Pytania kontrolne */}
+              <div className="bg-green-900/20 border border-green-700 rounded-lg p-6">
+                <h4 className="font-bold text-green-400 mb-4 flex items-center gap-2">
+                  <HelpCircle className="w-5 h-5" />
+                  Pytania Kwalifikacyjne
+                </h4>
+                <ul className="space-y-2 text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                    <span>Jaki produkt ma być eksponowany? (wielkość, waga, ilość)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                    <span>Gdzie będzie stał ekspozytory? (lada, podłoga, ściana)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                    <span>Czy ma być transportowany między lokalizacjami?</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                    <span>Czy interesuje Pana podświetlenie LED? (wow efekt!)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                    <span>Jaka ilość? (przy większych seriach cena spada)</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Techniki up-sellingu */}
+              <div className="bg-purple-900/20 border border-purple-700 rounded-lg p-6">
+                <h4 className="font-bold text-purple-400 mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  Techniki Up-sellingu
+                </h4>
+                <ul className="space-y-2 text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <Eye className="w-4 h-4 text-purple-500 mt-1 flex-shrink-0" />
+                    <span><strong>"Efekt premium":</strong> "Dla produktów tej klasy polecam ekspozytory z podświetleniem - to podkreśli ich wartość"</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Eye className="w-4 h-4 text-purple-500 mt-1 flex-shrink-0" />
+                    <span><strong>"Kompletny system":</strong> "Mogę przygotować zestaw: ekspozytory naladowy + ścienny + prezenter na ulotki"</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Eye className="w-4 h-4 text-purple-500 mt-1 flex-shrink-0" />
+                    <span><strong>"Sezonowość":</strong> "Warto zamówić wymienne wkładki na różne sezony/promocje"</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Eye className="w-4 h-4 text-purple-500 mt-1 flex-shrink-0" />
+                    <span><strong>"Branding":</strong> "Grawerowanie logo to jednorazowy koszt, a efekt na lata"</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Typy ekspozytorów z argumentami */}
+            <h3 className="text-xl font-bold text-white mb-4">Portfolio Ekspozytorów - Argumenty Sprzedażowe</h3>
+            
+            <div className="space-y-4">
+              {/* Ekspozytory naladowe */}
+              <div className="bg-zinc-700 rounded-lg p-6 hover:bg-zinc-600 transition-colors">
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="text-lg font-bold text-cyan-400">1. Ekspozytory Naladowe - "Cichy Sprzedawca"</h4>
+                  <div className="flex gap-4 text-sm">
+                    <span className="text-gray-400">ROI: <span className="text-yellow-400">★★★★★</span></span>
+                    <span className="text-gray-400">Cena: <span className="text-yellow-400">★★★★☆</span></span>
+                  </div>
+                </div>
+                <div className="bg-cyan-900/30 border-l-4 border-cyan-500 p-4 rounded mb-3">
+                  <p className="text-gray-300">
+                    <strong className="text-cyan-400">Argument biznesowy:</strong> "Ten ekspozytory pracuje dla Pana 24/7. Stojąc przy kasie, 
+                    zwiększa sprzedaż impulsową nawet o 30%. To jak zatrudnienie dodatkowego sprzedawcy za ułamek kosztów."
+                  </p>
+                </div>
+                <div className="text-sm text-gray-400">
+                  <strong>Bestsellery:</strong> Kaskadowe na lakiery, z przegródkami na kosmetyki, podświetlane na alkohole premium
+                </div>
+              </div>
+
+              {/* Standy reklamowe */}
+              <div className="bg-zinc-700 rounded-lg p-6 hover:bg-zinc-600 transition-colors">
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="text-lg font-bold text-orange-400">2. Standy Reklamowe - "Magnes na Klientów"</h4>
+                  <div className="flex gap-4 text-sm">
+                    <span className="text-gray-400">Prestiż: <span className="text-yellow-400">★★★★★</span></span>
+                    <span className="text-gray-400">Mobilność: <span className="text-yellow-400">★★★★☆</span></span>
+                  </div>
+                </div>
+                <div className="bg-orange-900/30 border-l-4 border-orange-500 p-4 rounded mb-3">
+                  <p className="text-gray-300">
+                    <strong className="text-orange-400">Argument eventowy:</strong> "Na targach liczy się pierwsze wrażenie. Nasz podświetlany 
+                    stand wyróżni Pana stoisko spośród dziesiątek innych. To inwestycja, która zwraca się już po pierwszym evencie."
+                  </p>
+                </div>
+                <div className="text-sm text-gray-400">
+                  <strong>Dodatkowe opcje:</strong> Kółka transportowe (+200 zł), walizka transportowa (+500 zł), wymienne panele graficzne
+                </div>
+              </div>
+
+              {/* Prezentery */}
+              <div className="bg-zinc-700 rounded-lg p-6 hover:bg-zinc-600 transition-colors">
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="text-lg font-bold text-purple-400">3. Prezentery na Ulotki - "Porządek = Profesjonalizm"</h4>
+                  <div className="flex gap-4 text-sm">
+                    <span className="text-gray-400">Uniwersalność: <span className="text-yellow-400">★★★★★</span></span>
+                    <span className="text-gray-400">Cena: <span className="text-yellow-400">★★★★★</span></span>
+                  </div>
+                </div>
+                <div className="bg-purple-900/30 border-l-4 border-purple-500 p-4 rounded mb-3">
+                  <p className="text-gray-300">
+                    <strong className="text-purple-400">Argument wizerunkowy:</strong> "Porozrzucane ulotki na ladzie wyglądają nieprofesjonalnie. 
+                    Elegancki prezenter pokazuje, że dba Pan o każdy szczegół. To buduje zaufanie klientów."
+                  </p>
+                </div>
+                <div className="text-sm text-gray-400">
+                  <strong>Cross-sell:</strong> Zawsze proponuj zestaw: A4 na katalogi + A5 na ulotki + DL na wizytówki = komplet -10%
+                </div>
+              </div>
+
+              {/* Ekspozytory z lustrem */}
+              <div className="bg-zinc-700 rounded-lg p-6 hover:bg-zinc-600 transition-colors">
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="text-lg font-bold text-pink-400">4. Ekspozytory z Lustrem - "Podwajacz Sprzedaży"</h4>
+                  <div className="flex gap-4 text-sm">
+                    <span className="text-gray-400">Efekt wow: <span className="text-yellow-400">★★★★★</span></span>
+                    <span className="text-gray-400">Dla premium: <span className="text-yellow-400">★★★★★</span></span>
+                  </div>
+                </div>
+                <div className="bg-pink-900/30 border-l-4 border-pink-500 p-4 rounded mb-3">
+                  <p className="text-gray-300">
+                    <strong className="text-pink-400">Argument luksusowy:</strong> "Lustro optycznie podwaja ilość biżuterii i jej blask. 
+                    Klientka może od razu zobaczyć jak prezentuje się w produkcie. To dramatycznie zwiększa konwersję!"
+                  </p>
+                </div>
+                <div className="text-sm text-gray-400">
+                  <strong>Idealne dla:</strong> Jubilerów, optyki, kosmetyki premium, galanteria skórzana
+                </div>
+              </div>
+            </div>
+
+            {/* Kalkulator ROI */}
+            <div className="mt-8 bg-gradient-to-r from-green-900/50 to-blue-900/50 p-6 rounded-lg">
+              <h4 className="text-xl font-bold text-white mb-4 flex items-center">
+                <DollarSign className="mr-3" />
+                Kalkulator ROI - Przekonaj Liczbami!
+              </h4>
+              <div className="bg-zinc-800 p-4 rounded">
+                <p className="text-gray-300 mb-2">
+                  <strong className="text-green-400">Przykład dla ekspozytora naladowego za 500 zł:</strong>
+                </p>
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>• Zwiększenie sprzedaży impulsowej: +20% = 200 zł/dzień extra</li>
+                  <li>• Zwrot inwestycji: 2,5 dnia!</li>
+                  <li>• Zysk roczny: 73,000 zł</li>
+                  <li>• Żywotność ekspozytora: 5+ lat</li>
+                </ul>
+                <p className="text-yellow-400 mt-3 font-semibold">
+                  "To nie koszt, to inwestycja z gwarantowanym zwrotem!"
+                </p>
+              </div>
+            </div>
+
+            {/* Pakiety sprzedażowe */}
+            <div className="mt-8 grid md:grid-cols-3 gap-4">
+              <div className="bg-zinc-700 p-4 rounded-lg border-2 border-zinc-600">
+                <h5 className="font-bold text-gray-400 mb-2">Pakiet STARTER</h5>
+                <p className="text-2xl font-bold text-white mb-2">1,299 zł</p>
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>✓ Ekspozytory naladowy</li>
+                  <li>✓ Prezenter A5</li>
+                  <li>✓ Podstawowe logo</li>
+                </ul>
+              </div>
+              
+              <div className="bg-gradient-to-r from-cyan-900 to-blue-900 p-4 rounded-lg border-2 border-cyan-500">
+                <div className="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded inline-block mb-2">BESTSELLER</div>
+                <h5 className="font-bold text-cyan-300 mb-2">Pakiet PROFESSIONAL</h5>
+                <p className="text-2xl font-bold text-white mb-2">2,999 zł</p>
+                <ul className="text-sm text-gray-300 space-y-1">
+                  <li>✓ Ekspozytory naladowy LED</li>
+                  <li>✓ Ekspozytory ścienny</li>
+                  <li>✓ Zestaw prezenterów</li>
+                  <li>✓ Pełna personalizacja</li>
+                  <li className="text-cyan-300">✓ Projekt GRATIS!</li>
+                </ul>
+              </div>
+              
+              <div className="bg-zinc-700 p-4 rounded-lg border-2 border-zinc-600">
+                <h5 className="font-bold text-purple-400 mb-2">Pakiet PREMIUM</h5>
+                <p className="text-2xl font-bold text-white mb-2">5,999 zł</p>
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>✓ Stand targowy LED</li>
+                  <li>✓ Komplet ekspozytorów</li>
+                  <li>✓ Walizki transportowe</li>
+                  <li>✓ Serwis roczny</li>
+                </ul>
               </div>
             </div>
           </div>
