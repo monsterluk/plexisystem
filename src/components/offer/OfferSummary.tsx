@@ -97,7 +97,13 @@ export const OfferSummary: React.FC<OfferSummaryProps> = ({
               <p className="text-gray-400">Łączna waga:</p>
               <p className="font-mono">
                 {offer.items
-                  .reduce((sum, item) => sum + (item.calculations?.totalWeight || 0), 0)
+                  .reduce((sum, item) => {
+                    // Dla produktów nietypowych zakładamy szacowaną wagę
+                    if ('isCustom' in item && item.isCustom) {
+                      return sum + (item.quantity * 5); // Szacunkowa waga 5kg na sztukę
+                    }
+                    return sum + (item.calculations?.totalWeight || 0);
+                  }, 0)
                   .toFixed(2)}{' '}
                 kg
               </p>
@@ -106,7 +112,12 @@ export const OfferSummary: React.FC<OfferSummaryProps> = ({
               <p className="text-gray-400">Liczba palet:</p>
               <p className="font-mono">
                 {Math.max(
-                  ...offer.items.map((item) => item.calculations?.palletsTotal || 0)
+                  ...offer.items.map((item) => {
+                    if ('isCustom' in item && item.isCustom) {
+                      return Math.ceil(item.quantity / 50); // Szacunkowa ilość na paletę
+                    }
+                    return item.calculations?.palletsTotal || 0;
+                  })
                 )}
               </p>
             </div>
@@ -114,7 +125,12 @@ export const OfferSummary: React.FC<OfferSummaryProps> = ({
               <p className="text-gray-400">Liczba kartonów:</p>
               <p className="font-mono">
                 {offer.items
-                  .reduce((sum, item) => sum + (item.calculations?.boxesTotal || 0), 0)}
+                  .reduce((sum, item) => {
+                    if ('isCustom' in item && item.isCustom) {
+                      return sum + Math.ceil(item.quantity / 10); // Szacunkowa ilość na karton
+                    }
+                    return sum + (item.calculations?.boxesTotal || 0);
+                  }, 0)}
               </p>
             </div>
             <div>

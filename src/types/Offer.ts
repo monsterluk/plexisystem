@@ -57,6 +57,20 @@ export interface AdditionalOption {
   unit: 'szt' | 'm²' | 'mb' | 'komplet' | 'special';
 }
 
+// Produkt nietypowy
+export interface CustomProduct {
+  id: number;
+  name: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  isCustom: true;
+}
+
+// Rozszerzone OfferItem o produkt nietypowy
+export type OfferItemExtended = OfferItem | CustomProduct;
+
 // Alias dla kompatybilności
 export type CalculatorItem = OfferItem;
 
@@ -132,7 +146,7 @@ export interface Offer {
   number: string;
   date: string;
   client: Client;
-  items: OfferItem[];
+  items: OfferItemExtended[];
   terms: Terms;
   status: OfferStatus;
   salesperson: Salesperson;

@@ -5,6 +5,27 @@ import { additionalOptions } from '../constants/options';
 
 export function generatePDFHTML(offer: Offer, showInternalData: boolean = false): string {
   const itemsHTML = offer.items.map((item, index) => {
+    // Sprawdź czy to produkt nietypowy
+    if ('isCustom' in item && item.isCustom) {
+      return `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;">${index + 1}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">
+            <strong>${item.name}</strong>
+            <br><small style="color: #666;">${item.description}</small>
+            <br><span style="background: #f97316; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">Produkt nietypowy</span>
+          </td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">-</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">-</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">-</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.quantity}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${item.unitPrice.toFixed(2)} zł</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${item.totalPrice.toFixed(2)} zł</td>
+        </tr>
+      `;
+    }
+    
+    // Standardowy produkt
     const options = Object.entries(item.options || {})
       .filter(([key, value]) => value && key !== 'wieko')
       .map(([key]) => {

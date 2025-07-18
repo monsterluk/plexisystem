@@ -1,15 +1,49 @@
 import React from 'react';
-import { Trash2 } from 'lucide-react';
-import { CalculatorItem } from '@/types/Offer';
+import { Trash2, Package } from 'lucide-react';
+import { OfferItemExtended, CustomProduct } from '@/types/Offer';
 import { expositorTypes } from '@/constants/materials';
 import { additionalOptions } from '@/constants/options';
 
 interface ItemSummaryProps {
-  item: CalculatorItem;
+  item: OfferItemExtended;
   onRemove: () => void;
 }
 
 export const ItemSummary: React.FC<ItemSummaryProps> = ({ item, onRemove }) => {
+  // Sprawdź czy to produkt nietypowy
+  if ('isCustom' in item && item.isCustom) {
+    const customItem = item as CustomProduct;
+    return (
+      <div className="bg-zinc-700 rounded-lg p-4 flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-start justify-between mb-2">
+            <div>
+              <h4 className="font-semibold text-lg flex items-center">
+                <Package className="w-5 h-5 mr-2 text-orange-500" />
+                {customItem.name}
+              </h4>
+              <p className="text-sm text-gray-400 mt-1">{customItem.description}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-mono text-lg font-bold">{customItem.totalPrice.toFixed(2)} zł</p>
+              <p className="text-sm text-gray-400">{customItem.quantity} szt × {customItem.unitPrice.toFixed(2)} zł</p>
+            </div>
+          </div>
+          <div className="mt-3 text-sm text-gray-400">
+            <span className="bg-orange-500/20 text-orange-400 px-2 py-1 rounded">Produkt nietypowy</span>
+          </div>
+        </div>
+        <button
+          onClick={onRemove}
+          className="ml-4 p-2 hover:bg-zinc-600 rounded transition-all text-red-400"
+          title="Usuń pozycję"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+      </div>
+    );
+  }
+
   const getOptionsText = () => {
     const options = Object.entries(item.options || {})
       .filter(([key, value]) => value && key !== 'wieko')

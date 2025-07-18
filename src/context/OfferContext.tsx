@@ -1,12 +1,12 @@
 // src/context/OfferContext.tsx
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Offer, OfferItem, Client } from '../types/Offer';
+import { Offer, OfferItem, OfferItemExtended, CustomProduct, Client } from '../types/Offer';
 import { defaultTerms, salespeople } from '../constants/materials';
 
 interface OfferContextType {
   currentOffer: Offer;
   setCurrentOffer: React.Dispatch<React.SetStateAction<Offer>>;
-  addItem: (item: OfferItem) => void;
+  addItem: (item: OfferItemExtended) => void;
   removeItem: (itemId: number) => void;
   updateClient: (client: Partial<Client>) => void;
   updateDiscount: (discount: number) => void;
@@ -85,10 +85,10 @@ export const OfferProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   }, []);
 
-  const addItem = useCallback((item: OfferItem) => {
+  const addItem = useCallback((item: OfferItemExtended) => {
     setCurrentOffer(prev => {
       const newItems = [...prev.items, item];
-      const totalNet = newItems.reduce((sum, i) => sum + i.totalPrice, 0);
+      const totalNet = newItems.reduce((sum, i) => sum + ('totalPrice' in i ? i.totalPrice : 0), 0);
       const discountValue = (totalNet * prev.discount) / 100;
       const totalNetAfterDiscount = totalNet - discountValue;
       
@@ -105,7 +105,7 @@ export const OfferProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const removeItem = useCallback((itemId: number) => {
     setCurrentOffer(prev => {
       const newItems = prev.items.filter(item => item.id !== itemId);
-      const totalNet = newItems.reduce((sum, item) => sum + item.totalPrice, 0);
+      const totalNet = newItems.reduce((sum, item) => sum + ('totalPrice' in item ? item.totalPrice : 0), 0);
       const discountValue = (totalNet * prev.discount) / 100;
       const totalNetAfterDiscount = totalNet - discountValue;
       
@@ -190,11 +190,12 @@ export const OfferProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
-function calculateDeliveryCost(items: OfferItem[], regionId: string): number {
+function calculateDeliveryCost(items: OfferItemExtended[], regionId: string): number {
   // Implementacja kalkulacji kosztów dostawy
-  const totalWeight = items.reduce((sum, item) => 
-    sum + (item.calculations?.totalWeight || 0), 0
-  );
+  const totalWeight = items.reduce((sum, item) => {
+    if ('isCustom' in item) return sum; // Pomijamy produkty nietypowe w wadze
+    return sum + (item.calculations?.totalWeight || 0);
+  }, 0);
   
   const regions = {
     trojmiasto: { pricePerKg: 0.5, minPrice: 30 },

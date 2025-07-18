@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Check, FileText, Send, ExternalLink, Trash2, Lock } from 'lucide-react';
-import { Offer, CalculatorItem } from '@/types/Offer';
+import { Offer, CalculatorItem, CustomProduct, OfferItemExtended } from '@/types/Offer';
 import { saveOffer, getOffer } from '@/api/quotations';
 import { generatePDF } from '@/utils/generatePDF';
 import { sendOfferEmail } from '@/utils/sendEmail';
@@ -11,6 +11,7 @@ import { useUser } from '@/context/UserContext';
 import { ClientForm } from '@/components/client/ClientForm';
 import { Calculator } from '@/components/quotation/Calculator';
 import { ItemSummary } from '@/components/quotation/ItemSummary';
+import { CustomProductForm } from '@/components/quotation/CustomProductForm';
 import { OfferSummary } from '@/components/offer/OfferSummary';
 import { Button } from '@/components/ui/Button';
 
@@ -114,7 +115,7 @@ export const OfferView: React.FC = () => {
     return `${userPrefix}-${year}-${String(nextNumber).padStart(4, '0')}`;
   };
 
-  const handleAddItem = (item: CalculatorItem) => {
+  const handleAddItem = (item: CalculatorItem | CustomProduct) => {
     if (!currentOffer) return;
 
     const newTotal = currentOffer.totalNet + item.totalPrice;
@@ -147,6 +148,10 @@ export const OfferView: React.FC = () => {
     }
   };
 
+  const handleAddCustomProduct = (product: CustomProduct) => {
+    handleAddItem(product);
+  };
+
   const updateDiscount = (discount: number) => {
     if (!currentOffer) return;
 
@@ -165,7 +170,13 @@ export const OfferView: React.FC = () => {
     const region = deliveryRegions.find((r) => r.id === regionId);
     if (region) {
       const totalWeight = currentOffer.items.reduce(
-        (sum, item) => sum + (item.calculations?.totalWeight || 0),
+        (sum, item) => {
+          // Dla produktów nietypowych zakładamy szacowaną wagę
+          if ('isCustom' in item && item.isCustom) {
+            return sum + (item.quantity * 5); // Szacunkowa waga 5kg na sztukę
+          }
+          return sum + (item.calculations?.totalWeight || 0);
+        },
         0
       );
       const deliveryCost = Math.max(region.pricePerKg * totalWeight, region.minPrice);
@@ -377,10 +388,15 @@ export const OfferView: React.FC = () => {
         </div>
       )}
 
-      {/* Kalkulator */}
+      {/* Kalkulator i produkt nietypowy */}
       <div className="bg-zinc-800 rounded-xl p-6">
         <h3 className="text-xl font-semibold mb-6">Dodaj pozycję do oferty</h3>
-        <Calculator onAddToOffer={handleAddItem} viewMode={viewMode} />
+        <div className="space-y-6">
+          <Calculator onAddToOffer={handleAddItem} viewMode={viewMode} />
+          <div className="border-t border-zinc-700 pt-6">
+            <CustomProductForm onAdd={handleAddCustomProduct} />
+          </div>
+        </div>
       </div>
 
       {/* Warunki handlowe */}
