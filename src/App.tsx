@@ -37,6 +37,7 @@ const AppContent: React.FC = () => {
   const [viewMode, setViewMode] = useState<'salesperson' | 'client'>('salesperson');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: 1,
@@ -123,61 +124,87 @@ const AppContent: React.FC = () => {
                     {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                   </button>
                   <h1 className="text-xl lg:text-2xl font-bold text-orange-500 gradient-text flex-shrink-0">PlexiSystem</h1>
-                  <nav className="hidden lg:flex gap-1 overflow-x-auto">
+                  <nav className="hidden lg:grid grid-flow-col auto-cols-max gap-1 overflow-x-auto">
                     <a
                       href="/dashboard"
-                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
+                      className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all min-w-[60px] ${
+                        currentPath === '/dashboard' || currentPath === '/' ? 'bg-orange-500/20 text-orange-500' : 'hover:bg-zinc-700'
+                      }`}
                     >
-                      <BarChart2 className="w-4 h-4" />
-                      Dashboard
+                      <BarChart2 className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Dashboard</span>
                     </a>
                     <a
                       href="/offers"
-                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
                     >
-                      <FileText className="w-4 h-4" />
-                      Oferty
+                      <FileText className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Oferty</span>
                     </a>
                     <a
                       href="/calculator"
-                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
                     >
-                      <Calculator className="w-4 h-4" />
-                      Kalkulator
+                      <Calculator className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Kalkulator</span>
                     </a>
                     <a
                       href="/production"
-                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
                     >
-                      <Settings className="w-4 h-4" />
-                      Produkcja
+                      <Settings className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Produkcja</span>
                     </a>
                     <a
                       href="/clients"
-                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
                     >
-                      <Users className="w-4 h-4" />
-                      Klienci
+                      <Users className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Klienci</span>
+                    </a>
+                    <a
+                      href="/products"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                    >
+                      <Package className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Produkty</span>
+                    </a>
+                    <a
+                      href="/reports"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                    >
+                      <Activity className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Raporty</span>
                     </a>
                     <a
                       href="/marketplace"
-                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative whitespace-nowrap text-sm"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px] relative"
                     >
-                      <ShoppingBag className="w-4 h-4" />
-                      Marketplace
-                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-purple-500 text-xs rounded-full animate-pulse">
-                        HOT
-                      </span>
+                      <ShoppingBag className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Market</span>
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
                     </a>
                     <a
                       href="/ai"
-                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative whitespace-nowrap text-sm"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px] relative"
                     >
-                      <Brain className="w-4 h-4" />
-                      AI
-                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-orange-500 text-xs rounded-full animate-pulse">
-                        NEW
-                      </span>
+                      <Brain className="w-5 h-5 mb-1" />
+                      <span className="text-xs">AI</span>
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                    </a>
+                    <a
+                      href="/knowledge"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                    >
+                      <Book className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Wiedza</span>
+                    </a>
+                    <a
+                      href="/settings"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                    >
+                      <Settings className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Ustawienia</span>
                     </a>
                   </nav>
                 </div>
