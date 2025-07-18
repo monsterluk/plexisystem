@@ -38,7 +38,7 @@ const categories: Category[] = [
     name: 'Rozpoczęcie pracy',
     icon: <Lightbulb className="w-6 h-6" />,
     description: 'Podstawy systemu i pierwsze kroki',
-    articleCount: 12,
+    articleCount: 1,
     color: 'purple'
   },
   {
@@ -46,7 +46,7 @@ const categories: Category[] = [
     name: 'Produkty i materiały',
     icon: <Package className="w-6 h-6" />,
     description: 'Wszystko o produktach z plexi',
-    articleCount: 28,
+    articleCount: 8,
     color: 'blue'
   },
   {
@@ -54,7 +54,7 @@ const categories: Category[] = [
     name: 'Kalkulacje i wyceny',
     icon: <Calculator className="w-6 h-6" />,
     description: 'Jak prawidłowo wyceniać produkty',
-    articleCount: 18,
+    articleCount: 1,
     color: 'emerald'
   },
   {
@@ -62,7 +62,7 @@ const categories: Category[] = [
     name: 'Najlepsze praktyki',
     icon: <Award className="w-6 h-6" />,
     description: 'Sprawdzone metody i porady',
-    articleCount: 18,
+    articleCount: 8,
     color: 'amber'
   },
   {
@@ -70,7 +70,7 @@ const categories: Category[] = [
     name: 'Rozwiązywanie problemów',
     icon: <HelpCircle className="w-6 h-6" />,
     description: 'Częste problemy i ich rozwiązania',
-    articleCount: 9,
+    articleCount: 3,
     color: 'red'
   },
   {
@@ -78,7 +78,7 @@ const categories: Category[] = [
     name: 'Zaawansowane',
     icon: <Code className="w-6 h-6" />,
     description: 'Dla doświadczonych użytkowników',
-    articleCount: 10,
+    articleCount: 9,
     color: 'pink'
   }
 ];
@@ -408,6 +408,71 @@ const articles: Article[] = [
     tags: ['ekspozytory', 'magnesy', 'innowacje'],
     author: 'Designer',
     date: '2024-03-25'
+  },
+  {
+    id: '26',
+    title: 'Druk UV na plexi - technologia i zastosowania',
+    excerpt: 'Profesjonalny druk UV na tworzywach. Parametry, przygotowanie plików, najlepsze praktyki.',
+    category: 'advanced',
+    readTime: '16 min',
+    views: 789,
+    helpful: 123,
+    icon: <Layers className="w-5 h-5" />,
+    tags: ['druk UV', 'technologie', 'plexi'],
+    author: 'Specjalista Druku',
+    date: '2024-03-28'
+  },
+  {
+    id: '27',
+    title: 'Oświetlenie LED w ekspozytorach',
+    excerpt: 'Kompleksowy przewodnik po systemach LED: moduły, taśmy, sterowniki. Projektowanie podświetleń.',
+    category: 'products',
+    readTime: '19 min',
+    views: 912,
+    helpful: 156,
+    icon: <Zap className="w-5 h-5" />,
+    tags: ['LED', 'oświetlenie', 'ekspozytory'],
+    author: 'Elektryk',
+    date: '2024-04-01'
+  },
+  {
+    id: '28',
+    title: 'Gięcie i formowanie termiczne plexi',
+    excerpt: 'Techniki gięcia liniowego, formowania 3D, termoformowanie próżniowe. Parametry i praktyka.',
+    category: 'advanced',
+    readTime: '17 min',
+    views: 645,
+    helpful: 98,
+    icon: <Settings className="w-5 h-5" />,
+    tags: ['gięcie', 'formowanie', 'termoformowanie'],
+    author: 'Technolog Formowania',
+    date: '2024-04-05'
+  },
+  {
+    id: '29',
+    title: 'Cięcie laserowe vs frezowanie CNC',
+    excerpt: 'Porównanie technologii: kiedy laser, kiedy frez? Koszty, możliwości, ograniczenia.',
+    category: 'best-practices',
+    readTime: '14 min',
+    views: 823,
+    helpful: 178,
+    icon: <Activity className="w-5 h-5" />,
+    tags: ['laser', 'CNC', 'porównanie'],
+    author: 'Kierownik Produkcji',
+    date: '2024-04-08'
+  },
+  {
+    id: '30',
+    title: 'Wykończenie krawędzi - polerowanie i fazowanie',
+    excerpt: 'Metody obróbki krawędzi: polerowanie płomieniowe, diamentowe, frezowanie. Estetyka i bezpieczeństwo.',
+    category: 'advanced',
+    readTime: '13 min',
+    views: 556,
+    helpful: 87,
+    icon: <Award className="w-5 h-5" />,
+    tags: ['polerowanie', 'wykończenie', 'obróbka'],
+    author: 'Mistrz Produkcji',
+    date: '2024-04-10'
   }
 ];
 
@@ -1579,6 +1644,227 @@ export function KnowledgeBase() {
                           <p className="text-emerald-400 font-semibold">Wskazówka projektowa:</p>
                           <p className="text-gray-300 mt-1">
                             Planuj rozmieszczenie magnesów symetrycznie - ułatwi to przyszłe modyfikacje i zachowa estetykę.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '26' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Druk UV to innowacyjna technologia bezpośredniego nadruku na tworzywach sztucznych, oferująca wyjątkową trwałość i jakość.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Zalety druku UV:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li>Natychmiastowe schnicie - brak czasu oczekiwania</li>
+                          <li>Odporność na ścieranie i UV</li>
+                          <li>Możliwość druku białym kolorem</li>
+                          <li>Druk na materiałach do 100mm grubości</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Parametry techniczne:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Rozdzielczość:</strong> do 1440 dpi</li>
+                          <li><strong>Kolory:</strong> CMYK + White + Varnish</li>
+                          <li><strong>Grubość materiału:</strong> do 100mm</li>
+                          <li><strong>Format:</strong> do 2500x3000mm</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Przygotowanie plików:</h3>
+                        <ol className="space-y-2 list-decimal list-inside ml-4">
+                          <li>Format: PDF, EPS, AI (wektory) lub TIFF (300dpi)</li>
+                          <li>Kolory w CMYK + ewentualnie warstwa biała</li>
+                          <li>Spady: min. 3mm</li>
+                          <li>Teksty zamienione na krzywe</li>
+                        </ol>
+                        <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mt-6">
+                          <p className="text-purple-400 font-semibold">Wskazówka:</p>
+                          <p className="text-gray-300 mt-1">
+                            Przy druku na plexi mlecznej użyj warstwy białej jako podkładu dla intensywnych kolorów.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '27' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Prawidłowo zaprojektowane oświetlenie LED może całkowicie zmienić odbiór ekspozytora, przyciągając uwagę klientów.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Rodzaje oświetlenia LED:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Taśmy LED:</strong> Elastyczne, idealne do konturów</li>
+                          <li><strong>Moduły LED:</strong> Mocne, równomierne światło</li>
+                          <li><strong>LED Edge:</strong> Podświetlenie krawędziowe</li>
+                          <li><strong>LED RGB:</strong> Zmiana kolorów, efekty</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Parametry LED:</h3>
+                        <table className="w-full border border-gray-600 mt-4">
+                          <thead>
+                            <tr className="bg-gray-800">
+                              <th className="border border-gray-600 p-2">Typ</th>
+                              <th className="border border-gray-600 p-2">Moc</th>
+                              <th className="border border-gray-600 p-2">Barwa</th>
+                              <th className="border border-gray-600 p-2">Zastosowanie</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Taśma 3528</td>
+                              <td className="border border-gray-600 p-2">4.8W/m</td>
+                              <td className="border border-gray-600 p-2">3000-6500K</td>
+                              <td className="border border-gray-600 p-2">Kontury</td>
+                            </tr>
+                            <tr className="bg-gray-800/50">
+                              <td className="border border-gray-600 p-2">Taśma 5050</td>
+                              <td className="border border-gray-600 p-2">14.4W/m</td>
+                              <td className="border border-gray-600 p-2">RGB/RGBW</td>
+                              <td className="border border-gray-600 p-2">Efekty</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Moduły</td>
+                              <td className="border border-gray-600 p-2">1.5-3W/szt</td>
+                              <td className="border border-gray-600 p-2">6500K</td>
+                              <td className="border border-gray-600 p-2">Kasetony</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Projektowanie oświetlenia:</h3>
+                        <ol className="space-y-2 list-decimal list-inside ml-4">
+                          <li>Określ cel - akcentowanie czy ogólne oświetlenie</li>
+                          <li>Dobierz moc - 1000-2000 lm/m² dla kasetonów</li>
+                          <li>Wybierz barwę - 4000K neutralna, 6500K chłodna</li>
+                          <li>Zaplanuj zasilanie - co 5m dla taśm</li>
+                          <li>Dodaj sterownik - ściemnianie, efekty</li>
+                        </ol>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '28' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Gięcie i formowanie termiczne pozwala tworzyć z płaskich arkuszy plexi trójwymiarowe formy o nieograniczonych możliwościach.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Techniki gięcia:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Gięcie liniowe:</strong> Grzanie wzdłuż linii, kąty do 180°</li>
+                          <li><strong>Gięcie promieni:</strong> Duże łuki w piecu</li>
+                          <li><strong>Formowanie 3D:</strong> Złożone kształty na formach</li>
+                          <li><strong>Termoformowanie próżniowe:</strong> Precyzyjne odwzorowanie formy</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Parametry gięcia PMMA:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Temperatura gięcia:</strong> 150-170°C</li>
+                          <li><strong>Czas nagrzewania:</strong> 1 min/mm grubości</li>
+                          <li><strong>Chłodzenie:</strong> Powolne, unikaj szoku termicznego</li>
+                          <li><strong>Minimalny promień:</strong> 2x grubość materiału</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Proces termoformowania:</h3>
+                        <ol className="space-y-2 list-decimal list-inside ml-4">
+                          <li>Przygotowanie formy - gładka, bez podcieni</li>
+                          <li>Mocowanie płyty w ramie</li>
+                          <li>Nagrzewanie do plastyczności</li>
+                          <li>Formowanie próżnią/ciśnieniem</li>
+                          <li>Chłodzenie na formie</li>
+                          <li>Przycinanie i wykończenie</li>
+                        </ol>
+                        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mt-6">
+                          <p className="text-amber-400 font-semibold">Uwaga:</p>
+                          <p className="text-gray-300 mt-1">
+                            Zbyt szybkie nagrzewanie może spowodować pęcherze w materiale. Zachowaj cierpliwość!
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '29' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Wybór między laserem a frezarką CNC ma kluczowy wpływ na jakość, czas i koszt produkcji.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Porównanie technologii:</h3>
+                        <table className="w-full border border-gray-600 mt-4 text-sm">
+                          <thead>
+                            <tr className="bg-gray-800">
+                              <th className="border border-gray-600 p-2">Kryterium</th>
+                              <th className="border border-gray-600 p-2">Laser CO2</th>
+                              <th className="border border-gray-600 p-2">Frezarka CNC</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Prędkość</td>
+                              <td className="border border-gray-600 p-2">★★★★★</td>
+                              <td className="border border-gray-600 p-2">★★★☆☆</td>
+                            </tr>
+                            <tr className="bg-gray-800/50">
+                              <td className="border border-gray-600 p-2">Precyzja</td>
+                              <td className="border border-gray-600 p-2">★★★★★</td>
+                              <td className="border border-gray-600 p-2">★★★★☆</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Grubość materiału</td>
+                              <td className="border border-gray-600 p-2">Do 20mm</td>
+                              <td className="border border-gray-600 p-2">Do 100mm+</td>
+                            </tr>
+                            <tr className="bg-gray-800/50">
+                              <td className="border border-gray-600 p-2">Krawędź</td>
+                              <td className="border border-gray-600 p-2">Polerowana</td>
+                              <td className="border border-gray-600 p-2">Matowa</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Koszt/szt</td>
+                              <td className="border border-gray-600 p-2">Niski</td>
+                              <td className="border border-gray-600 p-2">Średni</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Kiedy użyć lasera:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li>Skomplikowane kontury i małe detale</li>
+                          <li>Materiały do 20mm grubości</li>
+                          <li>Potrzeba polerowanej krawędzi</li>
+                          <li>Duże serie produkcyjne</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Kiedy użyć frezarki:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li>Grube materiały (>20mm)</li>
+                          <li>Fazowanie krawędzi</li>
+                          <li>Frezowanie kieszeni i rowków</li>
+                          <li>Obróbka 3D</li>
+                        </ul>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '30' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Profesjonalne wykończenie krawędzi to różnica między produktem amatorskim a premium.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Metody polerowania:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Polerowanie płomieniowe:</strong> Szybkie, idealna przejrzystość</li>
+                          <li><strong>Polerowanie diamentowe:</strong> Precyzyjne, bez odkształceń</li>
+                          <li><strong>Polerowanie mechaniczne:</strong> Duże powierzchnie</li>
+                          <li><strong>Polerowanie chemiczne:</strong> Skomplikowane kształty</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Proces polerowania płomieniowego:</h3>
+                        <ol className="space-y-2 list-decimal list-inside ml-4">
+                          <li>Przygotowanie - frezowanie na wymiar</li>
+                          <li>Czyszczenie krawędzi</li>
+                          <li>Regulacja płomienia - niebieski, ostry</li>
+                          <li>Szybki ruch wzdłuż krawędzi</li>
+                          <li>Chłodzenie naturalne</li>
+                        </ol>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Fazowanie krawędzi:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Faza 45°:</strong> Standard, bezpieczeństwo</li>
+                          <li><strong>Faza 30°:</strong> Delikatna, estetyczna</li>
+                          <li><strong>Zaokrąglenie:</strong> Premium, bezpieczne</li>
+                          <li><strong>Faza dwustronna:</strong> Symetria, elegancja</li>
+                        </ul>
+                        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mt-6">
+                          <p className="text-blue-400 font-semibold">Pro tip:</p>
+                          <p className="text-gray-300 mt-1">
+                            Przy polerowaniu płomieniowym utrzymuj stałą prędkość i odległość dla równomiernego efektu.
                           </p>
                         </div>
                       </div>
