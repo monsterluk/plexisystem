@@ -5,6 +5,7 @@ import { OfferProvider } from '@/context/OfferContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { UserProvider, useUser, users } from '@/context/UserContext';
 import { HomePage } from '@/pages/HomePage';
+import Dashboard from '@/pages/Dashboard';
 import { OfferView } from '@/pages/OfferView';
 import { OfferAcceptance } from '@/pages/OfferAcceptance';
 import { PublicOffer } from '@/pages/PublicOffer';
@@ -118,7 +119,7 @@ const AppContent: React.FC = () => {
                   <h1 className="text-xl lg:text-2xl font-bold text-orange-500 gradient-text flex-shrink-0">PlexiSystem</h1>
                   <nav className="hidden lg:flex gap-2 overflow-x-auto">
                     <a
-                      href="/"
+                      href="/offers"
                       className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
                     >
                       <FileText className="w-4 h-4" />
@@ -375,7 +376,7 @@ const AppContent: React.FC = () => {
             <div className="lg:hidden bg-zinc-800 border-b border-zinc-700">
               <nav className="flex flex-col p-4 space-y-2">
                 <a
-                  href="/"
+                  href="/offers"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
                   onClick={() => setShowMobileMenu(false)}
                 >
@@ -470,7 +471,8 @@ const AppContent: React.FC = () => {
               {/* Tymczasowo wyłączone dla testów
               <Route path="/login" element={<LoginPage />} />
               */}
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/offers" element={<HomePage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/clients" element={<ClientsPage />} />
               <Route path="/products" element={<ProductsPage />} />

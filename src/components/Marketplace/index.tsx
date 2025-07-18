@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calculator, Star, Clock, Package, Eye, Edit, Heart, TrendingUp, Award, Filter, Search, Palette, Shield, ClipboardList, Coffee, Briefcase, HardHat, Megaphone, Box, Sparkles, Hand, Utensils, Cake, Grid3x3, Table2, Factory, Cpu, Building, Lightbulb, Mail, FileText, Gift, ArrowRight, Ruler, Layers } from 'lucide-react';
 
 interface Project {
@@ -558,6 +559,7 @@ const categories = [
 ];
 
 const Marketplace: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -583,22 +585,21 @@ const Marketplace: React.FC = () => {
   };
 
   const goToCalculator = (project: Project) => {
-    // Tutaj będzie logika przekierowania do kalkulatora z wstępnie wypełnionymi danymi
+    // Zapisz dane w localStorage aby kalkulator mógł je odczytać
     const calculatorData = {
       productType: project.calculatorType,
       name: project.name,
       dimensions: project.defaultDimensions,
       materials: project.materials,
-      description: project.detailedDescription
+      description: project.detailedDescription,
+      features: project.features,
+      complexity: project.complexity
     };
     
-    // Zapisz dane w localStorage aby kalkulator mógł je odczytać
     localStorage.setItem('calculatorPreset', JSON.stringify(calculatorData));
     
-    // Przekieruj do kalkulatora (zastąp swoją logiką routingu)
-    console.log('Redirecting to calculator with data:', calculatorData);
-    // window.location.href = '/kalkulator';
-    alert(`Przekierowanie do kalkulatora z danymi:\nProdukt: ${project.name}\nWymiary: ${project.defaultDimensions.width}×${project.defaultDimensions.height}×${project.defaultDimensions.depth}mm`);
+    // Prawdziwe przekierowanie do kalkulatora
+    navigate('/calculator');
   };
 
   const getComplexityColor = (complexity: string) => {
