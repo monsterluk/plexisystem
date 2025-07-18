@@ -46,7 +46,7 @@ const categories: Category[] = [
     name: 'Produkty i materiały',
     icon: <Package className="w-6 h-6" />,
     description: 'Wszystko o produktach z plexi',
-    articleCount: 24,
+    articleCount: 28,
     color: 'blue'
   },
   {
@@ -62,7 +62,7 @@ const categories: Category[] = [
     name: 'Najlepsze praktyki',
     icon: <Award className="w-6 h-6" />,
     description: 'Sprawdzone metody i porady',
-    articleCount: 15,
+    articleCount: 18,
     color: 'amber'
   },
   {
@@ -70,7 +70,7 @@ const categories: Category[] = [
     name: 'Rozwiązywanie problemów',
     icon: <HelpCircle className="w-6 h-6" />,
     description: 'Częste problemy i ich rozwiązania',
-    articleCount: 8,
+    articleCount: 9,
     color: 'red'
   },
   {
@@ -78,7 +78,7 @@ const categories: Category[] = [
     name: 'Zaawansowane',
     icon: <Code className="w-6 h-6" />,
     description: 'Dla doświadczonych użytkowników',
-    articleCount: 6,
+    articleCount: 10,
     color: 'pink'
   }
 ];
@@ -278,6 +278,136 @@ const articles: Article[] = [
     tags: ['szyldy', 'litery 3D', 'reklama'],
     author: 'Projektant',
     date: '2024-02-25'
+  },
+  {
+    id: '16',
+    title: 'Kleje do plexi - kompletny przewodnik',
+    excerpt: 'Wszystko o klejach do PMMA: rodzaje, zastosowanie, techniki klejenia. Kleje cyjanoakrylowe, metakrylowe, UV.',
+    category: 'advanced',
+    readTime: '18 min',
+    views: 1245,
+    helpful: 187,
+    icon: <Layers className="w-5 h-5" />,
+    tags: ['kleje', 'montaż', 'technologie'],
+    author: 'Technolog Klejenia',
+    date: '2024-03-01'
+  },
+  {
+    id: '17',
+    title: 'Magnesy neodymowe w produkcji ekspozytorów',
+    excerpt: 'Jak wykorzystać magnesy neodymowe do montażu elementów z plexi. Rodzaje, siła przyciągania, techniki mocowania.',
+    category: 'products',
+    readTime: '12 min',
+    views: 678,
+    helpful: 89,
+    icon: <Shield className="w-5 h-5" />,
+    tags: ['magnesy', 'montaż', 'ekspozytory'],
+    author: 'Inżynier Produkcji',
+    date: '2024-03-05'
+  },
+  {
+    id: '18',
+    title: 'Taśmy dwustronne 3M VHB - zastosowania',
+    excerpt: 'Profesjonalne taśmy VHB do trwałego łączenia plexi z innymi materiałami. Właściwości, dobór, montaż.',
+    category: 'advanced',
+    readTime: '15 min',
+    views: 923,
+    helpful: 134,
+    icon: <Package className="w-5 h-5" />,
+    tags: ['taśmy', '3M', 'VHB', 'montaż'],
+    author: 'Specjalista 3M',
+    date: '2024-03-08'
+  },
+  {
+    id: '19',
+    title: 'Technologie klejenia UV - nowoczesne rozwiązania',
+    excerpt: 'Klejenie UV dla profesjonalistów: lampy, kleje, techniki. Idealne połączenia krawędziowe bez śladów.',
+    category: 'advanced',
+    readTime: '20 min',
+    views: 567,
+    helpful: 98,
+    icon: <Zap className="w-5 h-5" />,
+    tags: ['UV', 'klejenie', 'technologie'],
+    author: 'Ekspert UV',
+    date: '2024-03-10'
+  },
+  {
+    id: '20',
+    title: 'Montaż magnetyczny - praktyczne rozwiązania',
+    excerpt: 'Systemy magnetyczne w ekspozytorach: uchwyty, zamknięcia, demontowalne połączenia. Przykłady zastosowań.',
+    category: 'best-practices',
+    readTime: '10 min',
+    views: 789,
+    helpful: 112,
+    icon: <Settings className="w-5 h-5" />,
+    tags: ['magnesy', 'montaż', 'systemy'],
+    author: 'Projektant Systemów',
+    date: '2024-03-12'
+  },
+  {
+    id: '21',
+    title: 'Porównanie metod łączenia tworzyw',
+    excerpt: 'Klejenie vs taśmy vs magnesy vs śruby. Kiedy stosować którą metodę? Analiza kosztów i trwałości.',
+    category: 'best-practices',
+    readTime: '16 min',
+    views: 1034,
+    helpful: 156,
+    icon: <Activity className="w-5 h-5" />,
+    tags: ['montaż', 'porównanie', 'technologie'],
+    author: 'Kierownik Produkcji',
+    date: '2024-03-15'
+  },
+  {
+    id: '22',
+    title: 'Kleje specjalistyczne - Acrifix, Cosmofen, ATK',
+    excerpt: 'Przegląd profesjonalnych klejów do plexi: właściwości, zastosowania, parametry techniczne.',
+    category: 'products',
+    readTime: '22 min',
+    views: 456,
+    helpful: 78,
+    icon: <Award className="w-5 h-5" />,
+    tags: ['kleje', 'Acrifix', 'produkty'],
+    author: 'Chemik',
+    date: '2024-03-18'
+  },
+  {
+    id: '23',
+    title: 'Problem: Słabe połączenie klejone',
+    excerpt: 'Dlaczego klej nie trzyma? Najczęstsze błędy przy klejeniu plexi i jak ich uniknąć.',
+    category: 'troubleshooting',
+    readTime: '8 min',
+    views: 892,
+    helpful: 234,
+    icon: <AlertCircle className="w-5 h-5" />,
+    tags: ['problemy', 'klejenie', 'rozwiązania'],
+    author: 'Support Team',
+    date: '2024-03-20'
+  },
+  {
+    id: '24',
+    title: 'Taśmy montażowe - od podstawowych do VHB',
+    excerpt: 'Kompletny przewodnik po taśmach: piankowe, akrylowe, VHB. Parametry, zastosowania, trwałość.',
+    category: 'products',
+    readTime: '14 min',
+    views: 667,
+    helpful: 91,
+    icon: <Layers className="w-5 h-5" />,
+    tags: ['taśmy', 'montaż', 'produkty'],
+    author: 'Product Manager',
+    date: '2024-03-22'
+  },
+  {
+    id: '25',
+    title: 'Innowacyjne ekspozytory z magnesami',
+    excerpt: 'Projektowanie ekspozytorów z wymiennymi elementami magnetycznymi. Case studies i inspiracje.',
+    category: 'best-practices',
+    readTime: '11 min',
+    views: 534,
+    helpful: 67,
+    icon: <Sparkles className="w-5 h-5" />,
+    tags: ['ekspozytory', 'magnesy', 'innowacje'],
+    author: 'Designer',
+    date: '2024-03-25'
   }
 ];
 
@@ -1079,7 +1209,380 @@ export function KnowledgeBase() {
                       </>
                     )}
 
-                    {/* More content for other articles... */}
+                    {selectedArticle.id === '16' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Kleje do plexi stanowią kluczowy element w profesjonalnej produkcji ekspozytorów. Wybór odpowiedniego kleju wpływa na estetykę i trwałość produktu.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Rodzaje klejów do PMMA:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Kleje cyjanoakrylowe (CA):</strong> Błyskawiczne wiązanie, idealne do małych powierzchni</li>
+                          <li><strong>Kleje metakrylowe:</strong> Profesjonalne połączenia o wysokiej wytrzymałości</li>
+                          <li><strong>Kleje UV:</strong> Niewidoczna spoina, utwardzanie lampą UV</li>
+                          <li><strong>Kleje rozpuszczalnikowe:</strong> Łączenie przez rozpuszczanie powierzchni</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Techniki klejenia:</h3>
+                        <ol className="space-y-2 list-decimal list-inside ml-4">
+                          <li>Przygotowanie powierzchni - czyszczenie alkoholem izopropylowym</li>
+                          <li>Aplikacja kleju - igłą, aplikatorem lub kapilarnie</li>
+                          <li>Docisk elementów - bez nadmiernej siły</li>
+                          <li>Utwardzanie - zgodnie z instrukcją producenta</li>
+                        </ol>
+                        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mt-6">
+                          <p className="text-amber-400 font-semibold">Wskazówka:</p>
+                          <p className="text-gray-300 mt-1">
+                            Dla najlepszych rezultatów utrzymuj temperaturę pomieszczenia w zakresie 18-25°C i wilgotność 40-60%.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '17' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Magnesy neodymowe rewolucjonizują sposób montażu ekspozytorów, oferując niewidoczne i wytrzymałe połączenia.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Zastosowania w ekspozytorach:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li>Magnetyczne zamknięcia drzwiczek</li>
+                          <li>Wymienne panele graficzne</li>
+                          <li>Demontowalne półki i przegrody</li>
+                          <li>Systemy mocowania produktów</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Parametry magnesów:</h3>
+                        <table className="w-full border border-gray-600 mt-4">
+                          <thead>
+                            <tr className="bg-gray-800">
+                              <th className="border border-gray-600 p-2">Wymiar</th>
+                              <th className="border border-gray-600 p-2">Siła</th>
+                              <th className="border border-gray-600 p-2">Zastosowanie</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Ø10x2mm</td>
+                              <td className="border border-gray-600 p-2">2.5kg</td>
+                              <td className="border border-gray-600 p-2">Lekkie drzwiczki</td>
+                            </tr>
+                            <tr className="bg-gray-800/50">
+                              <td className="border border-gray-600 p-2">Ø20x3mm</td>
+                              <td className="border border-gray-600 p-2">8kg</td>
+                              <td className="border border-gray-600 p-2">Średnie obciążenia</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-600 p-2">30x10x5mm</td>
+                              <td className="border border-gray-600 p-2">15kg</td>
+                              <td className="border border-gray-600 p-2">Ciężkie elementy</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '18' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Taśmy 3M VHB (Very High Bond) to przemysłowy standard w trwałym łączeniu materiałów, idealny do produkcji ekspozytorów.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Właściwości taśm VHB:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li>Wytrzymałość porównywalna ze spawaniem lub nitowaniem</li>
+                          <li>Wodoodporność i odporność na UV</li>
+                          <li>Kompensacja naprężeń termicznych</li>
+                          <li>Niewidoczne połączenie</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Popularne modele:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>VHB 4910:</strong> Przezroczysta, 1mm, do plexi</li>
+                          <li><strong>VHB 4611:</strong> Szara, 1.1mm, plexi-metal</li>
+                          <li><strong>VHB 4941:</strong> Szara, 1.1mm, uniwersalna</li>
+                          <li><strong>VHB 5952:</strong> Czarna, 1.1mm, najwyższa wytrzymałość</li>
+                        </ul>
+                        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mt-6">
+                          <p className="text-green-400 font-semibold">Prawidłowa aplikacja:</p>
+                          <ol className="text-gray-300 mt-1 list-decimal list-inside ml-4">
+                            <li>Oczyść powierzchnie alkoholem IPA</li>
+                            <li>Aplikuj w temp. 15-35°C</li>
+                            <li>Dociśnij z siłą min. 15 PSI</li>
+                            <li>Pełna wytrzymałość po 72h</li>
+                          </ol>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '19' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Technologia klejenia UV to najnowocześniejsza metoda łączenia tworzyw, zapewniająca perfekcyjnie przezroczyste spoiny.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Zalety klejenia UV:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li>Utwardzanie w 5-60 sekund</li>
+                          <li>Całkowicie przezroczysta spoina</li>
+                          <li>Brak rozpuszczalników</li>
+                          <li>Możliwość repozycjonowania przed utwardzeniem</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Wyposażenie:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Lampa UV LED:</strong> 365-405nm, min. 10W/cm²</li>
+                          <li><strong>Klej UV:</strong> Viscosity 100-5000 mPa·s</li>
+                          <li><strong>Okulary ochronne:</strong> Filtr UV400</li>
+                          <li><strong>Przyrządy pozycjonujące:</strong> Uchwyty, kątowniki</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Proces klejenia:</h3>
+                        <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                          <ol className="space-y-2 list-decimal list-inside">
+                            <li>Przygotuj krawędzie - polerowanie do połysku</li>
+                            <li>Oczyść powierzchnie acetonem</li>
+                            <li>Nałóż cienką warstwę kleju</li>
+                            <li>Złóż elementy bez pęcherzyków</li>
+                            <li>Naświetl lampą UV przez 30-60s</li>
+                            <li>Sprawdź jakość spoiny</li>
+                          </ol>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '20' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Systemy magnetyczne w ekspozytorach to innowacyjne rozwiązanie umożliwiające szybką wymianę elementów i elastyczną aranżację.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Przykłady zastosowań:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Wymienne fronty:</strong> Szybka zmiana grafiki sezonowej</li>
+                          <li><strong>Modułowe półki:</strong> Regulacja wysokości bez narzędzi</li>
+                          <li><strong>Magnetyczne etykiety:</strong> Łatwa aktualizacja cen</li>
+                          <li><strong>Zabezpieczenia produktów:</strong> Dyskretne mocowanie</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Systemy montażu:</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-zinc-700/30 rounded-lg p-4">
+                            <h4 className="text-emerald-300 font-semibold mb-2">Wpuszczane</h4>
+                            <p className="text-gray-300 text-sm">Magnesy frezowane w materiale, niewidoczne połączenie</p>
+                          </div>
+                          <div className="bg-zinc-700/30 rounded-lg p-4">
+                            <h4 className="text-emerald-300 font-semibold mb-2">Naklejane</h4>
+                            <p className="text-gray-300 text-sm">Magnesy z klejem 3M, szybki montaż</p>
+                          </div>
+                        </div>
+                        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mt-6">
+                          <p className="text-blue-400 font-semibold">Kalkulator siły:</p>
+                          <p className="text-gray-300 mt-1">
+                            Siła potrzebna = Waga elementu × 3 (współczynnik bezpieczeństwa)
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '21' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Wybór metody łączenia tworzyw ma kluczowy wpływ na koszt, czas produkcji i jakość końcowego produktu.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Porównanie metod:</h3>
+                        <table className="w-full border border-gray-600 mt-4 text-sm">
+                          <thead>
+                            <tr className="bg-gray-800">
+                              <th className="border border-gray-600 p-2">Metoda</th>
+                              <th className="border border-gray-600 p-2">Koszt</th>
+                              <th className="border border-gray-600 p-2">Czas</th>
+                              <th className="border border-gray-600 p-2">Wytrzymałość</th>
+                              <th className="border border-gray-600 p-2">Estetyka</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Klejenie</td>
+                              <td className="border border-gray-600 p-2">$</td>
+                              <td className="border border-gray-600 p-2">Średni</td>
+                              <td className="border border-gray-600 p-2">★★★★★</td>
+                              <td className="border border-gray-600 p-2">★★★★★</td>
+                            </tr>
+                            <tr className="bg-gray-800/50">
+                              <td className="border border-gray-600 p-2">Taśmy VHB</td>
+                              <td className="border border-gray-600 p-2">$$</td>
+                              <td className="border border-gray-600 p-2">Szybki</td>
+                              <td className="border border-gray-600 p-2">★★★★☆</td>
+                              <td className="border border-gray-600 p-2">★★★★☆</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Magnesy</td>
+                              <td className="border border-gray-600 p-2">$$</td>
+                              <td className="border border-gray-600 p-2">Średni</td>
+                              <td className="border border-gray-600 p-2">★★★☆☆</td>
+                              <td className="border border-gray-600 p-2">★★★★★</td>
+                            </tr>
+                            <tr className="bg-gray-800/50">
+                              <td className="border border-gray-600 p-2">Śruby</td>
+                              <td className="border border-gray-600 p-2">$</td>
+                              <td className="border border-gray-600 p-2">Długi</td>
+                              <td className="border border-gray-600 p-2">★★★★☆</td>
+                              <td className="border border-gray-600 p-2">★★☆☆☆</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Rekomendacje:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Premium/wystawy:</strong> Klejenie UV lub Acrifix</li>
+                          <li><strong>Produkcja seryjna:</strong> Taśmy VHB</li>
+                          <li><strong>Elementy wymienne:</strong> Magnesy</li>
+                          <li><strong>Budżetowe:</strong> Śruby z kapturkami</li>
+                        </ul>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '22' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Przegląd profesjonalnych klejów specjalistycznych stosowanych w branży reklamy wizualnej.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Acrifix (Evonik):</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Acrifix 192:</strong> Klej polimeryzacyjny, spoina jak lity materiał</li>
+                          <li><strong>Acrifix 1S 0116:</strong> Szybkoschnący, do małych powierzchni</li>
+                          <li><strong>Acrifix 1R 0192:</strong> Reaktywny, wypełnia szczeliny do 0.5mm</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Cosmofen (Weiss):</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Cosmofen 345:</strong> Do PVC twardego</li>
+                          <li><strong>Cosmofen PMMA:</strong> Specjalnie do plexi</li>
+                          <li><strong>Cosmofen Plus HV:</strong> Wysokiej lepkości, wypełniający</li>
+                        </ul>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">ATK:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>ATK 812:</strong> Uniwersalny do tworzyw</li>
+                          <li><strong>ATK FIX:</strong> Błyskawiczny, pozycjonowanie</li>
+                          <li><strong>ATK PU50:</strong> Elastyczny, do różnych materiałów</li>
+                        </ul>
+                        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mt-6">
+                          <p className="text-red-400 font-semibold">Bezpieczeństwo:</p>
+                          <ul className="text-gray-300 mt-1 list-disc list-inside ml-4">
+                            <li>Zawsze pracuj w wentylowanym pomieszczeniu</li>
+                            <li>Używaj środków ochrony osobistej</li>
+                            <li>Przechowuj w temp. 5-25°C</li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '23' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Problemy z klejeniem to najczęstsze wyzwanie w produkcji. Poznaj przyczyny i skuteczne rozwiązania.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Najczęstsze błędy:</h3>
+                        <div className="space-y-4">
+                          <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                            <h4 className="text-red-300 font-semibold mb-2">1. Brudne powierzchnie</h4>
+                            <p className="text-gray-300 text-sm mb-2">Tłuszcz, kurz, odciski palców uniemożliwiają właściwe związanie</p>
+                            <p className="text-emerald-300 text-sm"><strong>Rozwiązanie:</strong> Czyszczenie alkoholem IPA 99%</p>
+                          </div>
+                          <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                            <h4 className="text-red-300 font-semibold mb-2">2. Niewłaściwa temperatura</h4>
+                            <p className="text-gray-300 text-sm mb-2">Zbyt niska temperatura spowalnia lub uniemożliwia utwardzanie</p>
+                            <p className="text-emerald-300 text-sm"><strong>Rozwiązanie:</strong> Pracuj w temp. 18-25°C</p>
+                          </div>
+                          <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                            <h4 className="text-red-300 font-semibold mb-2">3. Za dużo kleju</h4>
+                            <p className="text-gray-300 text-sm mb-2">Nadmiar kleju wydłuża czas utwardzania i psuje estetykę</p>
+                            <p className="text-emerald-300 text-sm"><strong>Rozwiązanie:</strong> Cienka, równomierna warstwa</p>
+                          </div>
+                          <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                            <h4 className="text-red-300 font-semibold mb-2">4. Zły dobór kleju</h4>
+                            <p className="text-gray-300 text-sm mb-2">Każdy materiał wymaga odpowiedniego kleju</p>
+                            <p className="text-emerald-300 text-sm"><strong>Rozwiązanie:</strong> Konsultuj kartę techniczną</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '24' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Taśmy montażowe to szybkie i czyste rozwiązanie do łączenia elementów. Od podstawowych po profesjonalne VHB.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Rodzaje taśm:</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-zinc-700/30 rounded-lg p-4">
+                            <h4 className="text-purple-300 font-semibold mb-2">Piankowe</h4>
+                            <p className="text-gray-300 text-sm">Grubość: 0.8-3mm<br/>Kompensują nierówności<br/>Zastosowanie: tymczasowe</p>
+                          </div>
+                          <div className="bg-zinc-700/30 rounded-lg p-4">
+                            <h4 className="text-purple-300 font-semibold mb-2">Akrylowe</h4>
+                            <p className="text-gray-300 text-sm">Grubość: 0.1-0.5mm<br/>Wysoka przezroczystość<br/>Zastosowanie: trwałe</p>
+                          </div>
+                          <div className="bg-zinc-700/30 rounded-lg p-4">
+                            <h4 className="text-purple-300 font-semibold mb-2">VHB</h4>
+                            <p className="text-gray-300 text-sm">Grubość: 0.5-3mm<br/>Ekstremalna wytrzymałość<br/>Zastosowanie: konstrukcyjne</p>
+                          </div>
+                          <div className="bg-zinc-700/30 rounded-lg p-4">
+                            <h4 className="text-purple-300 font-semibold mb-2">Transferowe</h4>
+                            <p className="text-gray-300 text-sm">Bez nośnika<br/>Minimalna grubość<br/>Zastosowanie: precyzyjne</p>
+                          </div>
+                        </div>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Parametry techniczne:</h3>
+                        <table className="w-full border border-gray-600 mt-4 text-sm">
+                          <thead>
+                            <tr className="bg-gray-800">
+                              <th className="border border-gray-600 p-2">Typ</th>
+                              <th className="border border-gray-600 p-2">Adhezja</th>
+                              <th className="border border-gray-600 p-2">Temp. pracy</th>
+                              <th className="border border-gray-600 p-2">UV</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-600 p-2">Piankowa</td>
+                              <td className="border border-gray-600 p-2">10-50 N/25mm</td>
+                              <td className="border border-gray-600 p-2">-20 do +60°C</td>
+                              <td className="border border-gray-600 p-2">Nie</td>
+                            </tr>
+                            <tr className="bg-gray-800/50">
+                              <td className="border border-gray-600 p-2">VHB</td>
+                              <td className="border border-gray-600 p-2">60-120 N/25mm</td>
+                              <td className="border border-gray-600 p-2">-40 do +150°C</td>
+                              <td className="border border-gray-600 p-2">Tak</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {selectedArticle.id === '25' && (
+                      <div className="space-y-4 text-gray-300">
+                        <p>
+                          Innowacyjne ekspozytory z systemami magnetycznymi to przyszłość merchandisingu. Maksymalna elastyczność przy minimalnym nakładzie pracy.
+                        </p>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Case study: Ekspozytor kosmetyczny</h3>
+                        <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-lg p-4 border border-purple-600/30">
+                          <h4 className="text-purple-300 font-semibold mb-2">Wyzwanie:</h4>
+                          <p className="text-gray-300 text-sm mb-3">Częsta zmiana układu produktów, sezonowość, różne wielkości opakowań</p>
+                          <h4 className="text-purple-300 font-semibold mb-2">Rozwiązanie:</h4>
+                          <ul className="list-disc list-inside text-gray-300 text-sm space-y-1">
+                            <li>Tył z blachy ferromagnetycznej</li>
+                            <li>Półki z plexi z magnesami neodymowymi</li>
+                            <li>Magnetyczne separatory i ograniczniki</li>
+                            <li>Wymienne toppery sezonowe</li>
+                          </ul>
+                          <h4 className="text-purple-300 font-semibold mb-2 mt-3">Rezultat:</h4>
+                          <p className="text-emerald-300 text-sm">Czas zmiany ekspozycji skrócony o 85%, ROI w 3 miesiące</p>
+                        </div>
+                        <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Inspiracje projektowe:</h3>
+                        <ul className="space-y-2 list-disc list-inside ml-4">
+                          <li><strong>Modułowe ściany:</strong> Panele A4/A3 z magnetycznym mocowaniem</li>
+                          <li><strong>Systemy haków:</strong> Magnetyczne listwy z przesuwanymi hakami</li>
+                          <li><strong>Interaktywne demo:</strong> Produkty na magnesach - klient może dotknąć</li>
+                          <li><strong>Quick change graphics:</strong> Wymiana grafik w 30 sekund</li>
+                        </ul>
+                        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 mt-6">
+                          <p className="text-emerald-400 font-semibold">Wskazówka projektowa:</p>
+                          <p className="text-gray-300 mt-1">
+                            Planuj rozmieszczenie magnesów symetrycznie - ułatwi to przyszłe modyfikacje i zachowa estetykę.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-8 pt-6 border-t border-zinc-700">
