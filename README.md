@@ -128,4 +128,4 @@ Skopiuj `.env.example` do `.env` i uzupełnij wartości:
 
 ## 📄 Licencja
 
-Własnościowa - PlexiSystem Sp. z o.o.
+Własnościowa - PlexiSystem Sp. z o.o.# test
