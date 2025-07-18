@@ -811,7 +811,7 @@ export function KnowledgeBase() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-zinc-700/30 rounded-lg p-4">
                               <h4 className="text-emerald-300 font-semibold mb-2">Konwersja ofert</h4>
-                              <p className="text-gray-300 text-sm">Stosunek ofert zaakceptowanych do wysłanych. Cel: >30%</p>
+                              <p className="text-gray-300 text-sm">Stosunek ofert zaakceptowanych do wysłanych. Cel: &gt;30%</p>
                             </div>
                             <div className="bg-zinc-700/30 rounded-lg p-4">
                               <h4 className="text-emerald-300 font-semibold mb-2">Średnia wartość zamówienia</h4>
@@ -819,11 +819,11 @@ export function KnowledgeBase() {
                             </div>
                             <div className="bg-zinc-700/30 rounded-lg p-4">
                               <h4 className="text-emerald-300 font-semibold mb-2">Czas realizacji</h4>
-                              <p className="text-gray-300 text-sm">Od oferty do dostawy. Cel: <7 dni</p>
+                              <p className="text-gray-300 text-sm">Od oferty do dostawy. Cel: &lt;7 dni</p>
                             </div>
                             <div className="bg-zinc-700/30 rounded-lg p-4">
                               <h4 className="text-emerald-300 font-semibold mb-2">Retencja klientów</h4>
-                              <p className="text-gray-300 text-sm">% powracających klientów. Cel: >60%</p>
+                              <p className="text-gray-300 text-sm">% powracających klientów. Cel: &gt;60%</p>
                             </div>
                           </div>
                         </section>
