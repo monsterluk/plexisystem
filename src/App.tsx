@@ -13,6 +13,8 @@ import { ClientPanel } from '@/pages/ClientPanel';
 import { Calculator as CalculatorPage } from '@/components/quotation/Calculator';
 import { ProductionPage } from '@/pages/ProductionPage';
 import Dashboard from './Dashboard';
+import { ProductDetailPage } from '@/pages/ProductDetailPage';
+import { PublicConfigurator } from '@/pages/configurator/PublicConfigurator';
 import { salespeople } from '@/constants/materials';
 import { ClientsPage } from '@/pages/ClientsPage';
 import { ProductsPage } from '@/pages/ProductsPage';
@@ -51,7 +53,10 @@ const AppContent: React.FC = () => {
     totalClients: 0
   });
 
-  const isPublicRoute = window.location.pathname.startsWith('/offer/accept/') || window.location.pathname.startsWith('/oferta/') || window.location.pathname.startsWith('/panel/');
+  const isPublicRoute = window.location.pathname.startsWith('/offer/accept/') || 
+    window.location.pathname.startsWith('/oferta/') || 
+    window.location.pathname.startsWith('/panel/') ||
+    window.location.pathname.startsWith('/configurator/public/');
 
   useEffect(() => {
     // Register service worker for PWA - wyłączone tymczasowo
@@ -97,6 +102,7 @@ const AppContent: React.FC = () => {
           <Route path="/offer/accept/:shareId" element={<OfferAcceptance />} />
           <Route path="/oferta/:token" element={<PublicOffer />} />
           <Route path="/panel/:token" element={<ClientPanel />} />
+          <Route path="/configurator/public/:token" element={<PublicConfigurator />} />
         </Routes>
       </Router>
     );
@@ -492,6 +498,7 @@ const AppContent: React.FC = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/clients" element={<ClientsPage />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/product/:id" element={<ProductDetailPage />} />
               <Route path="/production" element={<ProductionPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/ai" element={<AIAssistant />} />
