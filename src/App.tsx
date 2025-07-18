@@ -12,7 +12,6 @@ import { PublicOffer } from '@/pages/PublicOffer';
 import { ClientPanel } from '@/pages/ClientPanel';
 import { Calculator as CalculatorPage } from '@/components/quotation/Calculator';
 import { ProductionPage } from '@/pages/ProductionPage';
-import Dashboard from './Dashboard';
 import { ProductDetailPage } from '@/pages/ProductDetailPage';
 import { PublicConfigurator } from '@/pages/configurator/PublicConfigurator';
 import { salespeople } from '@/constants/materials';
@@ -124,76 +123,45 @@ const AppContent: React.FC = () => {
                     {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                   </button>
                   <h1 className="text-xl lg:text-2xl font-bold text-orange-500 gradient-text flex-shrink-0">PlexiSystem</h1>
-                  <nav className="hidden lg:flex gap-2 overflow-x-auto">
-                    <a
-                      href="/offers"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
-                    >
-                      <FileText className="w-4 h-4" />
-                      Oferty
-                    </a>
+                  <nav className="hidden lg:flex gap-1 overflow-x-auto">
                     <a
                       href="/dashboard"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
+                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
                     >
                       <BarChart2 className="w-4 h-4" />
                       Dashboard
                     </a>
                     <a
-                      href="/clients"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
+                      href="/offers"
+                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
                     >
-                      <Users className="w-4 h-4" />
-                      Klienci
+                      <FileText className="w-4 h-4" />
+                      Oferty
                     </a>
                     <a
                       href="/calculator"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
+                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
                     >
                       <Calculator className="w-4 h-4" />
                       Kalkulator
                     </a>
                     <a
-                      href="/products"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
-                    >
-                      <Package className="w-4 h-4" />
-                      Produkty
-                    </a>
-                    <a
                       href="/production"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
+                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
                     >
                       <Settings className="w-4 h-4" />
                       Produkcja
                     </a>
                     <a
-                      href="/reports"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
+                      href="/clients"
+                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap text-sm"
                     >
-                      <Activity className="w-4 h-4" />
-                      Raporty
-                    </a>
-                    <a
-                      href="/ai"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative whitespace-nowrap"
-                    >
-                      <Brain className="w-4 h-4" />
-                      AI
-                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-orange-500 text-xs rounded-full animate-pulse">
-                        NEW
-                      </span>
-                    </a>
-                    <a
-                      href="/knowledge"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
-                    >
-                      <Book className="w-4 h-4" />
-                      Wiedza
+                      <Users className="w-4 h-4" />
+                      Klienci
                     </a>
                     <a
                       href="/marketplace"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative whitespace-nowrap"
+                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative whitespace-nowrap text-sm"
                     >
                       <ShoppingBag className="w-4 h-4" />
                       Marketplace
@@ -202,13 +170,15 @@ const AppContent: React.FC = () => {
                       </span>
                     </a>
                     <a
-                      href="/settings"
-                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
+                      href="/ai"
+                      className="px-3 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative whitespace-nowrap text-sm"
                     >
-                      <Settings className="w-4 h-4" />
-                      Ustawienia
+                      <Brain className="w-4 h-4" />
+                      AI
+                      <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-orange-500 text-xs rounded-full animate-pulse">
+                        NEW
+                      </span>
                     </a>
-                  </nav>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 lg:gap-4">

@@ -28,8 +28,8 @@ export const CuttingVisualization: React.FC<CuttingVisualizationProps> = ({
       canvas.width = width;
       canvas.height = height;
 
-      // Tło arkusza
-      ctx.fillStyle = '#f5f5f5';
+      // Tło arkusza (ciemne)
+      ctx.fillStyle = '#27272a';
       ctx.fillRect(0, 0, width, height);
 
       // Rysuj umieszczone elementy
@@ -40,17 +40,17 @@ export const CuttingVisualization: React.FC<CuttingVisualizationProps> = ({
         const h = (placement.rotated ? placement.rect.width : placement.rect.height) * scale;
 
         // Element
-        ctx.fillStyle = '#3b82f6';
+        ctx.fillStyle = '#f97316';
         ctx.fillRect(x, y, w, h);
 
         // Obramowanie
-        ctx.strokeStyle = '#1e40af';
+        ctx.strokeStyle = '#ea580c';
         ctx.lineWidth = 2;
         ctx.strokeRect(x, y, w, h);
 
         // ID elementu
         ctx.fillStyle = '#ffffff';
-        ctx.font = '12px Arial';
+        ctx.font = 'bold 12px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(placement.rect.id, x + w/2, y + h/2);
@@ -67,7 +67,7 @@ export const CuttingVisualization: React.FC<CuttingVisualizationProps> = ({
       });
 
       // Linie siatki (opcjonalne)
-      ctx.strokeStyle = '#e5e7eb';
+      ctx.strokeStyle = '#3f3f46';
       ctx.lineWidth = 0.5;
       ctx.setLineDash([5, 5]);
 
@@ -103,31 +103,31 @@ export const CuttingVisualization: React.FC<CuttingVisualizationProps> = ({
 
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold">Wizualizacja rozkroju</h3>
+      <h3 className="text-xl font-semibold text-white">Wizualizacja rozkroju</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {plan.sheets.map((sheetPlan: any, index: number) => (
-          <div key={index} className="bg-white rounded-lg shadow-lg p-4">
+          <div key={index} className="bg-zinc-700 rounded-lg shadow-xl p-4">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h4 className="font-semibold">Arkusz {index + 1}</h4>
-                <p className="text-sm text-gray-600">
+                <h4 className="font-semibold text-white">Arkusz {index + 1}</h4>
+                <p className="text-sm text-gray-400">
                   {sheetPlan.sheet.width} x {sheetPlan.sheet.height} mm
                 </p>
-                <p className="text-sm font-medium text-green-600">
+                <p className="text-sm font-medium text-green-400">
                   Wykorzystanie: {sheetPlan.utilization.toFixed(1)}%
                 </p>
               </div>
               <button
                 onClick={() => downloadCanvas(index)}
-                className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
                 title="Pobierz jako obraz"
               >
                 <Download className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+            <div className="border-2 border-zinc-600 rounded-lg overflow-hidden bg-zinc-800">
               <canvas
                 ref={el => canvasRefs.current[index] = el}
                 className="w-full"
@@ -136,12 +136,12 @@ export const CuttingVisualization: React.FC<CuttingVisualizationProps> = ({
             </div>
 
             <div className="mt-4 space-y-1">
-              <p className="text-sm font-medium">Elementy na arkuszu:</p>
+              <p className="text-sm font-medium text-gray-300">Elementy na arkuszu:</p>
               <div className="flex flex-wrap gap-2">
                 {sheetPlan.placements.map((placement: any, pIndex: number) => (
-                  <div key={pIndex} className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-1 rounded">
-                    <span>{placement.rect.id}</span>
-                    <span className="text-gray-500">
+                  <div key={pIndex} className="flex items-center gap-1 text-xs bg-zinc-800 px-2 py-1 rounded">
+                    <span className="text-white">{placement.rect.id}</span>
+                    <span className="text-gray-400">
                       ({placement.rect.width}x{placement.rect.height})
                     </span>
                     {placement.rotated && <RotateCw className="w-3 h-3 text-orange-500" />}
@@ -153,22 +153,22 @@ export const CuttingVisualization: React.FC<CuttingVisualizationProps> = ({
         ))}
       </div>
 
-      <div className="bg-gray-100 rounded-lg p-4">
-        <h4 className="font-semibold mb-2">Podsumowanie optymalizacji</h4>
+      <div className="bg-zinc-700 rounded-lg p-4">
+        <h4 className="font-semibold mb-2 text-white">Podsumowanie optymalizacji</h4>
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="text-gray-600">Wykorzystanych arkuszy</p>
-            <p className="text-2xl font-bold">{plan.sheets.length}</p>
+            <p className="text-gray-400">Wykorzystanych arkuszy</p>
+            <p className="text-2xl font-bold text-white">{plan.sheets.length}</p>
           </div>
           <div>
-            <p className="text-gray-600">Całkowite wykorzystanie</p>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-gray-400">Całkowite wykorzystanie</p>
+            <p className="text-2xl font-bold text-green-400">
               {((plan.usedArea / plan.totalArea) * 100).toFixed(1)}%
             </p>
           </div>
           <div>
-            <p className="text-gray-600">Odpad</p>
-            <p className="text-2xl font-bold text-red-600">
+            <p className="text-gray-400">Odpad</p>
+            <p className="text-2xl font-bold text-red-400">
               {plan.waste.toFixed(1)}%
             </p>
           </div>

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react';
-import { Settings, Package2, Scissors, FileText, QrCode } from 'lucide-react';
+import { Settings, Package2, Scissors, FileText, QrCode, Plus, Calendar, Clock } from 'lucide-react';
 import { SheetOptimizerForm } from '@/components/optimization/SheetOptimizerForm';
 
 export const ProductionPage: React.FC = () => {
@@ -13,53 +13,51 @@ export const ProductionPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Nagłówek */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Settings className="w-8 h-8 text-orange-500" />
-            Produkcja
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Zarządzaj procesem produkcji i optymalizuj wykorzystanie materiału
-          </p>
-        </div>
+    <div className="space-y-6">
+      {/* Nagłówek */}
+      <div>
+        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+          <Settings className="w-8 h-8 text-orange-500" />
+          Produkcja
+        </h1>
+        <p className="text-gray-400 mt-2">
+          Zarządzaj procesem produkcji i optymalizuj wykorzystanie materiału
+        </p>
+      </div>
 
-        {/* Zakładki */}
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="flex -mb-px">
-              {tabs.map(tab => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
-                    className={`
-                      flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-colors
-                      ${activeTab === tab.id
-                        ? 'border-orange-500 text-orange-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }
-                    `}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
+      {/* Zakładki */}
+      <div className="bg-zinc-800 rounded-lg shadow-xl">
+        <div className="border-b border-zinc-700">
+          <nav className="flex -mb-px">
+            {tabs.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`
+                    flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all
+                    ${activeTab === tab.id
+                      ? 'border-orange-500 text-orange-500 bg-zinc-700/50'
+                      : 'border-transparent text-gray-400 hover:text-white hover:bg-zinc-700/30'
+                    }
+                  `}
+                >
+                  <Icon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
         {/* Zawartość zakładek */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="p-6">
           {activeTab === 'optimizer' && (
             <div>
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold mb-2">Optymalizator rozkroju materiału</h2>
-                <p className="text-gray-600">
+                <h2 className="text-2xl font-semibold mb-2 text-white">Optymalizator rozkroju materiału</h2>
+                <p className="text-gray-400">
                   Zoptymalizuj wykorzystanie arkuszy pleksi i innych materiałów. 
                   System automatycznie układa elementy minimalizując odpad.
                 </p>
@@ -70,32 +68,44 @@ export const ProductionPage: React.FC = () => {
 
           {activeTab === 'queue' && (
             <div>
-              <h2 className="text-2xl font-semibold mb-6">Kolejka produkcji</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold text-white">Kolejka produkcji</h2>
+                <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Nowe zlecenie
+                </button>
+              </div>
+              
               <div className="space-y-4">
                 {/* Przykładowe zlecenia */}
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div key={i} className="bg-zinc-700 rounded-lg p-4 hover:bg-zinc-600 transition-all">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-semibold">Zlecenie #2024{i}</h3>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <h3 className="font-semibold text-white">Zlecenie #2024{i}</h3>
+                        <p className="text-sm text-gray-400 mt-1">
                           Klient: Firma XYZ • 5 ekspozytorów, 10 formatek
                         </p>
-                        <div className="flex items-center gap-4 mt-2">
-                          <span className="text-sm text-gray-500">
-                            Termin: {new Date(Date.now() + i * 86400000).toLocaleDateString('pl-PL')}
+                        <div className="flex items-center gap-4 mt-3">
+                          <span className="text-sm text-gray-400 flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            {new Date(Date.now() + i * 86400000).toLocaleDateString('pl-PL')}
                           </span>
-                          <span className={`text-sm px-2 py-1 rounded-full ${
-                            i === 1 ? 'bg-yellow-100 text-yellow-800' : 
-                            i === 2 ? 'bg-blue-100 text-blue-800' : 
-                            'bg-gray-100 text-gray-800'
+                          <span className="text-sm text-gray-400 flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {8 - i * 2}h pozostało
+                          </span>
+                          <span className={`text-sm px-3 py-1 rounded-full ${
+                            i === 1 ? 'bg-yellow-500/20 text-yellow-400' : 
+                            i === 2 ? 'bg-blue-500/20 text-blue-400' : 
+                            'bg-gray-500/20 text-gray-400'
                           }`}>
                             {i === 1 ? 'W produkcji' : i === 2 ? 'Oczekuje' : 'Zaplanowane'}
                           </span>
                         </div>
                       </div>
-                      <button className="p-2 hover:bg-gray-100 rounded transition-colors">
-                        <QrCode className="w-5 h-5" />
+                      <button className="p-2 hover:bg-zinc-800 rounded transition-all">
+                        <QrCode className="w-5 h-5 text-gray-400" />
                       </button>
                     </div>
                   </div>
@@ -106,35 +116,35 @@ export const ProductionPage: React.FC = () => {
 
           {activeTab === 'history' && (
             <div>
-              <h2 className="text-2xl font-semibold mb-6">Historia produkcji</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-white">Historia produkcji</h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4">Zlecenie</th>
-                      <th className="text-left py-3 px-4">Data</th>
-                      <th className="text-left py-3 px-4">Produkty</th>
-                      <th className="text-left py-3 px-4">Wykorzystanie</th>
-                      <th className="text-left py-3 px-4">Status</th>
+                    <tr className="border-b border-zinc-700">
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Zlecenie</th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Data</th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Produkty</th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Wykorzystanie</th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {[1, 2, 3, 4, 5].map(i => (
-                      <tr key={i} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">#2024{100 - i}</td>
-                        <td className="py-3 px-4">
+                      <tr key={i} className="border-b border-zinc-700 hover:bg-zinc-700/50 transition-all">
+                        <td className="py-3 px-4 text-white">#2024{100 - i}</td>
+                        <td className="py-3 px-4 text-gray-300">
                           {new Date(Date.now() - i * 86400000).toLocaleDateString('pl-PL')}
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3 px-4 text-gray-300">
                           {Math.floor(Math.random() * 10 + 5)} sztuk
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-green-600 font-medium">
+                          <span className="text-green-400 font-medium">
                             {85 + Math.floor(Math.random() * 10)}%
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-sm px-2 py-1 rounded-full bg-green-100 text-green-800">
+                          <span className="text-sm px-3 py-1 rounded-full bg-green-500/20 text-green-400">
                             Zrealizowane
                           </span>
                         </td>

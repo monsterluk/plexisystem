@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react';
-import { Plus, Trash2, Package, Settings } from 'lucide-react';
+import { Plus, Trash2, Package, Settings, Calculator } from 'lucide-react';
 import { sheetOptimizer } from '@/services/optimization/sheetOptimizer';
 import { CuttingVisualization } from './CuttingVisualization';
 
@@ -71,15 +71,15 @@ export const SheetOptimizerForm: React.FC<SheetOptimizerFormProps> = ({ onOptimi
   return (
     <div className="space-y-6">
       {/* Elementy do cięcia */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-zinc-700 rounded-lg shadow-xl p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Package className="w-5 h-5" />
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-white">
+            <Package className="w-5 h-5 text-orange-500" />
             Elementy do rozkroju
           </h3>
           <button
             onClick={addRectangle}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Dodaj element
@@ -88,12 +88,12 @@ export const SheetOptimizerForm: React.FC<SheetOptimizerFormProps> = ({ onOptimi
 
         <div className="space-y-3">
           {rectangles.map((rect, index) => (
-            <div key={rect.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+            <div key={rect.id} className="flex items-center gap-4 p-3 bg-zinc-800 rounded-lg">
               <input
                 type="text"
                 value={rect.id}
                 onChange={(e) => updateRectangle(index, 'id', e.target.value)}
-                className="w-20 px-3 py-2 border rounded"
+                className="w-20 px-3 py-2 bg-zinc-700 border border-zinc-600 rounded text-white"
                 placeholder="ID"
               />
               <div className="flex items-center gap-2">
@@ -101,31 +101,31 @@ export const SheetOptimizerForm: React.FC<SheetOptimizerFormProps> = ({ onOptimi
                   type="number"
                   value={rect.width}
                   onChange={(e) => updateRectangle(index, 'width', parseInt(e.target.value) || 0)}
-                  className="w-24 px-3 py-2 border rounded"
+                  className="w-24 px-3 py-2 bg-zinc-700 border border-zinc-600 rounded text-white"
                   placeholder="Szerokość"
                 />
-                <span>×</span>
+                <span className="text-gray-400">×</span>
                 <input
                   type="number"
                   value={rect.height}
                   onChange={(e) => updateRectangle(index, 'height', parseInt(e.target.value) || 0)}
-                  className="w-24 px-3 py-2 border rounded"
+                  className="w-24 px-3 py-2 bg-zinc-700 border border-zinc-600 rounded text-white"
                   placeholder="Wysokość"
                 />
-                <span className="text-gray-500">mm</span>
+                <span className="text-gray-400">mm</span>
               </div>
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 text-gray-300">
                 <input
                   type="checkbox"
                   checked={rect.rotatable}
                   onChange={(e) => updateRectangle(index, 'rotatable', e.target.checked)}
-                  className="rounded"
+                  className="rounded bg-zinc-700 border-zinc-600"
                 />
                 <span className="text-sm">Może być obrócony</span>
               </label>
               <button
                 onClick={() => removeRectangle(index)}
-                className="ml-auto p-2 text-red-500 hover:bg-red-50 rounded transition-colors"
+                className="ml-auto p-2 text-red-400 hover:bg-red-500/20 rounded transition-all"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -135,15 +135,15 @@ export const SheetOptimizerForm: React.FC<SheetOptimizerFormProps> = ({ onOptimi
       </div>
 
       {/* Arkusze materiału */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-zinc-700 rounded-lg shadow-xl p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Settings className="w-5 h-5" />
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-white">
+            <Settings className="w-5 h-5 text-green-500" />
             Dostępne arkusze
           </h3>
           <button
             onClick={addSheet}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Dodaj arkusz
@@ -152,35 +152,35 @@ export const SheetOptimizerForm: React.FC<SheetOptimizerFormProps> = ({ onOptimi
 
         <div className="space-y-3">
           {sheets.map((sheet, index) => (
-            <div key={sheet.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+            <div key={sheet.id} className="flex items-center gap-4 p-3 bg-zinc-800 rounded-lg">
               <input
                 type="text"
                 value={sheet.id}
                 readOnly
-                className="w-20 px-3 py-2 border rounded bg-gray-100"
+                className="w-20 px-3 py-2 bg-zinc-600 border border-zinc-600 rounded text-gray-300"
               />
               <div className="flex items-center gap-2">
                 <input
                   type="number"
                   value={sheet.width}
                   onChange={(e) => updateSheet(index, 'width', parseInt(e.target.value) || 0)}
-                  className="w-24 px-3 py-2 border rounded"
+                  className="w-24 px-3 py-2 bg-zinc-700 border border-zinc-600 rounded text-white"
                   placeholder="Szerokość"
                 />
-                <span>×</span>
+                <span className="text-gray-400">×</span>
                 <input
                   type="number"
                   value={sheet.height}
                   onChange={(e) => updateSheet(index, 'height', parseInt(e.target.value) || 0)}
-                  className="w-24 px-3 py-2 border rounded"
+                  className="w-24 px-3 py-2 bg-zinc-700 border border-zinc-600 rounded text-white"
                   placeholder="Wysokość"
                 />
-                <span className="text-gray-500">mm</span>
+                <span className="text-gray-400">mm</span>
               </div>
               {sheets.length > 1 && (
                 <button
                   onClick={() => removeSheet(index)}
-                  className="ml-auto p-2 text-red-500 hover:bg-red-50 rounded transition-colors"
+                  className="ml-auto p-2 text-red-400 hover:bg-red-500/20 rounded transition-all"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -194,8 +194,9 @@ export const SheetOptimizerForm: React.FC<SheetOptimizerFormProps> = ({ onOptimi
       <div className="flex justify-center">
         <button
           onClick={performOptimization}
-          className="px-8 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-lg font-semibold"
+          className="px-8 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all text-lg font-semibold flex items-center gap-2"
         >
+          <Calculator className="w-5 h-5" />
           Optymalizuj rozkrój
         </button>
       </div>
@@ -205,19 +206,19 @@ export const SheetOptimizerForm: React.FC<SheetOptimizerFormProps> = ({ onOptimi
         <>
           <CuttingVisualization plan={cuttingPlan} />
           
-          <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="bg-zinc-700 rounded-lg shadow-xl p-6">
             <button
               onClick={() => setShowInstructions(!showInstructions)}
-              className="w-full text-left font-semibold text-lg flex justify-between items-center"
+              className="w-full text-left font-semibold text-lg flex justify-between items-center text-white"
             >
               Instrukcje cięcia
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-400">
                 {showInstructions ? 'Ukryj' : 'Pokaż'}
               </span>
             </button>
             
             {showInstructions && (
-              <pre className="mt-4 p-4 bg-gray-100 rounded-lg text-sm overflow-x-auto">
+              <pre className="mt-4 p-4 bg-zinc-800 rounded-lg text-sm overflow-x-auto text-gray-300">
                 {sheetOptimizer.generateCuttingInstructions(cuttingPlan).join('\n')}
               </pre>
             )}
