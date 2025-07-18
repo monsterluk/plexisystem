@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, TrendingUp, Sparkles, Calculator, FileText, Lightbulb, BarChart, Target, Zap, RefreshCw, MessageSquare, ChevronRight, DollarSign, Percent, Clock, AlertCircle } from 'lucide-react';
+import { Brain, TrendingUp, Sparkles, Calculator, FileText, Lightbulb, BarChart, Target, Zap, RefreshCw, MessageSquare, ChevronRight, DollarSign, Percent, Clock, AlertCircle, Package, Grid, Maximize, Square, Plus, Trash2, RotateCcw, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { AIService } from '@/services/aiService';
 import { formatDate } from '@/utils/dateHelpers';
@@ -31,12 +31,100 @@ interface ProductDescription {
   tone: 'professional' | 'casual' | 'technical';
 }
 
+interface NestingPart {
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  quantity: number;
+  material: string;
+  thickness: number;
+  urgent?: boolean;
+}
+
+interface NestingResult {
+  sheetSize: { width: number; height: number };
+  efficiency: number;
+  wasteArea: number;
+  totalSheets: number;
+  partsLayout: { partId: string; x: number; y: number; rotation: number }[];
+  materialCost: number;
+  estimatedCutTime: number;
+}
+
 export function AIAssistant() {
-  const [activeTab, setActiveTab] = useState<'pricing' | 'conversion' | 'descriptions' | 'insights'>('pricing');
+  const [activeTab, setActiveTab] = useState<'pricing' | 'conversion' | 'descriptions' | 'insights' | 'nesting'>('pricing');
   const [loading, setLoading] = useState(false);
   const [priceSuggestions, setPriceSuggestions] = useState<PriceSuggestion[]>([]);
   const [conversionPredictions, setConversionPredictions] = useState<ConversionPrediction[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [nestingParts, setNestingParts] = useState<NestingPart[]>([]);
+  const [nestingResults, setNestingResults] = useState<NestingResult[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState({ width: 3050, height: 2050 });
+
+  // Dodaj część do nestingu
+  const addNestingPart = () => {
+    const newPart: NestingPart = {
+      id: `part_${Date.now()}`,
+      name: `Część ${nestingParts.length + 1}`,
+      width: 100,
+      height: 100,
+      quantity: 1,
+      material: 'PMMA 3mm',
+      thickness: 3,
+    };
+    setNestingParts([...nestingParts, newPart]);
+  };
+
+  // Usuń część
+  const removePart = (partId: string) => {
+    setNestingParts(nestingParts.filter(part => part.id !== partId));
+  };
+
+  // Aktualizuj część
+  const updatePart = (partId: string, field: keyof NestingPart, value: any) => {
+    setNestingParts(nestingParts.map(part => 
+      part.id === partId ? { ...part, [field]: value } : part
+    ));
+  };
+
+  // Uruchom analizę nestingu
+  const runNestingAnalysis = async () => {
+    if (nestingParts.length === 0) return;
+    
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Symulacja algorytmu nestingu
+    const totalArea = nestingParts.reduce((sum, part) => 
+      sum + (part.width * part.height * part.quantity), 0
+    );
+
+    const sheetArea = selectedSheet.width * selectedSheet.height;
+    const estimatedEfficiency = Math.min(85, 45 + (totalArea / sheetArea) * 40);
+    const wasteArea = sheetArea - (totalArea * (estimatedEfficiency / 100));
+    const totalSheets = Math.ceil(totalArea / (sheetArea * (estimatedEfficiency / 100)));
+
+    const result: NestingResult = {
+      sheetSize: selectedSheet,
+      efficiency: estimatedEfficiency,
+      wasteArea: wasteArea,
+      totalSheets: totalSheets,
+      partsLayout: nestingParts.flatMap(part => 
+        Array.from({ length: part.quantity }, (_, i) => ({
+          partId: `${part.id}_${i}`,
+          x: Math.random() * (selectedSheet.width - part.width),
+          y: Math.random() * (selectedSheet.height - part.height),
+          rotation: Math.random() > 0.7 ? 90 : 0
+        }))
+      ),
+      materialCost: totalSheets * 45 * ((selectedSheet.width * selectedSheet.height) / 1000000),
+      estimatedCutTime: totalArea / 15000 // cm²/min
+    };
+
+    setNestingResults([result]);
+    setLoading(false);
+  };
 
   // Symulacja AI - w rzeczywistości byłoby to API
   const generatePriceSuggestions = async () => {
@@ -139,6 +227,285 @@ export function AIAssistant() {
     
     setLoading(false);
   };
+
+  const renderNestingOptimizer = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">Optymalizator Nestingu AI</h3>
+          <p className="text-sm text-gray-500 mt-1">Inteligentne rozmieszczenie detali na arkuszu materiału</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={addNestingPart}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            Dodaj detal
+          </button>
+          <button
+            onClick={runNestingAnalysis}
+            disabled={loading || nestingParts.length === 0}
+            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all disabled:opacity-50"
+          >
+            {loading ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Calculator className="w-4 h-4" />
+            )}
+            Analizuj nesting
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Konfiguracja arkusza */}
+        <div className="bg-white rounded-lg border p-6">
+          <h4 className="font-medium text-gray-900 mb-4">Rozmiar arkusza</h4>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-sm text-gray-600">Szerokość (mm)</label>
+                <input
+                  type="number"
+                  value={selectedSheet.width}
+                  onChange={(e) => setSelectedSheet(prev => ({ ...prev, width: parseInt(e.target.value) || 0 }))}
+                  className="w-full mt-1 px-3 py-2 border rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">Wysokość (mm)</label>
+                <input
+                  type="number"
+                  value={selectedSheet.height}
+                  onChange={(e) => setSelectedSheet(prev => ({ ...prev, height: parseInt(e.target.value) || 0 }))}
+                  className="w-full mt-1 px-3 py-2 border rounded-lg"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-700">Rozmiary standardowe:</p>
+              {[
+                { width: 3050, height: 2050, label: 'PMMA Standard' },
+                { width: 2050, height: 3050, label: 'PMMA Pionowy' },
+                { width: 3050, height: 1530, label: 'Dibond Standard' },
+                { width: 2000, height: 1000, label: 'PETG Standard' }
+              ].map((size) => (
+                <button
+                  key={`${size.width}x${size.height}`}
+                  onClick={() => setSelectedSheet({ width: size.width, height: size.height })}
+                  className="w-full text-left text-sm p-2 rounded border hover:bg-gray-50 transition-colors"
+                >
+                  {size.label}: {size.width}×{size.height}mm
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Lista detali */}
+        <div className="bg-white rounded-lg border p-6">
+          <h4 className="font-medium text-gray-900 mb-4">Detale do zagnieżdżenia</h4>
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {nestingParts.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Package className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm">Dodaj detale aby rozpocząć</p>
+              </div>
+            ) : (
+              nestingParts.map((part) => (
+                <div key={part.id} className="border rounded-lg p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <input
+                      type="text"
+                      value={part.name}
+                      onChange={(e) => updatePart(part.id, 'name', e.target.value)}
+                      className="font-medium text-sm border-none p-0 focus:ring-0 bg-transparent"
+                    />
+                    <button
+                      onClick={() => removePart(part.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs text-gray-500">Szerokość</label>
+                      <input
+                        type="number"
+                        value={part.width}
+                        onChange={(e) => updatePart(part.id, 'width', parseInt(e.target.value) || 0)}
+                        className="w-full text-sm border rounded px-2 py-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500">Wysokość</label>
+                      <input
+                        type="number"
+                        value={part.height}
+                        onChange={(e) => updatePart(part.id, 'height', parseInt(e.target.value) || 0)}
+                        className="w-full text-sm border rounded px-2 py-1"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs text-gray-500">Ilość</label>
+                      <input
+                        type="number"
+                        value={part.quantity}
+                        min="1"
+                        onChange={(e) => updatePart(part.id, 'quantity', parseInt(e.target.value) || 1)}
+                        className="w-full text-sm border rounded px-2 py-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500">Grubość</label>
+                      <input
+                        type="number"
+                        value={part.thickness}
+                        onChange={(e) => updatePart(part.id, 'thickness', parseInt(e.target.value) || 0)}
+                        className="w-full text-sm border rounded px-2 py-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={part.urgent || false}
+                      onChange={(e) => updatePart(part.id, 'urgent', e.target.checked)}
+                      className="rounded"
+                    />
+                    <label className="text-xs text-gray-600">Priorytet</label>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Wyniki */}
+        <div className="bg-white rounded-lg border p-6">
+          <h4 className="font-medium text-gray-900 mb-4">Wyniki analizy</h4>
+          {nestingResults.length > 0 ? (
+            <div className="space-y-4">
+              {nestingResults.map((result, index) => (
+                <div key={index} className="space-y-3">
+                  {/* Podstawowe statystyki */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">
+                        {result.efficiency.toFixed(1)}%
+                      </div>
+                      <div className="text-xs text-green-700">Efektywność</div>
+                    </div>
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {result.totalSheets}
+                      </div>
+                      <div className="text-xs text-blue-700">Arkuszy</div>
+                    </div>
+                  </div>
+
+                  {/* Szczegóły */}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Powierzchnia odpadu:</span>
+                      <span className="font-medium">{(result.wasteArea / 10000).toFixed(2)} m²</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Koszt materiału:</span>
+                      <span className="font-medium">{result.materialCost.toFixed(0)} zł</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Czas cięcia:</span>
+                      <span className="font-medium">{(result.estimatedCutTime / 60).toFixed(1)} h</span>
+                    </div>
+                  </div>
+
+                  {/* Wizualizacja arkusza */}
+                  <div className="border rounded-lg p-3 bg-gray-50">
+                    <div className="text-xs text-gray-600 mb-2">Podgląd nestingu:</div>
+                    <div 
+                      className="relative border-2 border-gray-300 bg-white"
+                      style={{ 
+                        width: '100%', 
+                        height: '120px',
+                        aspectRatio: `${result.sheetSize.width} / ${result.sheetSize.height}`
+                      }}
+                    >
+                      {result.partsLayout.slice(0, 10).map((layout, i) => {
+                        const part = nestingParts.find(p => layout.partId.startsWith(p.id));
+                        if (!part) return null;
+                        
+                        const scaleX = 100 / result.sheetSize.width;
+                        const scaleY = 120 / result.sheetSize.height;
+                        
+                        return (
+                          <div
+                            key={layout.partId}
+                            className="absolute border border-blue-400 bg-blue-100 opacity-75"
+                            style={{
+                              left: `${layout.x * scaleX}%`,
+                              top: `${layout.y * scaleY}%`,
+                              width: `${part.width * scaleX}%`,
+                              height: `${part.height * scaleY}%`,
+                              transform: `rotate(${layout.rotation}deg)`,
+                              fontSize: '8px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            {part.name.substring(0, 3)}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <button className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center gap-2">
+                    <Download className="w-4 h-4" />
+                    Eksportuj układ
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <Grid className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+              <p className="text-sm">Uruchom analizę aby zobaczyć wyniki</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Wskazówki AI */}
+      {nestingResults.length > 0 && (
+        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6">
+          <h4 className="font-medium text-orange-900 mb-3 flex items-center gap-2">
+            <Lightbulb className="w-5 h-5" />
+            Sugestie optymalizacji AI
+          </h4>
+          <div className="space-y-2 text-sm text-orange-800">
+            {nestingResults[0].efficiency < 70 && (
+              <p>• Niska efektywność - rozważ zmianę orientacji detali lub podział na mniejsze partie</p>
+            )}
+            {nestingResults[0].efficiency > 85 && (
+              <p>• Doskonała efektywność - układ jest optymalny!</p>
+            )}
+            <p>• Dodanie 2mm marginesu między detalami zwiększy bezpieczeństwo cięcia</p>
+            <p>• Priorytetowe detale zostały umieszczone w pierwszej kolejności</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   const renderPricingSuggestions = () => (
     <div className="space-y-6">
@@ -488,6 +855,7 @@ export function AIAssistant() {
               { id: 'pricing', label: 'Sugestie cenowe', icon: Calculator },
               { id: 'conversion', label: 'Przewidywanie konwersji', icon: Target },
               { id: 'descriptions', label: 'Generator opisów', icon: FileText },
+              { id: 'nesting', label: 'Optymalizator Nestingu', icon: Grid },
               { id: 'insights', label: 'Insights', icon: Lightbulb }
             ].map((tab) => (
               <button
@@ -512,6 +880,7 @@ export function AIAssistant() {
         {activeTab === 'pricing' && renderPricingSuggestions()}
         {activeTab === 'conversion' && renderConversionPredictions()}
         {activeTab === 'descriptions' && renderDescriptionGenerator()}
+        {activeTab === 'nesting' && renderNestingOptimizer()}
         {activeTab === 'insights' && renderInsights()}
       </div>
     </div>

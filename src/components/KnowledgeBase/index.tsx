@@ -3,7 +3,8 @@ import MillingGuide from './MillingGuide';
 import MaterialsGuide from './MaterialsGuide';
 import ProductsGuide from './ProductsGuide';
 import SalesGuide from './SalesGuide';
-import { BookOpen, Wrench, Layers, Package, Briefcase } from 'lucide-react';
+import SheetFormatsGuide from './SheetFormatsGuide';
+import { BookOpen, Wrench, Layers, Package, Briefcase, Ruler } from 'lucide-react';
 
 const KnowledgeBase: React.FC = () => {
   const [activeTab, setActiveTab] = useState('milling');
@@ -26,6 +27,12 @@ const KnowledgeBase: React.FC = () => {
       label: 'Tworzywa',
       icon: <Layers className="w-5 h-5" />,
       component: <MaterialsGuide />
+    },
+    {
+      id: 'formats',
+      label: 'Formaty Arkuszy',
+      icon: <Ruler className="w-5 h-5" />,
+      component: <SheetFormatsGuide />
     },
     {
       id: 'products',
