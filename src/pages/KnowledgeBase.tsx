@@ -4,7 +4,7 @@ import {
   Book, Search, ChevronRight, FileText, Video, HelpCircle, 
   Lightbulb, Users, Settings, Package, Calculator, Zap,
   Shield, Award, Clock, Eye, ThumbsUp, MessageCircle,
-  BookOpen, GraduationCap, Code, Layers, X
+  BookOpen, GraduationCap, Code, Layers, X, AlertCircle, Activity, Sparkles
 } from 'lucide-react';
 import { PageWrapper, Card, SectionTitle, EmptyState } from '@/components/ui/PageWrapper';
 import { Button } from '@/components/ui/Button';
@@ -135,6 +135,84 @@ const articles: Article[] = [
     tags: ['GUS', 'integracja', 'klienci'],
     author: 'IT Support',
     date: '2024-01-05'
+  },
+  {
+    id: '5',
+    title: 'Marketplace - jak efektywnie korzystać',
+    excerpt: 'Wykorzystaj gotowe szablony produktów z Marketplace do szybszego tworzenia ofert. Oszczędź nawet 70% czasu.',
+    category: 'best-practices',
+    readTime: '7 min',
+    views: 789,
+    helpful: 92,
+    icon: <Sparkles className="w-5 h-5" />,
+    tags: ['marketplace', 'szablony', 'produktywność'],
+    author: 'Product Manager',
+    date: '2024-02-01'
+  },
+  {
+    id: '6',
+    title: 'Konfiguracja ekspozytorów krok po kroku',
+    excerpt: 'Naucz się prawidłowo konfigurować ekspozytory: wybór typu, materiału, wymiarów i dodatków.',
+    category: 'products',
+    readTime: '10 min',
+    views: 645,
+    helpful: 78,
+    icon: <Package className="w-5 h-5" />,
+    tags: ['ekspozytory', 'konfiguracja', 'produkty'],
+    author: 'Specjalista ds. Produktów',
+    date: '2024-01-20'
+  },
+  {
+    id: '7',
+    title: 'Zarządzanie zespołem w PlexiSystem',
+    excerpt: 'Jak dodawać użytkowników, przypisywać role i uprawnienia oraz monitorować aktywność zespołu.',
+    category: 'best-practices',
+    readTime: '5 min',
+    views: 312,
+    helpful: 28,
+    icon: <Users className="w-5 h-5" />,
+    tags: ['zespół', 'użytkownicy', 'uprawnienia'],
+    author: 'HR Manager',
+    date: '2024-01-25'
+  },
+  {
+    id: '8',
+    title: 'Analiza raportów sprzedażowych',
+    excerpt: 'Jak czytać i interpretować raporty sprzedażowe. Kluczowe wskaźniki KPI i ich znaczenie.',
+    category: 'best-practices',
+    readTime: '9 min',
+    views: 534,
+    helpful: 61,
+    icon: <Activity className="w-5 h-5" />,
+    tags: ['raporty', 'analiza', 'KPI'],
+    author: 'Sales Director',
+    date: '2024-02-05'
+  },
+  {
+    id: '9',
+    title: 'Problem: Oferta nie generuje się do PDF',
+    excerpt: 'Rozwiązania najczęstszych problemów z generowaniem PDF: brakujące dane, błędy formatowania.',
+    category: 'troubleshooting',
+    readTime: '3 min',
+    views: 234,
+    helpful: 156,
+    icon: <AlertCircle className="w-5 h-5" />,
+    tags: ['PDF', 'błędy', 'rozwiązywanie'],
+    author: 'Support Team',
+    date: '2024-02-10'
+  },
+  {
+    id: '10',
+    title: 'API PlexiSystem - wprowadzenie',
+    excerpt: 'Podstawy integracji z API PlexiSystem. Autoryzacja, endpoints i przykłady użycia.',
+    category: 'advanced',
+    readTime: '12 min',
+    views: 189,
+    helpful: 23,
+    icon: <Code className="w-5 h-5" />,
+    tags: ['API', 'integracja', 'programowanie'],
+    author: 'Dev Team',
+    date: '2024-02-12'
   }
 ];
 

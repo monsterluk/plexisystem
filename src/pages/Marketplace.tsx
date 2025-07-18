@@ -201,14 +201,14 @@ const generateMarketplaceItems = (): MarketplaceItem[] => {
 const marketplaceItems = generateMarketplaceItems();
 
 const categories = [
-  { id: 'all', name: 'Wszystkie', icon: <Package />, count: marketplaceItems.length },
-  { id: 'ekspozytor', name: 'Ekspozytory', icon: productTypes.find(p => p.id === 'ekspozytor')?.icon || <Layers />, count: marketplaceItems.filter(i => i.category === 'ekspozytor').length },
-  { id: 'kaseton', name: 'Kasetony', icon: productTypes.find(p => p.id === 'kaseton')?.icon || <Zap />, count: marketplaceItems.filter(i => i.category === 'kaseton').length },
-  { id: 'pojemnik', name: 'Organizery', icon: productTypes.find(p => p.id === 'pojemnik')?.icon || <Package />, count: marketplaceItems.filter(i => i.category === 'pojemnik').length },
-  { id: 'ledon', name: 'Neony LED', icon: productTypes.find(p => p.id === 'ledon')?.icon || <Zap />, count: marketplaceItems.filter(i => i.category === 'ledon').length },
-  { id: 'gablota', name: 'Gabloty', icon: productTypes.find(p => p.id === 'gablota')?.icon || <Award />, count: marketplaceItems.filter(i => i.category === 'gablota').length },
-  { id: 'obudowa', name: 'Osłony', icon: productTypes.find(p => p.id === 'obudowa')?.icon || <Sparkles />, count: marketplaceItems.filter(i => i.category === 'obudowa').length },
-  { id: 'impuls', name: 'Impulsy', icon: productTypes.find(p => p.id === 'impuls')?.icon || <ShoppingCart />, count: marketplaceItems.filter(i => i.category === 'impuls').length }
+  { id: 'all', name: 'Wszystkie', icon: Package, count: marketplaceItems.length },
+  { id: 'ekspozytor', name: 'Ekspozytory', icon: productTypes.find(p => p.id === 'ekspozytor')?.icon || Layers, count: marketplaceItems.filter(i => i.category === 'ekspozytor').length },
+  { id: 'kaseton', name: 'Kasetony', icon: productTypes.find(p => p.id === 'kaseton')?.icon || Zap, count: marketplaceItems.filter(i => i.category === 'kaseton').length },
+  { id: 'pojemnik', name: 'Organizery', icon: productTypes.find(p => p.id === 'pojemnik')?.icon || Package, count: marketplaceItems.filter(i => i.category === 'pojemnik').length },
+  { id: 'ledon', name: 'Neony LED', icon: productTypes.find(p => p.id === 'ledon')?.icon || Zap, count: marketplaceItems.filter(i => i.category === 'ledon').length },
+  { id: 'gablota', name: 'Gabloty', icon: productTypes.find(p => p.id === 'gablota')?.icon || Award, count: marketplaceItems.filter(i => i.category === 'gablota').length },
+  { id: 'obudowa', name: 'Osłony', icon: productTypes.find(p => p.id === 'obudowa')?.icon || Sparkles, count: marketplaceItems.filter(i => i.category === 'obudowa').length },
+  { id: 'impuls', name: 'Impulsy', icon: productTypes.find(p => p.id === 'impuls')?.icon || ShoppingCart, count: marketplaceItems.filter(i => i.category === 'impuls').length }
 ];
 
 export function Marketplace() {
@@ -319,7 +319,7 @@ export function Marketplace() {
                     : 'bg-zinc-800/50 hover:bg-zinc-800/70 text-gray-300'
                 }`}
               >
-                {React.cloneElement(Icon as React.ReactElement, { className: "w-4 h-4" })}
+                <Icon className="w-4 h-4" />
                 <span>{category.name}</span>
                 <span className="text-sm opacity-70">({category.count})</span>
               </motion.button>
@@ -476,7 +476,7 @@ export function Marketplace() {
                       </div>
                     )}
                     <div className="absolute top-2 left-2 p-2 bg-black/50 backdrop-blur rounded-lg">
-                      {React.cloneElement(Icon as React.ReactElement, { className: "w-5 h-5 text-white" })}
+                      <Icon className="w-5 h-5 text-white" />
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end p-4">
                       <p className="text-white text-sm">{item.description}</p>
