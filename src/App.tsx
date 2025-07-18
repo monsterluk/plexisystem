@@ -11,6 +11,7 @@ import { OfferAcceptance } from '@/pages/OfferAcceptance';
 import { PublicOffer } from '@/pages/PublicOffer';
 import { ClientPanel } from '@/pages/ClientPanel';
 import { Calculator as CalculatorPage } from '@/components/quotation/Calculator';
+import { ProductionPage } from '@/pages/ProductionPage';
 import Dashboard from './Dashboard';
 import { salespeople } from '@/constants/materials';
 import { ClientsPage } from '@/pages/ClientsPage';
@@ -152,6 +153,13 @@ const AppContent: React.FC = () => {
                     >
                       <Package className="w-4 h-4" />
                       Produkty
+                    </a>
+                    <a
+                      href="/production"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 whitespace-nowrap"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Produkcja
                     </a>
                     <a
                       href="/reports"
@@ -416,6 +424,14 @@ const AppContent: React.FC = () => {
                   Produkty
                 </a>
                 <a
+                  href="/production"
+                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  <Settings className="w-4 h-4" />
+                  Produkcja
+                </a>
+                <a
                   href="/reports"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
                   onClick={() => setShowMobileMenu(false)}
@@ -476,6 +492,7 @@ const AppContent: React.FC = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/clients" element={<ClientsPage />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/production" element={<ProductionPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/ai" element={<AIAssistant />} />
               <Route path="/knowledge" element={<KnowledgeBase />} />
