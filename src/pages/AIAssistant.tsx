@@ -116,15 +116,23 @@ export function AIAssistant() {
     setLoading(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Symulacja algorytmu nestingu
-    const totalArea = nestingParts.reduce((sum, part) => 
-      sum + (part.width * part.height * part.quantity), 0
+    // Obliczanie powierzchni z uwzględnieniem marginesu cięcia (5mm)
+    const cuttingMargin = 5; // margines cięcia w mm
+    const totalPartsArea = nestingParts.reduce((sum, part) => 
+      sum + ((part.width + cuttingMargin * 2) * (part.height + cuttingMargin * 2) * part.quantity), 0
     );
 
     const sheetArea = selectedSheet.width * selectedSheet.height;
-    const estimatedEfficiency = Math.min(85, 45 + (totalArea / sheetArea) * 40);
-    const wasteArea = sheetArea - (totalArea * (estimatedEfficiency / 100));
-    const totalSheets = Math.ceil(totalArea / (sheetArea * (estimatedEfficiency / 100)));
+    
+    // Realistyczna efektywność (70-85% w zależności od wypełnienia)
+    const fillRatio = totalPartsArea / sheetArea;
+    const estimatedEfficiency = Math.min(85, Math.max(50, 70 + fillRatio * 15));
+    
+    // Rzeczywista powierzchnia użyta (z marginesami)
+    const usedArea = totalPartsArea;
+    const totalSheets = Math.ceil(usedArea / (sheetArea * (estimatedEfficiency / 100)));
+    const totalUsedSheetArea = totalSheets * sheetArea;
+    const wasteArea = totalUsedSheetArea - totalPartsArea;
 
     const result: NestingResult = {
       sheetSize: selectedSheet,
@@ -134,13 +142,13 @@ export function AIAssistant() {
       partsLayout: nestingParts.flatMap(part => 
         Array.from({ length: part.quantity }, (_, i) => ({
           partId: `${part.id}_${i}`,
-          x: Math.random() * (selectedSheet.width - part.width),
-          y: Math.random() * (selectedSheet.height - part.height),
+          x: Math.random() * Math.max(0, selectedSheet.width - part.width - cuttingMargin * 2),
+          y: Math.random() * Math.max(0, selectedSheet.height - part.height - cuttingMargin * 2),
           rotation: Math.random() > 0.7 ? 90 : 0
         }))
       ),
       materialCost: totalSheets * 45 * ((selectedSheet.width * selectedSheet.height) / 1000000),
-      estimatedCutTime: totalArea / 15000 // cm²/min
+      estimatedCutTime: (totalPartsArea / 100) / 150 // mm²/min -> min
     };
 
     setNestingResults([result]);
@@ -497,8 +505,12 @@ export function AIAssistant() {
                   {/* Szczegóły */}
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
+                      <span className="text-gray-400">Powierzchnia arkusza:</span>
+                      <span className="font-medium text-gray-200">{(result.sheetSize.width * result.sheetSize.height / 1000000).toFixed(3)} m²</span>
+                    </div>
+                    <div className="flex justify-between">
                       <span className="text-gray-400">Powierzchnia odpadu:</span>
-                      <span className="font-medium text-gray-200">{(result.wasteArea / 10000).toFixed(2)} m²</span>
+                      <span className="font-medium text-gray-200">{(result.wasteArea / 1000000).toFixed(3)} m²</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Koszt materiału:</span>
@@ -506,7 +518,7 @@ export function AIAssistant() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Czas cięcia:</span>
-                      <span className="font-medium text-gray-200">{(result.estimatedCutTime / 60).toFixed(1)} h</span>
+                      <span className="font-medium text-gray-200">{result.estimatedCutTime.toFixed(1)} min</span>
                     </div>
                   </div>
 
@@ -576,13 +588,14 @@ export function AIAssistant() {
           </h4>
           <div className="space-y-2 text-sm text-orange-200">
             {nestingResults[0].efficiency < 70 && (
-              <p>• Niska efektywność - rozważ zmianę orientacji detali lub podział na mniejsze partie</p>
+              <p>• Niska efektywność ({nestingResults[0].efficiency.toFixed(1)}%) - rozważ zmianę orientacji detali lub podział na mniejsze partie</p>
             )}
             {nestingResults[0].efficiency > 85 && (
-              <p>• Doskonała efektywność - układ jest optymalny!</p>
+              <p>• Doskonała efektywność ({nestingResults[0].efficiency.toFixed(1)}%) - układ jest optymalny!</p>
             )}
-            <p>• Dodanie 2mm marginesu między detalami zwiększy bezpieczeństwo cięcia</p>
-            <p>• Priorytetowe detale zostały umieszczone w pierwszej kolejności</p>
+            <p>• Zastosowano 5mm margines bezpieczeństwa między detalami</p>
+            <p>• Odpad wynosi {((nestingResults[0].wasteArea / (nestingResults[0].totalSheets * nestingResults[0].sheetSize.width * nestingResults[0].sheetSize.height)) * 100).toFixed(1)}% całkowitej powierzchni</p>
+            <p>• Przy większej liczbie detali efektywność może wzrosnąć</p>
           </div>
         </div>
       )}
