@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react';
-import { Download, FileCode, File3d, FileImage, Layers } from 'lucide-react';
+import { Download, FileCode, Box, FileImage, Layers } from 'lucide-react';
 import { CalculatorItem } from '@/types/Offer';
 import { cadExporter } from '@/services/cad/cadExporter';
 
@@ -22,7 +22,7 @@ export const CADExport: React.FC<CADExportProps> = ({ item }) => {
     {
       format: 'step',
       name: 'STEP (3D)',
-      icon: File3d,
+      icon: Box,
       description: 'Do SolidWorks, Fusion 360',
       color: 'green'
     },
