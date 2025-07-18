@@ -112,7 +112,7 @@ Ilość: ${item.quantity} szt.
     return translations[type] || type;
   }
 
-  private generateFallbackDescription(item: CalculatorItem): string {
+  generateFallbackDescription(item: CalculatorItem): string {
     const options = Object.entries(item.options)
       .filter(([_, selected]) => selected)
       .map(([option]) => this.translateOption(option))
@@ -147,3 +147,8 @@ Ilość: ${item.quantity} szt.
 }
 
 export const productDescriptionGenerator = new ProductDescriptionGenerator();
+
+// Eksportuj też metodę fallback dla użycia w komponentach
+export const generateFallbackDescription = (item: CalculatorItem) => {
+  return productDescriptionGenerator.generateFallbackDescription(item);
+};
