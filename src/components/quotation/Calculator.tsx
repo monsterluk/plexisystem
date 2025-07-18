@@ -26,6 +26,94 @@ export const Calculator: React.FC<CalculatorProps> = ({ onAddToOffer, viewMode =
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, boolean>>({});
   const [optionQuantities, setOptionQuantities] = useState<Record<string, number>>({});
+  const [presetName, setPresetName] = useState<string>('');
+
+  // Sprawdź czy są dane z Marketplace
+  useEffect(() => {
+    const presetData = localStorage.getItem('calculatorPreset');
+    if (presetData) {
+      try {
+        const data = JSON.parse(presetData);
+        
+        // Mapowanie typu kalkulatora na typ produktu
+        const productTypeMap: Record<string, string> = {
+          'standard': 'formatka',
+          'display': 'ekspozytor',
+          'organizer': 'pojemnik',
+          'shield': 'obudowa',
+          'signage': 'kaseton'
+        };
+        
+        const mappedProduct = productTypeMap[data.productType] || data.productType;
+        setSelectedProduct(mappedProduct);
+        setPresetName(data.name || '');
+        
+        if (data.dimensions) {
+          setDimensions({
+            width: data.dimensions.width || 300,
+            height: data.dimensions.height || 200,
+            depth: data.dimensions.depth || 150
+          });
+        }
+        
+        // Ustaw domyślny materiał na podstawie typu produktu
+        if (data.materials && data.materials.length > 0) {
+          const materialMap: Record<string, string> = {
+            'PMMA 3mm': 'plexi',
+            'PMMA 5mm': 'plexi',
+            'PMMA 3mm satynowa': 'plexi_satyna',
+            'PMMA 5mm crystal clear': 'plexi',
+            'PMMA 5mm opal': 'plexi_opal',
+            'PMMA 8mm crystal clear': 'plexi',
+            'PMMA 4mm': 'plexi',
+            'PETG 3mm': 'petg',
+            'PETG 4mm': 'petg',
+            'Poliwęglan 5mm': 'poliweg',
+            'Poliwęglan 8mm': 'poliweg',
+            'Dibond 3mm': 'dibond',
+            'Dibond szczotkowany 3mm': 'dibond'
+          };
+          
+          const material = data.materials[0];
+          const mappedMaterial = materialMap[material] || 'plexi';
+          setSelectedMaterial(mappedMaterial);
+          
+          // Ustaw grubość na podstawie materiału
+          const thicknessMatch = material.match(/\d+mm/);
+          if (thicknessMatch) {
+            const thicknessValue = parseInt(thicknessMatch[0]);
+            setThickness(thicknessValue);
+          }
+        }
+        
+        // Ustaw złożoność jako opcję
+        if (data.complexity) {
+          const complexityMap: Record<string, number> = {
+            'Proste': 1,
+            'Średnie': 2,
+            'Złożone': 3
+          };
+          // Tu możesz dodać logikę dla złożoności jeśli potrzebujesz
+        }
+        
+        // Wyczyść dane z localStorage po użyciu
+        localStorage.removeItem('calculatorPreset');
+        
+        // Pokaż powiadomienie
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-xl z-50 animate-slide-in';
+        notification.textContent = `Załadowano dane z Marketplace: ${data.name}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.remove();
+        }, 3000);
+        
+      } catch (error) {
+        console.error('Błąd ładowania danych z Marketplace:', error);
+      }
+    }
+  }, []);
 
   const [productParams, setProductParams] = useState<ProductParams>({
     shelves: 3,
@@ -613,6 +701,14 @@ export const Calculator: React.FC<CalculatorProps> = ({ onAddToOffer, viewMode =
 
   return (
     <div className="space-y-8">
+      {/* Informacja o załadowanym projekcie */}
+      {presetName && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-4 mb-6">
+          <p className="text-white font-medium">🎯 Załadowano projekt z Marketplace: <span className="font-bold">{presetName}</span></p>
+          <p className="text-white/80 text-sm mt-1">Dane zostały automatycznie wypełnione. Możesz je modyfikować według potrzeb.</p>
+        </div>
+      )}
+
       {/* Wybór produktu */}
       <div>
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">

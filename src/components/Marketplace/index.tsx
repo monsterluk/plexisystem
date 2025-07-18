@@ -744,6 +744,188 @@ const Marketplace: React.FC = () => {
         {/* Products Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map(project => (
+            <div key={project.id} className="group bg-zinc-800/50 backdrop-blur-xl rounded-3xl overflow-hidden border border-zinc-700/50 hover:border-purple-500/50 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-2">
+              {/* Image/Icon */}
+              <div className="relative h-72 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
+                {project.icon}
+                {project.bestseller && (
+                  <div className="absolute top-4 left-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white text-xs font-bold px-4 py-2 rounded-full flex items-center shadow-xl animate-pulse">
+                    <Award className="w-3 h-3 mr-1" />
+                    BESTSELLER
+                  </div>
+                )}
+                <button
+                  onClick={() => toggleFavorite(project.id)}
+                  className="absolute top-4 right-4 p-3 bg-black/40 backdrop-blur-sm rounded-full hover:bg-black/60 transition-all group-hover:scale-110"
+                >
+                  <Heart 
+                    className={`w-5 h-5 transition-all ${
+                      favorites.includes(project.id) 
+                        ? 'fill-red-500 text-red-500 scale-110' 
+                        : 'text-white hover:text-red-400'
+                    }`} 
+                  />
+                </button>
+                
+                {/* Complexity badge */}
+                <div className={`absolute bottom-4 left-4 px-4 py-2 rounded-full text-xs font-bold border ${getComplexityColor(project.complexity)} backdrop-blur-sm`}>
+                  {project.complexity}
+                </div>
+                
+                {/* Rating */}
+                <div className="absolute bottom-4 right-4 flex items-center space-x-2 bg-black/40 backdrop-blur-sm px-3 py-2 rounded-full">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <span className="text-white text-sm font-bold">{project.rating}</span>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-8">
+                <div className="mb-4">
+                  <h3 className="text-white font-bold text-xl leading-tight mb-2 group-hover:text-purple-200 transition-colors">{project.name}</h3>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                    {project.priceRange}
+                  </span>
+                  <span className="text-gray-500 text-sm ml-2">({project.soldCount} realizacji)</span>
+                </div>
+
+                {/* Short Description */}
+                <p className="text-gray-300 text-sm mb-6 leading-relaxed">{project.shortDescription}</p>
+
+                {/* Key Features */}
+                <div className="mb-6">
+                  <p className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider">Kluczowe cechy</p>
+                  <div className="space-y-2">
+                    {project.features.slice(0, 3).map((feature, index) => (
+                      <div key={index} className="flex items-center text-sm text-gray-300">
+                        <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mr-3 flex-shrink-0" />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Applications */}
+                <div className="mb-6">
+                  <p className="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider">Zastosowania</p>
+                  <div className="flex flex-wrap gap-2">
+                    {project.applications.slice(0, 2).map((app, index) => (
+                      <span key={index} className="px-3 py-1 bg-blue-900/30 border border-blue-700/30 text-blue-300 text-xs rounded-lg font-medium">
+                        {app}
+                      </span>
+                    ))}
+                    {project.applications.length > 2 && (
+                      <span className="px-3 py-1 bg-gray-700/50 border border-gray-600/50 text-gray-400 text-xs rounded-lg">
+                        +{project.applications.length - 2} więcej
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Materials & Dimensions */}
+                <div className="mb-6 p-4 bg-zinc-900/50 rounded-xl border border-zinc-700/30">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <div className="flex items-center gap-2 text-gray-400 mb-2">
+                        <Layers className="w-4 h-4" />
+                        <span className="font-medium">Materiał</span>
+                      </div>
+                      <p className="text-blue-300 font-medium">{project.materials[0]}</p>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 text-gray-400 mb-2">
+                        <Ruler className="w-4 h-4" />
+                        <span className="font-medium">Wymiary</span>
+                      </div>
+                      <p className="text-emerald-300 font-medium">
+                        {project.defaultDimensions.width}×{project.defaultDimensions.height}×{project.defaultDimensions.depth}mm
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delivery Time & Customization */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center text-sm text-gray-400">
+                    <Clock className="w-4 h-4 mr-2" />
+                    <span className="font-medium">Realizacja: {project.deliveryDays} dni</span>
+                  </div>
+                  {project.customizable && (
+                    <span className="text-xs text-purple-400 bg-purple-900/30 border border-purple-700/30 px-3 py-1 rounded-lg font-medium">
+                      Personalizacja ✨
+                    </span>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="space-y-3">
+                  <button 
+                    onClick={() => goToCalculator(project)}
+                    className="w-full bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:from-purple-700 hover:via-violet-700 hover:to-purple-700 text-white py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center font-bold shadow-xl shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-105 group"
+                  >
+                    <Calculator className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
+                    Przejdź do kalkulatora
+                    <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <button className="bg-zinc-700/50 text-gray-300 py-3 px-4 rounded-xl hover:bg-zinc-600/50 hover:text-white transition-all flex items-center justify-center border border-zinc-600/50">
+                      <Eye className="w-4 h-4 mr-2" />
+                      <span className="font-medium">Szczegóły</span>
+                    </button>
+                    <button className="bg-zinc-700/50 text-gray-300 py-3 px-4 rounded-xl hover:bg-zinc-600/50 hover:text-white transition-all flex items-center justify-center border border-zinc-600/50">
+                      <Edit className="w-4 h-4 mr-2" />
+                      <span className="font-medium">Dostosuj</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Empty state */}
+        {filteredProjects.length === 0 && (
+          <div className="text-center py-20">
+            <div className="w-24 h-24 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Package className="w-12 h-12 text-gray-400" />
+            </div>
+            <p className="text-gray-400 text-xl mb-4">Nie znaleziono projektów spełniających kryteria</p>
+            <button 
+              onClick={() => {
+                setSelectedCategory('all');
+                setSearchTerm('');
+                setSelectedComplexity('all');
+              }}
+              className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+            >
+              Wyczyść wszystkie filtry →
+            </button>
+          </div>
+        )}
+
+        {/* CTA Section */}
+        <div className="mt-20 bg-gradient-to-r from-purple-900/50 via-violet-900/50 to-indigo-900/50 backdrop-blur-xl rounded-3xl p-12 text-center border border-purple-500/20 relative overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-pink-500/10 rounded-full blur-3xl" />
+          <div className="relative">
+            <h2 className="text-4xl font-bold text-white mb-6">
+              Potrzebujesz projektu na wymiar?
+            </h2>
+            <p className="text-gray-300 text-lg mb-8 max-w-3xl mx-auto leading-relaxed">
+              Nasz zespół inżynierów przygotuje dla Ciebie dedykowany projekt z pełną dokumentacją techniczną i specyfikacją materiałów.
+            </p>
+            <button className="bg-white text-purple-900 px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:scale-105">
+              Zapytaj o projekt indywidualny →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Marketplace;(project => (
             <div key={project.id} className="bg-zinc-800 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-zinc-700 hover:border-purple-500/50">
               {/* Image/Icon */}
               <div className="relative h-64 bg-white">
