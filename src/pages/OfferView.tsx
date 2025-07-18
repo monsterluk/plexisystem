@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Check, FileText, Send, ExternalLink, Trash2, Lock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { 
+  Check, FileText, Send, ExternalLink, Trash2, Lock, 
+  ArrowLeft, Package, Calculator as CalculatorIcon, 
+  FileSignature, Truck, Settings, Save, Mail, Link2,
+  AlertCircle, User, Calendar, Tag
+} from 'lucide-react';
 import { Offer, CalculatorItem, CustomProduct, OfferItemExtended } from '@/types/Offer';
 import { saveOffer, getOffer } from '@/api/quotations';
 import { generatePDF } from '@/utils/generatePDF';
@@ -14,6 +20,7 @@ import { ItemSummary } from '@/components/quotation/ItemSummary';
 import { CustomProductForm } from '@/components/quotation/CustomProductForm';
 import { OfferSummary } from '@/components/offer/OfferSummary';
 import { Button } from '@/components/ui/Button';
+import { PageWrapper, Card, SectionTitle, LoadingState, EmptyState } from '@/components/ui/PageWrapper';
 
 export const OfferView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +31,7 @@ export const OfferView: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const [viewMode, setViewMode] = useState<'salesperson' | 'client'>('salesperson');
+  const [activeTab, setActiveTab] = useState<'calculator' | 'custom'>('calculator');
 
   // Funkcje pomocnicze do aktualizacji
   const updateOfferField = (field: string, value: any) => {
@@ -295,250 +303,359 @@ export const OfferView: React.FC = () => {
     }
   };
 
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      draft: { bg: 'bg-gray-500/20', text: 'text-gray-400', border: 'border-gray-500/30', label: 'Szkic' },
+      sent: { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: 'Wysłana' },
+      accepted: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30', label: 'Zaakceptowana' },
+      rejected: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30', label: 'Odrzucona' },
+    };
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
+    
+    return (
+      <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.bg} ${config.text} border ${config.border}`}>
+        {config.label}
+      </span>
+    );
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-      </div>
+      <PageWrapper>
+        <LoadingState />
+      </PageWrapper>
     );
   }
 
   if (!currentOffer) {
-    return <div>Nie znaleziono oferty</div>;
+    return (
+      <PageWrapper>
+        <EmptyState
+          icon={<AlertCircle className="w-12 h-12" />}
+          title="Nie znaleziono oferty"
+          description="Oferta, którą próbujesz otworzyć, nie istnieje"
+          action={
+            <Button onClick={() => navigate('/')} variant="primary">
+              <ArrowLeft className="w-5 h-5" />
+              Wróć do listy ofert
+            </Button>
+          }
+        />
+      </PageWrapper>
+    );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Nagłówek */}
-      <div className="bg-zinc-800 rounded-xl p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">
-              {id === 'new' ? 'Nowa oferta' : `Edycja oferty ${currentOffer.number}`}
-            </h2>
-            <p className="text-gray-400">Data: {currentOffer.date}</p>
-            {currentOffer.shareLink && (
-              <p className="text-sm text-gray-500 mt-1">
-                Status: <span className={`font-medium ${
-                  currentOffer.status === 'sent' ? 'text-green-500' : 
-                  currentOffer.status === 'accepted' ? 'text-blue-500' : 
-                  'text-yellow-500'
-                }`}>
-                  {currentOffer.status === 'draft' ? 'Szkic' :
-                   currentOffer.status === 'sent' ? 'Wysłana' :
-                   currentOffer.status === 'accepted' ? 'Zaakceptowana' :
-                   'Odrzucona'}
-                </span>
-              </p>
-            )}
+    <PageWrapper>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="space-y-6"
+      >
+        {/* Header */}
+        <Card className="p-6" gradient>
+          <div className="flex justify-between items-start">
+            <div className="space-y-4 flex-1">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => navigate('/')}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div>
+                  <h1 className="text-3xl font-bold text-white">
+                    {id === 'new' ? 'Nowa oferta' : `Oferta ${currentOffer.number}`}
+                  </h1>
+                  <div className="flex items-center gap-4 mt-2">
+                    <span className="text-gray-400 flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      {currentOffer.date}
+                    </span>
+                    {currentOffer.shareLink && getStatusBadge(currentOffer.status)}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Project Name */}
+              <div className="max-w-md">
+                <label htmlFor="project-name" className="block text-sm font-medium mb-2 text-gray-400">
+                  <Tag className="w-4 h-4 inline mr-1" />
+                  Nazwa projektu
+                </label>
+                <input
+                  id="project-name"
+                  name="projectName"
+                  type="text"
+                  value={currentOffer.projectName || ''}
+                  onChange={(e) => updateOfferField('projectName', e.target.value)}
+                  placeholder="np. Ekspozytory targowe 2025"
+                  className="w-full bg-white/10 backdrop-blur rounded-xl px-4 py-2.5 text-white border border-white/20 focus:border-purple-500 focus:outline-none transition-all placeholder-gray-500"
+                />
+              </div>
+            </div>
+            
+            {/* Salesperson Info */}
+            <div className="text-right bg-white/5 rounded-xl p-4">
+              <p className="text-sm text-gray-400 mb-1">Handlowiec</p>
+              <p className="font-semibold text-white">{currentOffer.salesperson.name}</p>
+              <p className="text-sm text-gray-400">{currentOffer.salesperson.phone}</p>
+              {currentUser.role === 'admin' && currentOffer.salesperson.id !== currentUser.id && (
+                <p className="text-xs text-yellow-400 mt-2 flex items-center justify-end gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  Oferta innego handlowca
+                </p>
+              )}
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-gray-400">Handlowiec</p>
-            <p className="font-medium">{currentOffer.salesperson.name}</p>
-            <p className="text-sm text-gray-400">{currentOffer.salesperson.phone}</p>
-            {currentUser.role === 'admin' && currentOffer.salesperson.id !== currentUser.id && (
-              <p className="text-xs text-yellow-400 mt-1">⚠️ Oferta innego handlowca</p>
-            )}
-          </div>
-        </div>
+        </Card>
 
-        {/* Nazwa projektu */}
-        <div className="mt-4">
-          <label htmlFor="project-name" className="block text-sm font-medium mb-2 text-gray-400">
-            Nazwa projektu
-          </label>
-          <input
-            id="project-name"
-            name="projectName"
-            type="text"
-            value={currentOffer.projectName || ''}
-            onChange={(e) => updateOfferField('projectName', e.target.value)}
-            placeholder="np. Ekspozytory targowe 2025"
-            className="w-full bg-zinc-700 rounded-lg px-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
+        {/* Client Form */}
+        <Card className="p-6">
+          <SectionTitle icon={<User className="w-6 h-6" />}>
+            Dane klienta
+          </SectionTitle>
+          <ClientForm
+            client={currentOffer.client}
+            onChange={updateClient}
           />
-        </div>
-      </div>
+        </Card>
 
-      {/* Dane klienta */}
-      <ClientForm
-        client={currentOffer.client}
-        onChange={updateClient}
-      />
+        {/* Offer Items */}
+        {currentOffer.items.length > 0 && (
+          <Card className="p-6">
+            <SectionTitle icon={<Package className="w-6 h-6" />}>
+              Pozycje oferty ({currentOffer.items.length})
+            </SectionTitle>
+            <div className="space-y-4">
+              {currentOffer.items.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <ItemSummary
+                    item={item}
+                    onRemove={() => handleRemoveItem(item.id)}
+                  />
+                </motion.div>
+              ))}
+            </div>
 
-      {/* Pozycje oferty */}
-      {currentOffer.items.length > 0 && (
-        <div className="bg-zinc-800 rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Pozycje oferty</h3>
-          <div className="space-y-4">
-            {currentOffer.items.map((item) => (
-              <ItemSummary
-                key={item.id}
-                item={item}
-                onRemove={() => handleRemoveItem(item.id)}
+            {/* Summary */}
+            <div className="mt-6">
+              <OfferSummary
+                offer={currentOffer}
+                onDiscountChange={updateDiscount}
+                onDeliveryChange={updateDelivery}
               />
-            ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Add Product Section */}
+        <Card className="p-6">
+          <SectionTitle icon={<CalculatorIcon className="w-6 h-6" />}>
+            Dodaj produkt
+          </SectionTitle>
+          
+          {/* Tabs */}
+          <div className="flex gap-2 mb-6 p-1 bg-zinc-700/50 rounded-xl">
+            <button
+              onClick={() => setActiveTab('calculator')}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+                activeTab === 'calculator'
+                  ? 'bg-purple-500 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <CalculatorIcon className="w-4 h-4 inline mr-2" />
+              Kalkulator
+            </button>
+            <button
+              onClick={() => setActiveTab('custom')}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+                activeTab === 'custom'
+                  ? 'bg-purple-500 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Package className="w-4 h-4 inline mr-2" />
+              Produkt nietypowy
+            </button>
           </div>
 
-          {/* Podsumowanie */}
-          <OfferSummary
-            offer={currentOffer}
-            onDiscountChange={updateDiscount}
-            onDeliveryChange={updateDelivery}
-          />
-        </div>
-      )}
+          {/* Tab Content */}
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {activeTab === 'calculator' ? (
+              <Calculator onAddToOffer={handleAddItem} viewMode={viewMode} />
+            ) : (
+              <CustomProductForm onAdd={handleAddCustomProduct} />
+            )}
+          </motion.div>
+        </Card>
 
-      {/* Kalkulator i produkt nietypowy */}
-      <div className="bg-zinc-800 rounded-xl p-6">
-        <h3 className="text-xl font-semibold mb-6">Dodaj pozycję do oferty</h3>
-        <div className="space-y-6">
-          <Calculator onAddToOffer={handleAddItem} viewMode={viewMode} />
-          <div className="border-t border-zinc-700 pt-6">
-            <CustomProductForm onAdd={handleAddCustomProduct} />
+        {/* Terms & Settings */}
+        <Card className="p-6">
+          <SectionTitle icon={<Settings className="w-6 h-6" />}>
+            Warunki handlowe
+          </SectionTitle>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="delivery-time" className="block text-sm font-medium mb-2 text-gray-400">
+                <Truck className="w-4 h-4 inline mr-1" />
+                Czas realizacji
+              </label>
+              <input
+                id="delivery-time"
+                name="deliveryTime"
+                type="text"
+                value={currentOffer.terms.deliveryTime}
+                onChange={(e) => updateOfferTerms('deliveryTime', e.target.value)}
+                className="w-full bg-zinc-700/50 rounded-xl px-4 py-2.5 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="delivery-method" className="block text-sm font-medium mb-2 text-gray-400">
+                Sposób dostawy
+              </label>
+              <input
+                id="delivery-method"
+                name="deliveryMethod"
+                type="text"
+                value={currentOffer.terms.deliveryMethod}
+                onChange={(e) => updateOfferTerms('deliveryMethod', e.target.value)}
+                className="w-full bg-zinc-700/50 rounded-xl px-4 py-2.5 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="payment-terms" className="block text-sm font-medium mb-2 text-gray-400">
+                Warunki płatności
+              </label>
+              <input
+                id="payment-terms"
+                name="paymentTerms"
+                type="text"
+                value={currentOffer.terms.paymentTerms}
+                onChange={(e) => updateOfferTerms('paymentTerms', e.target.value)}
+                className="w-full bg-zinc-700/50 rounded-xl px-4 py-2.5 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="validity" className="block text-sm font-medium mb-2 text-gray-400">
+                Ważność oferty
+              </label>
+              <input
+                id="validity"
+                name="validity"
+                type="text"
+                value={currentOffer.terms.validity}
+                onChange={(e) => updateOfferTerms('validity', e.target.value)}
+                className="w-full bg-zinc-700/50 rounded-xl px-4 py-2.5 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
+              />
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Warunki handlowe */}
-      <div className="bg-zinc-800 rounded-xl p-6">
-        <h3 className="text-xl font-semibold mb-4">Warunki handlowe</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="delivery-time" className="block text-sm font-medium mb-2 text-gray-400">
-              Czas realizacji
-            </label>
-            <input
-              id="delivery-time"
-              name="deliveryTime"
-              type="text"
-              value={currentOffer.terms.deliveryTime}
-              onChange={(e) => updateOfferTerms('deliveryTime', e.target.value)}
-              className="w-full bg-zinc-700 rounded-lg px-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="delivery-method" className="block text-sm font-medium mb-2 text-gray-400">
-              Sposób dostawy
-            </label>
-            <input
-              id="delivery-method"
-              name="deliveryMethod"
-              type="text"
-              value={currentOffer.terms.deliveryMethod}
-              onChange={(e) => updateOfferTerms('deliveryMethod', e.target.value)}
-              className="w-full bg-zinc-700 rounded-lg px-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="payment-terms" className="block text-sm font-medium mb-2 text-gray-400">
-              Warunki płatności
-            </label>
-            <input
-              id="payment-terms"
-              name="paymentTerms"
-              type="text"
-              value={currentOffer.terms.paymentTerms}
-              onChange={(e) => updateOfferTerms('paymentTerms', e.target.value)}
-              className="w-full bg-zinc-700 rounded-lg px-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="validity" className="block text-sm font-medium mb-2 text-gray-400">
-              Ważność oferty
-            </label>
-            <input
-              id="validity"
-              name="validity"
-              type="text"
-              value={currentOffer.terms.validity}
-              onChange={(e) => updateOfferTerms('validity', e.target.value)}
-              className="w-full bg-zinc-700 rounded-lg px-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <label htmlFor="comment" className="block text-sm font-medium mb-2 text-gray-400">
-            Uwagi do oferty (widoczne dla klienta)
-          </label>
-          <textarea
-            id="comment"
-            name="comment"
-            value={currentOffer.comment}
-            onChange={(e) => updateOfferField('comment', e.target.value)}
-            rows={3}
-            className="w-full bg-zinc-700 rounded-lg px-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
-            placeholder="Dodatkowe informacje dla klienta..."
-          />
-        </div>
-
-        {viewMode === 'salesperson' && (
           <div className="mt-4">
-            <label htmlFor="internal-notes" className="block text-sm font-medium mb-2 text-yellow-400">
-              <Lock className="w-4 h-4 inline mr-1" />
-              Notatki wewnętrzne (niewidoczne dla klienta)
+            <label htmlFor="comment" className="block text-sm font-medium mb-2 text-gray-400">
+              <FileSignature className="w-4 h-4 inline mr-1" />
+              Uwagi do oferty (widoczne dla klienta)
             </label>
             <textarea
-              id="internal-notes"
-              name="internalNotes"
-              value={currentOffer.internalNotes}
-              onChange={(e) => updateOfferField('internalNotes', e.target.value)}
+              id="comment"
+              name="comment"
+              value={currentOffer.comment}
+              onChange={(e) => updateOfferField('comment', e.target.value)}
               rows={3}
-              className="w-full bg-zinc-700 rounded-lg px-3 py-2 border border-yellow-600/30 text-white"
-              placeholder="Notatki dla zespołu sprzedaży..."
+              className="w-full bg-zinc-700/50 rounded-xl px-4 py-2.5 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
+              placeholder="Dodatkowe informacje dla klienta..."
             />
           </div>
-        )}
-      </div>
 
-      {/* Przyciski akcji */}
-      <div className="flex justify-between items-center">
-        <Button onClick={() => navigate('/')} variant="secondary">
-          Anuluj
-        </Button>
+          {viewMode === 'salesperson' && (
+            <div className="mt-4 p-4 bg-yellow-900/20 border border-yellow-600/30 rounded-xl">
+              <label htmlFor="internal-notes" className="block text-sm font-medium mb-2 text-yellow-400">
+                <Lock className="w-4 h-4 inline mr-1" />
+                Notatki wewnętrzne (niewidoczne dla klienta)
+              </label>
+              <textarea
+                id="internal-notes"
+                name="internalNotes"
+                value={currentOffer.internalNotes}
+                onChange={(e) => updateOfferField('internalNotes', e.target.value)}
+                rows={3}
+                className="w-full bg-yellow-900/10 rounded-xl px-4 py-2.5 border border-yellow-600/20 text-white focus:border-yellow-500 focus:outline-none transition-all"
+                placeholder="Notatki dla zespołu sprzedaży..."
+              />
+            </div>
+          )}
+        </Card>
 
-        <div className="flex gap-4">
-          <Button
-            onClick={handleSaveOffer}
-            variant="secondary"
-            disabled={saving || currentOffer.items.length === 0}
-          >
-            <Check className="w-5 h-5" />
-            {saving ? 'Zapisywanie...' : 'Zapisz szkic'}
+        {/* Action Buttons */}
+        <div className="flex justify-between items-center sticky bottom-6 bg-gradient-to-t from-zinc-900 via-zinc-900/95 to-transparent pt-12 pb-6 -mb-6">
+          <Button onClick={() => navigate('/')} variant="secondary">
+            <ArrowLeft className="w-5 h-5" />
+            Anuluj
           </Button>
 
-          <Button
-            onClick={handleGeneratePDF}
-            variant="primary"
-            disabled={currentOffer.items.length === 0}
-          >
-            <FileText className="w-5 h-5" />
-            Generuj PDF
-          </Button>
+          <div className="flex gap-3">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={handleSaveOffer}
+                variant="secondary"
+                disabled={saving || currentOffer.items.length === 0}
+              >
+                <Save className="w-5 h-5" />
+                {saving ? 'Zapisywanie...' : 'Zapisz szkic'}
+              </Button>
+            </motion.div>
 
-          <Button
-            onClick={handleGenerateLink}
-            variant="primary"
-            disabled={currentOffer.items.length === 0}
-          >
-            <ExternalLink className="w-5 h-5" />
-            Generuj link
-          </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={handleGeneratePDF}
+                variant="primary"
+                disabled={currentOffer.items.length === 0}
+              >
+                <FileText className="w-5 h-5" />
+                Generuj PDF
+              </Button>
+            </motion.div>
 
-          <Button
-            onClick={handleSendOffer}
-            variant="primary"
-            disabled={sending || currentOffer.items.length === 0 || !currentOffer.client.email}
-          >
-            <Send className="w-5 h-5" />
-            {sending ? 'Wysyłanie...' : 'Wyślij ofertę'}
-          </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={handleGenerateLink}
+                variant="primary"
+                disabled={currentOffer.items.length === 0}
+              >
+                <Link2 className="w-5 h-5" />
+                Generuj link
+              </Button>
+            </motion.div>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={handleSendOffer}
+                variant="primary"
+                disabled={sending || currentOffer.items.length === 0 || !currentOffer.client.email}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              >
+                <Mail className="w-5 h-5" />
+                {sending ? 'Wysyłanie...' : 'Wyślij ofertę'}
+              </Button>
+            </motion.div>
+          </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </PageWrapper>
   );
 };

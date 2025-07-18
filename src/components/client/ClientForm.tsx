@@ -1,6 +1,7 @@
 // src/components/client/ClientForm.tsx
 import React, { useState, useEffect } from 'react';
-import { Building2, Mail, Phone, MapPin, Hash, Search, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Building2, Mail, Phone, MapPin, Hash, Search, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Client } from '@/types/Offer';
 import { fetchCompanyData as fetchGUSData } from '@/api/gus';
 
@@ -13,6 +14,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchingGus, setSearchingGus] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Formatowanie NIP - tylko cyfry
   const formatNip = (value: string) => {
@@ -44,16 +46,15 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
 
     if (!validateNip(nip)) {
       setError('Nieprawidłowy NIP');
+      setSuccessMessage('');
       return;
     }
     
     setSearchingGus(true);
     setError('');
+    setSuccessMessage('');
     
     try {
-      console.log('Szukam NIP:', nip);
-      console.log('GUS URL:', import.meta.env.VITE_GUS_WEBHOOK_URL);
-
       // Użyj funkcji z api/gus.ts
       const companyData = await fetchGUSData(nip);
       
@@ -63,10 +64,8 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
           ...companyData,
           nip: nip,
         });
-        console.log('Znaleziono dane:', companyData);
+        setSuccessMessage('Dane pobrane z GUS');
       } else {
-        console.log('Nie znaleziono danych dla NIP:', nip);
-        
         // Dane testowe jako fallback
         const mockData: Record<string, any> = {
           '5882396272': {
@@ -119,6 +118,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
             email: mockCompany.email || client.email,
             phone: mockCompany.phone || client.phone
           });
+          setSuccessMessage('Dane testowe załadowane');
         } else {
           setError('Nie znaleziono firmy. Wprowadź dane ręcznie.');
         }
@@ -148,85 +148,127 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
     
     if (formattedNip.length < 10) {
       setError('');
+      setSuccessMessage('');
     }
   };
 
-  return (
-    <div className="bg-zinc-800 rounded-xl p-6">
-      <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-        <Building2 className="w-6 h-6 text-orange-500" />
-        Dane klienta
-      </h3>
+  const inputVariants = {
+    initial: { scale: 0.98 },
+    focus: { scale: 1 },
+  };
 
+  return (
+    <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* NIP */}
-        <div className="relative">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="relative"
+        >
           <label htmlFor="nip" className="block text-sm font-medium mb-2 text-gray-400">
             NIP
           </label>
           <div className="relative">
-            <input
+            <motion.input
               id="nip"
               name="nip"
               type="text"
               value={client.nip}
               onChange={handleNipChange}
               placeholder="0000000000"
-              className={`w-full bg-zinc-700 rounded-lg px-3 py-2 pr-10 text-white border ${
-                error && client.nip.length === 10 ? 'border-red-500' : 'border-zinc-600'
-              } focus:border-orange-500 focus:outline-none`}
+              whileFocus="focus"
+              variants={inputVariants}
+              className={`w-full bg-zinc-700/50 backdrop-blur rounded-xl px-4 py-3 pr-12 text-white border ${
+                error && client.nip.length === 10 ? 'border-red-500' : 
+                successMessage ? 'border-emerald-500' : 'border-zinc-600'
+              } focus:border-purple-500 focus:outline-none transition-all`}
             />
             {searchingGus && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                <Loader2 className="w-5 h-5 text-orange-500 animate-spin" />
+                <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
               </div>
             )}
-            {!searchingGus && client.nip.length === 10 && (
-              <button
+            {!searchingGus && client.nip.length === 10 && validateNip(client.nip) && (
+              <motion.button
                 type="button"
                 onClick={() => fetchCompanyData(client.nip)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-purple-500 transition-colors"
                 title="Szukaj w GUS"
               >
                 <Search className="w-5 h-5" />
-              </button>
+              </motion.button>
+            )}
+            {successMessage && (
+              <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
             )}
           </div>
           {error && (
-            <p className="mt-1 text-sm text-red-500">{error}</p>
+            <motion.p 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mt-1 text-sm text-red-500 flex items-center gap-1"
+            >
+              <AlertCircle className="w-3 h-3" />
+              {error}
+            </motion.p>
+          )}
+          {successMessage && (
+            <motion.p 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mt-1 text-sm text-emerald-500 flex items-center gap-1"
+            >
+              <CheckCircle className="w-3 h-3" />
+              {successMessage}
+            </motion.p>
           )}
           <p className="mt-1 text-xs text-gray-500">
             Wpisz 10-cyfrowy NIP aby automatycznie pobrać dane
           </p>
-        </div>
+        </motion.div>
 
         {/* REGON */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
           <label htmlFor="regon" className="block text-sm font-medium mb-2 text-gray-400">
             REGON
           </label>
           <div className="relative">
-            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
+            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <motion.input
               id="regon"
               name="regon"
               type="text"
               value={client.regon}
               onChange={(e) => onChange({ ...client, regon: e.target.value })}
               placeholder="000000000"
-              className="w-full bg-zinc-700 rounded-lg pl-10 pr-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
+              whileFocus="focus"
+              variants={inputVariants}
+              className="w-full bg-zinc-700/50 backdrop-blur rounded-xl pl-10 pr-4 py-3 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Nazwa firmy */}
-        <div className="md:col-span-2">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="md:col-span-2"
+        >
           <label htmlFor="name" className="block text-sm font-medium mb-2 text-gray-400">
             Nazwa firmy <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
+            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <motion.input
               id="name"
               name="name"
               type="text"
@@ -234,71 +276,96 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
               onChange={(e) => onChange({ ...client, name: e.target.value })}
               placeholder="Nazwa firmy"
               required
-              className="w-full bg-zinc-700 rounded-lg pl-10 pr-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
+              whileFocus="focus"
+              variants={inputVariants}
+              className="w-full bg-zinc-700/50 backdrop-blur rounded-xl pl-10 pr-4 py-3 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Adres */}
-        <div className="md:col-span-2">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="md:col-span-2"
+        >
           <label htmlFor="address" className="block text-sm font-medium mb-2 text-gray-400">
             Adres
           </label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <motion.input
               id="address"
               name="address"
               type="text"
               value={client.address}
               onChange={(e) => onChange({ ...client, address: e.target.value })}
               placeholder="ul. Przykładowa 1, 00-001 Warszawa"
-              className="w-full bg-zinc-700 rounded-lg pl-10 pr-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
+              whileFocus="focus"
+              variants={inputVariants}
+              className="w-full bg-zinc-700/50 backdrop-blur rounded-xl pl-10 pr-4 py-3 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Email */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
           <label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-400">
             E-mail
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <motion.input
               id="email"
               name="email"
               type="email"
               value={client.email}
               onChange={(e) => onChange({ ...client, email: e.target.value })}
               placeholder="firma@example.com"
-              className="w-full bg-zinc-700 rounded-lg pl-10 pr-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
+              whileFocus="focus"
+              variants={inputVariants}
+              className="w-full bg-zinc-700/50 backdrop-blur rounded-xl pl-10 pr-4 py-3 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Telefon */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+        >
           <label htmlFor="phone" className="block text-sm font-medium mb-2 text-gray-400">
             Telefon
           </label>
           <div className="relative">
-            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <motion.input
               id="phone"
               name="phone"
               type="tel"
               value={client.phone}
               onChange={(e) => onChange({ ...client, phone: e.target.value })}
               placeholder="+48 123 456 789"
-              className="w-full bg-zinc-700 rounded-lg pl-10 pr-3 py-2 text-white border border-zinc-600 focus:border-orange-500 focus:outline-none"
+              whileFocus="focus"
+              variants={inputVariants}
+              className="w-full bg-zinc-700/50 backdrop-blur rounded-xl pl-10 pr-4 py-3 text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Dodatkowe pola lokalizacyjne (ukryte domyślnie, wypełniane z GUS) */}
         {(client.wojewodztwo || client.powiat || client.gmina) && (
-          <div className="md:col-span-2 grid grid-cols-3 gap-4 mt-2">
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="md:col-span-2 grid grid-cols-3 gap-4 mt-2"
+          >
             <div>
               <label className="block text-xs font-medium mb-1 text-gray-500">
                 Województwo
@@ -307,7 +374,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
                 type="text"
                 value={client.wojewodztwo}
                 readOnly
-                className="w-full bg-zinc-700/50 rounded px-2 py-1 text-sm text-gray-300"
+                className="w-full bg-zinc-800/50 rounded-lg px-3 py-2 text-sm text-gray-400 border border-zinc-700"
               />
             </div>
             <div>
@@ -318,7 +385,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
                 type="text"
                 value={client.powiat}
                 readOnly
-                className="w-full bg-zinc-700/50 rounded px-2 py-1 text-sm text-gray-300"
+                className="w-full bg-zinc-800/50 rounded-lg px-3 py-2 text-sm text-gray-400 border border-zinc-700"
               />
             </div>
             <div>
@@ -329,20 +396,26 @@ export const ClientForm: React.FC<ClientFormProps> = ({ client, onChange }) => {
                 type="text"
                 value={client.gmina}
                 readOnly
-                className="w-full bg-zinc-700/50 rounded px-2 py-1 text-sm text-gray-300"
+                className="w-full bg-zinc-800/50 rounded-lg px-3 py-2 text-sm text-gray-400 border border-zinc-700"
               />
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
 
       {/* Informacja o danych testowych */}
       {!import.meta.env.VITE_GUS_WEBHOOK_URL && (
-        <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-          <p className="text-sm text-yellow-400">
-            ℹ️ Dane testowe NIP: 5882396272, 1234567890, 5213870274, 5252344078
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-6 p-4 bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-xl"
+        >
+          <p className="text-sm text-amber-400 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" />
+            Dane testowe NIP: 5882396272, 1234567890, 5213870274, 5252344078
           </p>
-        </div>
+        </motion.div>
       )}
     </div>
   );
