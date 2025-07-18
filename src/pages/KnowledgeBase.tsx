@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Book, Search, ChevronRight, FileText, Video, HelpCircle, 
   Lightbulb, Users, Settings, Package, Calculator, Zap,
   Shield, Award, Clock, Eye, ThumbsUp, MessageCircle,
-  BookOpen, GraduationCap, Code, Layers
+  BookOpen, GraduationCap, Code, Layers, X
 } from 'lucide-react';
 import { PageWrapper, Card, SectionTitle, EmptyState } from '@/components/ui/PageWrapper';
 import { Button } from '@/components/ui/Button';
@@ -304,9 +304,14 @@ export function KnowledgeBase() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-white hover:text-purple-400 transition-colors">
-                        {article.title}
-                      </h3>
+                      <button
+                        onClick={() => setSelectedArticle(article)}
+                        className="text-left group"
+                      >
+                        <h3 className="text-lg font-semibold text-white hover:text-purple-400 transition-colors group-hover:underline">
+                          {article.title}
+                        </h3>
+                      </button>
                       <div className="flex items-center gap-3 text-sm text-gray-500">
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
@@ -348,7 +353,11 @@ export function KnowledgeBase() {
                           <ThumbsUp className="w-4 h-4" />
                           <span className="text-sm">{article.helpful}</span>
                         </motion.button>
-                        <Button size="sm" variant="secondary">
+                        <Button 
+                          size="sm" 
+                          variant="secondary"
+                          onClick={() => setSelectedArticle(article)}
+                        >
                           Czytaj więcej
                           <ChevronRight className="w-4 h-4 ml-1" />
                         </Button>
@@ -387,6 +396,163 @@ export function KnowledgeBase() {
           </div>
         </Card>
       </motion.div>
+
+      {/* Article Detail Modal */}
+      <AnimatePresence>
+        {selectedArticle && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-zinc-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-zinc-700"
+            >
+              <div className="sticky top-0 bg-zinc-800 border-b border-zinc-700 p-6 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-zinc-700/50 rounded-lg">
+                    {selectedArticle.icon}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">{selectedArticle.title}</h2>
+                    <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
+                      <span>{selectedArticle.author}</span>
+                      <span>•</span>
+                      <span>{selectedArticle.date}</span>
+                      <span>•</span>
+                      <span>{selectedArticle.readTime}</span>
+                    </div>
+                  </div>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setSelectedArticle(null)}
+                  className="p-2 hover:bg-zinc-700 rounded-lg transition-all"
+                >
+                  <X className="w-5 h-5 text-gray-400" />
+                </motion.button>
+              </div>
+
+              <div className="p-6">
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-lg text-gray-300 leading-relaxed mb-6">
+                    {selectedArticle.excerpt}
+                  </p>
+
+                  {/* Article content sections */}
+                  <div className="space-y-6">
+                    {selectedArticle.id === '1' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Krok 1: Wybierz klienta</h3>
+                          <p className="text-gray-300 mb-4">
+                            Zacznij od wybrania istniejącego klienta z listy lub dodaj nowego. System automatycznie pobiera dane z GUS, co oszczędza czas.
+                          </p>
+                          <div className="bg-zinc-700/30 rounded-lg p-4 mb-4">
+                            <p className="text-sm text-gray-400">
+                              <strong className="text-white">Wskazówka:</strong> Użyj funkcji wyszukiwania po NIP, aby szybko znaleźć klienta.
+                            </p>
+                          </div>
+                        </section>
+
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Krok 2: Dodaj produkty</h3>
+                          <p className="text-gray-300 mb-4">
+                            Przejdź do kalkulatora i wybierz produkty. Możesz użyć gotowych szablonów z Marketplace lub stworzyć własną konfigurację.
+                          </p>
+                          <ul className="list-disc list-inside text-gray-300 space-y-2">
+                            <li>Wybierz typ produktu (ekspozytor, kaseton, etc.)</li>
+                            <li>Określ materiał i grubość</li>
+                            <li>Podaj wymiary</li>
+                            <li>System automatycznie obliczy cenę</li>
+                          </ul>
+                        </section>
+
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Krok 3: Wygeneruj PDF</h3>
+                          <p className="text-gray-300 mb-4">
+                            Po dodaniu wszystkich produktów, kliknij "Generuj PDF". Oferta zostanie automatycznie sformatowana i gotowa do wysłania.
+                          </p>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '2' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Plexi bezbarwna (transparentna)</h3>
+                          <p className="text-gray-300 mb-4">
+                            Najbardziej popularna, krystalicznie przezroczysta. Dostępna w grubościach od 2 do 20mm.
+                          </p>
+                          <ul className="list-disc list-inside text-gray-300 space-y-2">
+                            <li>Przepuszczalność światła: 92%</li>
+                            <li>Odporna na UV</li>
+                            <li>Łatwa w obróbce</li>
+                            <li>Cena bazowa: 30 zł/kg</li>
+                          </ul>
+                        </section>
+
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Plexi mleczna</h3>
+                          <p className="text-gray-300 mb-4">
+                            Półprzezroczysta, rozprasza światło. Idealna do podświetleń LED.
+                          </p>
+                          <ul className="list-disc list-inside text-gray-300 space-y-2">
+                            <li>Przepuszczalność światła: 60-70%</li>
+                            <li>Równomierne rozproszenie światła</li>
+                            <li>Popularna w kasetonach reklamowych</li>
+                            <li>Cena bazowa: 33 zł/kg</li>
+                          </ul>
+                        </section>
+                      </>
+                    )}
+
+                    {/* More content for other articles... */}
+                  </div>
+
+                  <div className="mt-8 pt-6 border-t border-zinc-700">
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {selectedArticle.tags.map(tag => (
+                        <span key={tag} className="px-3 py-1 bg-zinc-700/50 rounded-full text-sm text-gray-300">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Eye className="w-5 h-5 text-gray-400" />
+                          <span className="text-gray-400">{selectedArticle.views} wyświetleń</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <ThumbsUp className="w-5 h-5 text-gray-400" />
+                          <span className="text-gray-400">{selectedArticle.helpful} osób uznało za pomocny</span>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          handleHelpful(selectedArticle.id);
+                          setSelectedArticle(null);
+                        }}
+                        variant="primary"
+                      >
+                        <ThumbsUp className="w-5 h-5" />
+                        Ten artykuł był pomocny
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </PageWrapper>
   );
 }
