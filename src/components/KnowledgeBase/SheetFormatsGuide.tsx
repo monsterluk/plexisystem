@@ -641,7 +641,7 @@ const SheetFormatsGuide: React.FC = () => {
             <h4 className="font-semibold text-white mb-2">Warunki dostawy</h4>
             <ul className="space-y-1 text-sm">
               <li>• Dostawa w folii ochronnej (PMMA, PC, PETG)</li>
-              <li>• Transport dedykowany dla arkuszy >2m</li>
+              <li>• Transport dedykowany dla arkuszy &gt;2m</li>
               <li>• Możliwość cięcia na wymiar (+opłata)</li>
               <li>• Rabaty ilościowe od 10 arkuszy tego samego typu</li>
               <li>• Próbki materiałów dostępne na życzenie</li>
