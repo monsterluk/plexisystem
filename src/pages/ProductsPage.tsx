@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Package, Image, Tag, Edit, Trash2, X, Save, Upload, Grid, List, Filter, ChevronRight, Star, TrendingUp, Eye, Copy } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Search, Plus, Package, Image, Tag, Edit, Trash2, X, Save, Upload, 
+  Grid, List, Filter, ChevronRight, Star, TrendingUp, Eye, Copy,
+  Layers, DollarSign, Ruler, Box, Sparkles, Zap
+} from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { PageWrapper, Card, SectionTitle, LoadingState, EmptyState, StatCard } from '@/components/ui/PageWrapper';
+import { Button } from '@/components/ui/Button';
 
 interface Product {
   id: string;
@@ -23,19 +30,20 @@ interface Product {
 interface Category {
   id: string;
   name: string;
-  icon: string;
+  icon: React.ReactNode;
   count: number;
+  color: string;
 }
 
 export function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([
-    { id: 'all', name: 'Wszystkie', icon: '📦', count: 0 },
-    { id: 'plate', name: 'Formatki / Płyty', icon: '🟦', count: 0 },
-    { id: 'stand', name: 'Ekspozytory', icon: '🏪', count: 0 },
-    { id: 'sign', name: 'Kasetony', icon: '💡', count: 0 },
-    { id: 'other', name: 'Inne', icon: '📋', count: 0 }
+    { id: 'all', name: 'Wszystkie', icon: <Package className="w-5 h-5" />, count: 0, color: 'purple' },
+    { id: 'plate', name: 'Formatki / Płyty', icon: <Layers className="w-5 h-5" />, count: 0, color: 'blue' },
+    { id: 'stand', name: 'Ekspozytory', icon: <Box className="w-5 h-5" />, count: 0, color: 'emerald' },
+    { id: 'sign', name: 'Kasetony', icon: <Zap className="w-5 h-5" />, count: 0, color: 'amber' },
+    { id: 'other', name: 'Inne', icon: <Sparkles className="w-5 h-5" />, count: 0, color: 'pink' }
   ]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -46,7 +54,6 @@ export function ProductsPage() {
 
   // Demo produkty
   useEffect(() => {
-    // Symulacja ładowania produktów
     setTimeout(() => {
       const demoProducts: Product[] = [
         {
@@ -178,347 +185,458 @@ export function ProductsPage() {
     updateCategoryCounts(newProducts);
   };
 
+  const pageActions = (
+    <Button onClick={() => setShowAddModal(true)} variant="primary">
+      <Plus className="w-5 h-5" />
+      Dodaj produkt
+    </Button>
+  );
+
+  if (loading) {
+    return (
+      <PageWrapper title="Produkty" subtitle="Zarządzaj katalogiem produktów i cenami" actions={pageActions}>
+        <LoadingState />
+      </PageWrapper>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Produkty</h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Zarządzaj katalogiem produktów i cenami
-              </p>
-            </div>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all hover:scale-105"
-            >
-              <Plus className="w-4 h-4" />
-              Dodaj produkt
-            </button>
-          </div>
-        </div>
+    <PageWrapper 
+      title="Produkty" 
+      subtitle="Zarządzaj katalogiem produktów i cenami"
+      actions={pageActions}
+    >
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <StatCard
+          icon={<Package className="w-6 h-6" />}
+          label="Wszystkie produkty"
+          value={products.length}
+          color="purple"
+          progress={85}
+        />
+        <StatCard
+          icon={<Star className="w-6 h-6" />}
+          label="Popularne"
+          value={products.filter(p => p.popularity > 90).length}
+          color="amber"
+          trend={{ value: 12, isPositive: true }}
+        />
+        <StatCard
+          icon={<TrendingUp className="w-6 h-6" />}
+          label="Nowe w tym miesiącu"
+          value={8}
+          color="emerald"
+        />
+        <StatCard
+          icon={<DollarSign className="w-6 h-6" />}
+          label="Średnia cena/m²"
+          value={`${Math.round(products.reduce((sum, p) => sum + p.price_per_m2, 0) / products.length)} zł`}
+          color="blue"
+        />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filtry i wyszukiwarka */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Szukaj produktu..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              />
-            </div>
+      {/* Search and Filters */}
+      <Card className="p-6 mb-6">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <motion.input
+              whileFocus={{ scale: 1.01 }}
+              type="text"
+              placeholder="Szukaj produktu..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-zinc-700/50 backdrop-blur rounded-xl text-white border border-zinc-600 focus:border-purple-500 focus:outline-none transition-all"
+            />
           </div>
           <div className="flex gap-2">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              className="px-3 py-3 border rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-3 bg-zinc-700/50 backdrop-blur rounded-xl border border-zinc-600 hover:border-purple-500 transition-all"
             >
               {viewMode === 'grid' ? <List className="w-5 h-5" /> : <Grid className="w-5 h-5" />}
-            </button>
-            <button className="px-3 py-3 border rounded-lg hover:bg-gray-50 transition-colors">
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-3 bg-zinc-700/50 backdrop-blur rounded-xl border border-zinc-600 hover:border-purple-500 transition-all"
+            >
               <Filter className="w-5 h-5" />
-            </button>
+            </motion.button>
           </div>
         </div>
+      </Card>
 
-        <div className="flex gap-6">
-          {/* Kategorie */}
-          <div className="w-64 flex-shrink-0">
-            <h3 className="font-semibold text-gray-900 mb-4">Kategorie</h3>
+      <div className="flex gap-6">
+        {/* Categories Sidebar */}
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="w-64 flex-shrink-0"
+        >
+          <Card className="p-6">
+            <SectionTitle>Kategorie</SectionTitle>
             <div className="space-y-2">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
-                    selectedCategory === category.id
-                      ? 'bg-orange-50 text-orange-600 border-orange-200 border'
-                      : 'hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{category.icon}</span>
-                    <span className="font-medium">{category.name}</span>
-                  </div>
-                  <span className="text-sm text-gray-500">{category.count}</span>
-                </button>
-              ))}
+              {categories.map((category, index) => {
+                const colorClasses = {
+                  purple: 'from-purple-500 to-pink-500',
+                  blue: 'from-blue-500 to-indigo-500',
+                  emerald: 'from-emerald-500 to-teal-500',
+                  amber: 'from-amber-500 to-orange-500',
+                  pink: 'from-pink-500 to-rose-500'
+                };
+                
+                return (
+                  <motion.button
+                    key={category.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                      selectedCategory === category.id
+                        ? 'bg-gradient-to-r ' + colorClasses[category.color as keyof typeof colorClasses] + ' text-white shadow-lg'
+                        : 'bg-zinc-800/50 hover:bg-zinc-800/70'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {category.icon}
+                      <span className="font-medium">{category.name}</span>
+                    </div>
+                    <span className={`text-sm ${
+                      selectedCategory === category.id ? 'text-white/80' : 'text-gray-500'
+                    }`}>
+                      {category.count}
+                    </span>
+                  </motion.button>
+                );
+              })}
             </div>
 
-            {/* Popularne tagi */}
+            {/* Popular Tags */}
             <div className="mt-8">
-              <h3 className="font-semibold text-gray-900 mb-4">Popularne tagi</h3>
+              <SectionTitle>Popularne tagi</SectionTitle>
               <div className="flex flex-wrap gap-2">
-                {['transparentne', 'białe', 'LED', 'zewnętrzne', 'A4', 'premium'].map((tag) => (
-                  <button
+                {['transparentne', 'białe', 'LED', 'zewnętrzne', 'A4', 'premium'].map((tag, index) => (
+                  <motion.button
                     key={tag}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-3 py-1 bg-zinc-800/50 backdrop-blur text-gray-300 rounded-full text-sm hover:bg-zinc-800/70 hover:text-white transition-all border border-zinc-700/50"
                   >
                     #{tag}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
-          </div>
+          </Card>
+        </motion.div>
 
-          {/* Lista produktów */}
-          <div className="flex-1">
-            {loading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-              </div>
-            ) : viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className="bg-white rounded-lg shadow-sm border hover:shadow-lg transition-all card-hover cursor-pointer"
-                    onClick={() => setSelectedProduct(product)}
-                  >
-                    <div className="relative h-48 bg-gray-100 rounded-t-lg overflow-hidden">
+        {/* Products Grid/List */}
+        <div className="flex-1">
+          {filteredProducts.length === 0 ? (
+            <Card className="p-12">
+              <EmptyState
+                icon={<Package className="w-12 h-12" />}
+                title="Brak produktów"
+                description="Nie znaleziono produktów spełniających kryteria"
+                action={
+                  <Button onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategory('all');
+                  }} variant="secondary">
+                    Wyczyść filtry
+                  </Button>
+                }
+              />
+            </Card>
+          ) : viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ y: -5 }}
+                  onClick={() => setSelectedProduct(product)}
+                >
+                  <Card className="overflow-hidden cursor-pointer hover:shadow-xl hover:shadow-purple-500/10" hover>
+                    <div className="relative h-48 bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden">
                       {product.images[0] ? (
                         <img
                           src={product.images[0]}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover opacity-80"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
-                          <Package className="w-12 h-12 text-gray-300" />
+                          <Package className="w-12 h-12 text-gray-600" />
                         </div>
                       )}
                       {product.popularity > 90 && (
-                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold animate-pulse">
-                          HOT
-                        </div>
+                        <motion.div 
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                        >
+                          HOT 🔥
+                        </motion.div>
                       )}
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                      <p className="text-sm text-gray-500 mt-1">
+                    <div className="p-5">
+                      <h3 className="font-semibold text-white text-lg mb-1">{product.name}</h3>
+                      <p className="text-sm text-gray-400 mb-3">
                         {product.material} • {product.thickness}mm
                       </p>
-                      <div className="mt-3 flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-3">
                         <div>
-                          <p className="text-2xl font-bold text-orange-600">
+                          <p className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                             {product.price_per_m2} zł
                           </p>
                           <p className="text-xs text-gray-500">za m²</p>
                         </div>
                         <div className="flex items-center gap-1">
                           <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="text-sm text-gray-600">{product.popularity}%</span>
+                          <span className="text-sm text-gray-400">{product.popularity}%</span>
                         </div>
                       </div>
-                      <div className="mt-3 flex gap-2">
+                      <div className="flex gap-2">
                         {product.tags.slice(0, 2).map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
+                            className="px-2 py-1 bg-zinc-800/50 text-gray-400 rounded-full text-xs border border-zinc-700/50"
                           >
                             #{tag}
                           </span>
                         ))}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm border divide-y">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className="p-4 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
-                    onClick={() => setSelectedProduct(product)}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
-                        {product.images[0] ? (
-                          <img
-                            src={product.images[0]}
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <Package className="w-6 h-6 text-gray-300" />
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                        <p className="text-sm text-gray-500">
-                          {product.material} • {product.thickness}mm • Max: {product.max_width}x{product.max_height}mm
-                        </p>
-                        <div className="flex gap-2 mt-1">
-                          {product.tags.map((tag) => (
-                            <span key={tag} className="text-xs text-gray-500">#{tag}</span>
-                          ))}
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <Card className="divide-y divide-zinc-700/50">
+              {filteredProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="p-5 hover:bg-zinc-800/30 cursor-pointer flex items-center justify-between transition-all"
+                  onClick={() => setSelectedProduct(product)}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-xl overflow-hidden">
+                      {product.images[0] ? (
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-cover opacity-80"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <Package className="w-6 h-6 text-gray-600" />
                         </div>
-                      </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-6">
-                      <div className="text-right">
-                        <p className="text-xl font-bold text-orange-600">{product.price_per_m2} zł/m²</p>
-                        <p className="text-xs text-gray-500">Min. {product.min_order} m²</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            duplicateProduct(product);
-                          }}
-                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteProduct(product.id);
-                          }}
-                          className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                    <div>
+                      <h3 className="font-semibold text-white">{product.name}</h3>
+                      <p className="text-sm text-gray-400">
+                        {product.material} • {product.thickness}mm • Max: {product.max_width}x{product.max_height}mm
+                      </p>
+                      <div className="flex gap-2 mt-1">
+                        {product.tags.map((tag) => (
+                          <span key={tag} className="text-xs text-gray-500">#{tag}</span>
+                        ))}
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  <div className="flex items-center gap-6">
+                    <div className="text-right">
+                      <p className="text-xl font-bold text-amber-400">{product.price_per_m2} zł/m²</p>
+                      <p className="text-xs text-gray-500">Min. {product.min_order} m²</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          duplicateProduct(product);
+                        }}
+                        className="p-2 hover:bg-zinc-700 rounded-lg transition-all"
+                      >
+                        <Copy className="w-4 h-4 text-gray-400" />
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteProduct(product.id);
+                        }}
+                        className="p-2 hover:bg-red-900/50 text-red-400 rounded-lg transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </Card>
+          )}
         </div>
       </div>
 
-      {/* Modal szczegółów produktu */}
-      {selectedProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-scaleIn">
-            <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-start">
-              <h2 className="text-2xl font-bold">{selectedProduct.name}</h2>
-              <button
-                onClick={() => setSelectedProduct(null)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Galeria */}
-                <div>
-                  <div className="h-64 bg-gray-100 rounded-lg overflow-hidden">
-                    {selectedProduct.images[0] ? (
-                      <img
-                        src={selectedProduct.images[0]}
-                        alt={selectedProduct.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <Package className="w-16 h-16 text-gray-300" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-4 gap-2 mt-2">
-                    <button className="h-20 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors flex items-center justify-center">
-                      <Plus className="w-6 h-6 text-gray-400" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Informacje */}
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-1">Kategoria</h3>
-                    <p className="text-lg">{categories.find(c => c.id === selectedProduct.category)?.name}</p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 mb-1">Materiał</h3>
-                      <p className="text-lg">{selectedProduct.material}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 mb-1">Grubość</h3>
-                      <p className="text-lg">{selectedProduct.thickness} mm</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 mb-1">Max wymiary</h3>
-                      <p className="text-lg">{selectedProduct.max_width} x {selectedProduct.max_height} mm</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 mb-1">Min. zamówienie</h3>
-                      <p className="text-lg">{selectedProduct.min_order} m²</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-1">Cena</h3>
-                    <p className="text-3xl font-bold text-orange-600">{selectedProduct.price_per_m2} zł/m²</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-1">Opis</h3>
-                    <p className="text-gray-700">{selectedProduct.description}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-1">Tagi</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedProduct.tags.map((tag) => (
-                        <span key={tag} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                        <span className="font-semibold">{selectedProduct.popularity}%</span>
-                      </div>
-                      <span className="text-sm text-gray-500">popularności</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Eye className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-500">342 wyświetleń</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 flex gap-3">
-                <button className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
-                  Edytuj produkt
-                </button>
-                <button
-                  onClick={() => duplicateProduct(selectedProduct)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+      {/* Product Detail Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-zinc-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-zinc-700"
+            >
+              <div className="sticky top-0 bg-zinc-800 border-b border-zinc-700 p-6 flex justify-between items-start">
+                <h2 className="text-2xl font-bold text-white">{selectedProduct.name}</h2>
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setSelectedProduct(null)}
+                  className="p-2 hover:bg-zinc-700 rounded-lg transition-all"
                 >
-                  Duplikuj
-                </button>
+                  <X className="w-5 h-5 text-gray-400" />
+                </motion.button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+
+              <div className="p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Gallery */}
+                  <div>
+                    <div className="h-64 bg-gradient-to-br from-zinc-700 to-zinc-900 rounded-xl overflow-hidden">
+                      {selectedProduct.images[0] ? (
+                        <img
+                          src={selectedProduct.images[0]}
+                          alt={selectedProduct.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <Package className="w-16 h-16 text-gray-600" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-4 gap-2 mt-2">
+                      <motion.button 
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="h-20 bg-zinc-700/50 rounded-lg border-2 border-dashed border-zinc-600 hover:border-purple-500 transition-all flex items-center justify-center"
+                      >
+                        <Plus className="w-6 h-6 text-gray-500" />
+                      </motion.button>
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-1">Kategoria</h3>
+                      <p className="text-lg text-white">{categories.find(c => c.id === selectedProduct.category)?.name}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 mb-1">Materiał</h3>
+                        <p className="text-lg text-white">{selectedProduct.material}</p>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 mb-1">Grubość</h3>
+                        <p className="text-lg text-white">{selectedProduct.thickness} mm</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 mb-1">Max wymiary</h3>
+                        <p className="text-lg text-white">{selectedProduct.max_width} x {selectedProduct.max_height} mm</p>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 mb-1">Min. zamówienie</h3>
+                        <p className="text-lg text-white">{selectedProduct.min_order} m²</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-1">Cena</h3>
+                      <p className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                        {selectedProduct.price_per_m2} zł/m²
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-1">Opis</h3>
+                      <p className="text-gray-300">{selectedProduct.description}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-1">Tagi</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProduct.tags.map((tag) => (
+                          <span key={tag} className="px-3 py-1 bg-zinc-700/50 rounded-full text-sm text-gray-300 border border-zinc-600">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                          <span className="font-semibold text-white">{selectedProduct.popularity}%</span>
+                        </div>
+                        <span className="text-sm text-gray-500">popularności</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Eye className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-500">342 wyświetleń</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <Button variant="primary" className="flex-1">
+                    <Edit className="w-5 h-5" />
+                    Edytuj produkt
+                  </Button>
+                  <Button
+                    onClick={() => duplicateProduct(selectedProduct)}
+                    variant="secondary"
+                  >
+                    <Copy className="w-5 h-5" />
+                    Duplikuj
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </PageWrapper>
   );
 }

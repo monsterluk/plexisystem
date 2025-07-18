@@ -1,458 +1,356 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  FileText, 
-  Download, 
-  Calendar, 
-  Filter,
-  Users,
-  Package,
-  DollarSign,
-  Activity,
-  PieChart,
-  ArrowUp,
-  ArrowDown,
-  Clock,
-  Target,
-  Award,
-  ShoppingCart
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import {
+  BarChart3, PieChart, TrendingUp, Calendar, Download, Filter,
+  DollarSign, Users, Package, FileText, ArrowUp, ArrowDown,
+  Activity, Target, Award, Zap, ChevronRight, Clock
 } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
-import { formatDate, formatDateOnly } from '@/utils/dateHelpers';
-import { AIService } from '@/services/aiService';
+import { PageWrapper, Card, SectionTitle, StatCard } from '@/components/ui/PageWrapper';
+import { Button } from '@/components/ui/Button';
+import { 
+  BarChart, Bar, LineChart, Line, PieChart as RePieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart
+} from 'recharts';
 
-interface DashboardStats {
-  revenue: {
-    current: number;
-    previous: number;
-    change: number;
-  };
-  offers: {
-    total: number;
-    accepted: number;
-    pending: number;
-    rejected: number;
-  };
-  conversion: {
-    rate: number;
-    industry: number;
-  };
-  averageOrder: {
-    value: number;
-    items: number;
-  };
-  topProducts: Array<{
-    id: string;
-    name: string;
-    revenue: number;
-    quantity: number;
-  }>;
-  topClients: Array<{
-    id: string;
-    name: string;
-    revenue: number;
-    orders: number;
-  }>;
-  salesByMonth: Array<{
-    month: string;
-    revenue: number;
-    orders: number;
-  }>;
-}
+const salesData = [
+  { month: 'Sty', sales: 45000, offers: 28, accepted: 22 },
+  { month: 'Lut', sales: 52000, offers: 32, accepted: 25 },
+  { month: 'Mar', sales: 48000, offers: 30, accepted: 24 },
+  { month: 'Kwi', sales: 61000, offers: 38, accepted: 30 },
+  { month: 'Maj', sales: 73000, offers: 45, accepted: 36 },
+  { month: 'Cze', sales: 69000, offers: 42, accepted: 34 },
+];
 
-export const ReportsPage: React.FC = () => {
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [dateRange, setDateRange] = useState('month'); // month, quarter, year
-  const [exportLoading, setExportLoading] = useState(false);
-  const [trends, setTrends] = useState<any>(null);
+const productData = [
+  { name: 'Ekspozytory', value: 35, color: '#8b5cf6' },
+  { name: 'Kasetony LED', value: 25, color: '#ec4899' },
+  { name: 'Formatki', value: 20, color: '#3b82f6' },
+  { name: 'Inne', value: 20, color: '#10b981' },
+];
 
-  useEffect(() => {
-    loadDashboardData();
-    loadTrends();
-  }, [dateRange]);
+const topClients = [
+  { name: 'Beauty Zone Sp. z o.o.', revenue: 125000, orders: 23, growth: 15 },
+  { name: 'Tech Solutions SA', revenue: 98000, orders: 18, growth: -5 },
+  { name: 'Restauracja Marina', revenue: 87000, orders: 15, growth: 22 },
+  { name: 'Klinika Zdrowie', revenue: 76000, orders: 12, growth: 8 },
+  { name: 'Office Pro', revenue: 65000, orders: 10, growth: 12 },
+];
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Dla demo używamy przykładowych danych
-      // W prawdziwej aplikacji pobieraj z Supabase
-      setStats({
-        revenue: {
-          current: 67000,
-          previous: 58000,
-          change: 15.5
-        },
-        offers: {
-          total: 42,
-          accepted: 18,
-          pending: 12,
-          rejected: 12
-        },
-        conversion: {
-          rate: 42.9,
-          industry: 22
-        },
-        averageOrder: {
-          value: 3722,
-          items: 2.4
-        },
-        topProducts: [
-          { id: '1', name: 'Plexi Transparentne 3mm', revenue: 24500, quantity: 145 },
-          { id: '2', name: 'Dibond 3mm Biały', revenue: 18900, quantity: 89 },
-          { id: '3', name: 'Kaseton LED 100x50cm', revenue: 15600, quantity: 12 },
-          { id: '4', name: 'Plexi Satyna 5mm', revenue: 8900, quantity: 34 },
-          { id: '5', name: 'Ekspozytory A4', revenue: 5200, quantity: 52 }
-        ],
-        topClients: [
-          { id: '1', name: 'Firma ABC Sp. z o.o.', revenue: 18500, orders: 5 },
-          { id: '2', name: 'Studio Reklamy XYZ', revenue: 15200, orders: 8 },
-          { id: '3', name: 'Marketing Solutions', revenue: 12800, orders: 3 },
-          { id: '4', name: 'Jan Kowalski', revenue: 9600, orders: 12 },
-          { id: '5', name: 'Print House Gdańsk', revenue: 8100, orders: 4 }
-        ],
-        salesByMonth: [
-          { month: 'Sty', revenue: 45000, orders: 12 },
-          { month: 'Lut', revenue: 52000, orders: 15 },
-          { month: 'Mar', revenue: 48000, orders: 13 },
-          { month: 'Kwi', revenue: 61000, orders: 18 },
-          { month: 'Maj', revenue: 58000, orders: 16 },
-          { month: 'Cze', revenue: 67000, orders: 21 }
-        ]
-      });
+const performanceData = [
+  { day: 'Pon', target: 10000, actual: 12000 },
+  { day: 'Wto', target: 10000, actual: 9500 },
+  { day: 'Śro', target: 10000, actual: 11000 },
+  { day: 'Czw', target: 10000, actual: 13500 },
+  { day: 'Pią', target: 10000, actual: 15000 },
+  { day: 'Sob', target: 5000, actual: 7000 },
+  { day: 'Nie', target: 0, actual: 2000 },
+];
 
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+export function ReportsPage() {
+  const [dateRange, setDateRange] = useState('month');
+  const [selectedMetric, setSelectedMetric] = useState('revenue');
 
-  const loadTrends = async () => {
-    try {
-      // Przykładowe dane trendów
-      setTrends({
-        topProducts: [
-          { productId: '1', name: 'Kaseton LED', growth: 35 },
-          { productId: '2', name: 'Plexi Satyna', growth: 22 },
-          { productId: '3', name: 'Ekspozytory', growth: -5 }
-        ],
-        recommendations: [
-          '🚀 Kaseton LED notuje 35% wzrost - zwiększ stan magazynowy',
-          '📉 Ekspozytory spadają o 5% - rozważ promocję',
-          '💡 80% klientów akceptuje oferty < 48h - przyspiesz odpowiedzi'
-        ]
-      });
-    } catch (error) {
-      console.error('Error loading trends:', error);
-    }
-  };
-
-  const exportReport = async () => {
-    setExportLoading(true);
-    try {
-      // TODO: Implementacja eksportu do PDF/Excel
-      alert('Funkcja eksportu w przygotowaniu');
-    } catch (error) {
-      console.error('Error exporting report:', error);
-    } finally {
-      setExportLoading(false);
-    }
-  };
-
-  const renderStatCard = (title: string, value: string | number, change?: number, icon?: React.ReactNode) => (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-sm font-medium text-gray-600">{title}</p>
-        {icon}
-      </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      {change !== undefined && (
-        <div className="flex items-center gap-1 mt-1">
-          {change > 0 ? (
-            <ArrowUp className="w-4 h-4 text-green-500" />
-          ) : (
-            <ArrowDown className="w-4 h-4 text-red-500" />
-          )}
-          <span className={`text-sm ${change > 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {Math.abs(change).toFixed(1)}%
-          </span>
-        </div>
-      )}
-    </div>
+  const pageActions = (
+    <>
+      <select 
+        value={dateRange}
+        onChange={(e) => setDateRange(e.target.value)}
+        className="px-4 py-2 bg-zinc-700/50 rounded-xl text-white border border-zinc-600 focus:border-purple-500 focus:outline-none"
+      >
+        <option value="week">Ten tydzień</option>
+        <option value="month">Ten miesiąc</option>
+        <option value="quarter">Ten kwartał</option>
+        <option value="year">Ten rok</option>
+      </select>
+      <Button variant="secondary">
+        <Filter className="w-5 h-5" />
+        Filtry
+      </Button>
+      <Button variant="primary">
+        <Download className="w-5 h-5" />
+        Eksportuj raport
+      </Button>
+    </>
   );
-
-  if (loading) {
-    return (
-      <div className="flex-1 bg-gray-50 p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex-1 bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Nagłówek */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Raporty i Analizy</h1>
-            <p className="text-gray-600 mt-1">Szczegółowe statystyki i trendy biznesowe</p>
-          </div>
-          <div className="flex gap-3">
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            >
-              <option value="month">Ostatni miesiąc</option>
-              <option value="quarter">Ostatni kwartał</option>
-              <option value="year">Ostatni rok</option>
-            </select>
-            <button 
-              onClick={exportReport}
-              disabled={exportLoading}
-              className="flex items-center gap-2 px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600 disabled:opacity-50"
-            >
-              <Download className="w-4 h-4" />
-              {exportLoading ? 'Eksportowanie...' : 'Eksportuj PDF'}
-            </button>
-          </div>
-        </div>
-
-        {/* Statystyki główne */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {renderStatCard(
-            'Przychód bieżący',
-            `${stats?.revenue.current.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł`,
-            stats?.revenue.change,
-            <DollarSign className="w-5 h-5 text-green-500" />
-          )}
-          
-          {renderStatCard(
-            'Liczba ofert',
-            stats?.offers.total || 0,
-            undefined,
-            <FileText className="w-5 h-5 text-blue-500" />
-          )}
-          
-          {renderStatCard(
-            'Konwersja',
-            `${stats?.conversion.rate.toFixed(1)}%`,
-            stats?.conversion.rate - stats?.conversion.industry,
-            <Target className="w-5 h-5 text-orange-500" />
-          )}
-          
-          {renderStatCard(
-            'Średnia wartość',
-            `${stats?.averageOrder.value.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł`,
-            undefined,
-            <ShoppingCart className="w-5 h-5 text-purple-500" />
-          )}
-        </div>
-
-        {/* Szczegółowe statystyki ofert */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Status ofert</h3>
-              <PieChart className="w-5 h-5 text-gray-400" />
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Zaakceptowane</span>
-                </div>
-                <span className="text-sm font-medium">{stats?.offers.accepted}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Oczekujące</span>
-                </div>
-                <span className="text-sm font-medium">{stats?.offers.pending}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Odrzucone</span>
-                </div>
-                <span className="text-sm font-medium">{stats?.offers.rejected}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Średnie wartości</h3>
-              <Activity className="w-5 h-5 text-gray-400" />
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Wartość zamówienia</span>
-                <span className="text-sm font-medium">
-                  {stats?.averageOrder.value.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Liczba pozycji</span>
-                <span className="text-sm font-medium">{stats?.averageOrder.items.toFixed(1)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Czas realizacji</span>
-                <span className="text-sm font-medium">7-10 dni</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Wskaźniki</h3>
-              <Award className="w-5 h-5 text-gray-400" />
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Konwersja</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{stats?.conversion.rate.toFixed(1)}%</span>
-                  {stats && stats.conversion.rate > stats.conversion.industry && (
-                    <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">+{(stats.conversion.rate - stats.conversion.industry).toFixed(1)}%</span>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Średnia branży</span>
-                <span className="text-sm font-medium">{stats?.conversion.industry}%</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Cel miesięczny</span>
-                <span className="text-sm font-medium">85%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Wykresy i tabele */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Top produkty */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Package className="w-5 h-5 text-gray-400" />
-              Top produkty
-            </h2>
-            <div className="space-y-3">
-              {stats?.topProducts.map((product, index) => (
-                <div key={product.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg font-semibold text-gray-400">#{index + 1}</span>
-                    <div>
-                      <p className="font-medium text-gray-900">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.quantity} szt. sprzedanych</p>
-                    </div>
-                  </div>
-                  <span className="font-semibold text-gray-900">
-                    {product.revenue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Top klienci */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Users className="w-5 h-5 text-gray-400" />
-              Top klienci
-            </h2>
-            <div className="space-y-3">
-              {stats?.topClients.map((client, index) => (
-                <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg font-semibold text-gray-400">#{index + 1}</span>
-                    <div>
-                      <p className="font-medium text-gray-900">{client.name}</p>
-                      <p className="text-sm text-gray-500">{client.orders} zamówień</p>
-                    </div>
-                  </div>
-                  <span className="font-semibold text-gray-900">
-                    {client.revenue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Wykres sprzedaży */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-gray-400" />
-            Sprzedaż w czasie
-          </h2>
-          <div className="h-64">
-            {/* Prosty wykres słupkowy */}
-            <div className="h-full flex items-end gap-4">
-              {stats?.salesByMonth.map((month) => {
-                const maxRevenue = Math.max(...(stats?.salesByMonth.map(m => m.revenue) || [1]));
-                const height = (month.revenue / maxRevenue) * 100;
-                
-                return (
-                  <div key={month.month} className="flex-1 flex flex-col items-center">
-                    <div className="w-full bg-orange-500 rounded-t" style={{ height: `${height}%` }}></div>
-                    <p className="text-xs text-gray-600 mt-2">{month.month}</p>
-                    <p className="text-xs font-medium text-gray-900">
-                      {(month.revenue / 1000).toFixed(0)}k
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Trendy AI */}
-        {trends && (
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-orange-600" />
-              Trendy i rekomendacje AI
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Trendy produktów */}
-              <div className="bg-white rounded-lg p-4">
-                <h3 className="font-medium text-gray-900 mb-3">Produkty w trendzie</h3>
-                <div className="space-y-2">
-                  {trends.topProducts?.slice(0, 3).map((product: any) => (
-                    <div key={product.productId} className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">{product.name}</span>
-                      <span className={`text-sm font-medium ${
-                        product.growth > 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {product.growth > 0 ? '+' : ''}{product.growth}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Rekomendacje */}
-              <div className="bg-white rounded-lg p-4">
-                <h3 className="font-medium text-gray-900 mb-3">Rekomendacje AI</h3>
-                <div className="space-y-2">
-                  {trends.recommendations?.slice(0, 3).map((rec: string, index: number) => (
-                    <p key={index} className="text-sm text-gray-700">{rec}</p>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+    <PageWrapper 
+      title="Raporty i Analizy" 
+      subtitle="Kompleksowy przegląd wyników sprzedaży i statystyk"
+      actions={pageActions}
+    >
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <StatCard
+            icon={<DollarSign className="w-6 h-6" />}
+            label="Przychód miesięczny"
+            value="73 000 zł"
+            trend={{ value: 12.5, isPositive: true }}
+            color="emerald"
+            progress={85}
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <StatCard
+            icon={<FileText className="w-6 h-6" />}
+            label="Liczba ofert"
+            value="45"
+            trend={{ value: 8, isPositive: true }}
+            color="purple"
+            progress={72}
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <StatCard
+            icon={<Target className="w-6 h-6" />}
+            label="Konwersja"
+            value="80%"
+            trend={{ value: 5, isPositive: true }}
+            color="amber"
+            progress={80}
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+          <StatCard
+            icon={<Users className="w-6 h-6" />}
+            label="Nowi klienci"
+            value="12"
+            trend={{ value: -3, isPositive: false }}
+            color="blue"
+            progress={60}
+          />
+        </motion.div>
       </div>
-    </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Sales Trend */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="p-6">
+            <SectionTitle icon={<TrendingUp className="w-6 h-6" />}>
+              Trend sprzedaży
+            </SectionTitle>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={salesData}>
+                <defs>
+                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis dataKey="month" stroke="#9ca3af" />
+                <YAxis stroke="#9ca3af" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
+                  labelStyle={{ color: '#f3f4f6' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="sales" 
+                  stroke="#8b5cf6" 
+                  fillOpacity={1} 
+                  fill="url(#colorSales)" 
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </Card>
+        </motion.div>
+
+        {/* Product Distribution */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.35 }}
+        >
+          <Card className="p-6">
+            <SectionTitle icon={<PieChart className="w-6 h-6" />}>
+              Podział produktów
+            </SectionTitle>
+            <ResponsiveContainer width="100%" height={300}>
+              <RePieChart>
+                <Pie
+                  data={productData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {productData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
+                />
+              </RePieChart>
+            </ResponsiveContainer>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Performance vs Target */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="mb-6"
+      >
+        <Card className="p-6">
+          <SectionTitle icon={<Activity className="w-6 h-6" />}>
+            Wyniki vs Cel
+          </SectionTitle>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={performanceData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="day" stroke="#9ca3af" />
+              <YAxis stroke="#9ca3af" />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151' }}
+                labelStyle={{ color: '#f3f4f6' }}
+              />
+              <Legend />
+              <Bar dataKey="target" fill="#6b7280" name="Cel" />
+              <Bar dataKey="actual" fill="#8b5cf6" name="Rzeczywiste" />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      </motion.div>
+
+      {/* Top Clients Table */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45 }}
+      >
+        <Card className="p-6">
+          <SectionTitle 
+            icon={<Award className="w-6 h-6" />}
+            action={
+              <Button variant="secondary" size="sm">
+                Zobacz wszystkich
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            }
+          >
+            Top Klienci
+          </SectionTitle>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-zinc-700">
+                  <th className="text-left p-4 text-gray-400 font-medium">Klient</th>
+                  <th className="text-right p-4 text-gray-400 font-medium">Przychód</th>
+                  <th className="text-right p-4 text-gray-400 font-medium">Zamówienia</th>
+                  <th className="text-right p-4 text-gray-400 font-medium">Wzrost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topClients.map((client, index) => (
+                  <motion.tr
+                    key={client.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + index * 0.05 }}
+                    className="border-b border-zinc-700/50 hover:bg-zinc-800/30 transition-all"
+                  >
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                          {index + 1}
+                        </div>
+                        <span className="font-medium text-white">{client.name}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-right">
+                      <span className="font-mono text-white">
+                        {new Intl.NumberFormat('pl-PL', {
+                          style: 'currency',
+                          currency: 'PLN',
+                          minimumFractionDigits: 0
+                        }).format(client.revenue)}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right text-gray-300">{client.orders}</td>
+                    <td className="p-4 text-right">
+                      <span className={`flex items-center justify-end gap-1 ${
+                        client.growth > 0 ? 'text-emerald-400' : 'text-red-400'
+                      }`}>
+                        {client.growth > 0 ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
+                        {Math.abs(client.growth)}%
+                      </span>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </motion.div>
+
+      {/* Quick Stats */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+        className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
+      >
+        <Card className="p-6 bg-gradient-to-br from-purple-900/20 to-pink-900/20" gradient>
+          <div className="flex items-center justify-between mb-4">
+            <Zap className="w-8 h-8 text-yellow-400" />
+            <span className="text-2xl font-bold text-white">92%</span>
+          </div>
+          <h3 className="text-white font-semibold">Efektywność sprzedaży</h3>
+          <p className="text-sm text-gray-400 mt-1">+5% vs poprzedni miesiąc</p>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-br from-emerald-900/20 to-teal-900/20" gradient>
+          <div className="flex items-center justify-between mb-4">
+            <Clock className="w-8 h-8 text-emerald-400" />
+            <span className="text-2xl font-bold text-white">3.2 dni</span>
+          </div>
+          <h3 className="text-white font-semibold">Średni czas realizacji</h3>
+          <p className="text-sm text-gray-400 mt-1">-0.5 dnia vs poprzedni miesiąc</p>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-br from-amber-900/20 to-orange-900/20" gradient>
+          <div className="flex items-center justify-between mb-4">
+            <Target className="w-8 h-8 text-amber-400" />
+            <span className="text-2xl font-bold text-white">156%</span>
+          </div>
+          <h3 className="text-white font-semibold">Realizacja targetu</h3>
+          <p className="text-sm text-gray-400 mt-1">Najlepszy wynik w roku!</p>
+        </Card>
+      </motion.div>
+    </PageWrapper>
   );
-};
+}

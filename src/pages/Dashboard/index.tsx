@@ -6,6 +6,7 @@ import {
   BarChart3, PieChart, Activity, DollarSign, Eye, Calculator, FileText,
   Sparkles, Flame, Trophy, Rocket, MessageCircle, Book
 } from 'lucide-react';
+import { WeatherWidget } from '@/components/ui/WeatherWidget';
 
 interface DashboardStats {
   totalOffers: number;
@@ -444,6 +445,9 @@ const Dashboard: React.FC = () => {
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Weather Widget */}
+            <WeatherWidget />
           </div>
         </div>
 
