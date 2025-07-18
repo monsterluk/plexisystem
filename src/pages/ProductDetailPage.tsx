@@ -82,24 +82,24 @@ export const ProductDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-zinc-900">
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-40">
+      <div className="bg-zinc-800 shadow-xl sticky top-0 z-40 border-b border-zinc-700">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate(-1)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-zinc-700 rounded-lg transition-colors"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-5 h-5 text-white" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
+                <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
                   <Package className="w-6 h-6 text-orange-500" />
                   {product.productName}
                 </h1>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-400">
                   {product.materialName} • {product.thickness}mm • 
                   {product.dimensions.width} × {product.dimensions.height} × {product.dimensions.depth} mm
                 </p>
@@ -122,8 +122,8 @@ export const ProductDetailPage: React.FC = () => {
           {/* Panel główny */}
           <div className="lg:col-span-2">
             {/* Zakładki */}
-            <div className="bg-white rounded-t-lg shadow-sm">
-              <div className="border-b">
+            <div className="bg-zinc-800 rounded-t-lg shadow-xl">
+              <div className="border-b border-zinc-700">
                 <nav className="flex -mb-px">
                   {tabs.map(tab => {
                     const Icon = tab.icon;
@@ -132,10 +132,10 @@ export const ProductDetailPage: React.FC = () => {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
                         className={`
-                          flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-colors
+                          flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-all
                           ${activeTab === tab.id
-                            ? 'border-orange-500 text-orange-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            ? 'border-orange-500 text-orange-500 bg-zinc-700/50'
+                            : 'border-transparent text-gray-400 hover:text-white hover:bg-zinc-700/30'
                           }
                         `}
                       >
@@ -149,15 +149,15 @@ export const ProductDetailPage: React.FC = () => {
             </div>
 
             {/* Zawartość zakładek */}
-            <div className="bg-white rounded-b-lg shadow-lg p-6">
+            <div className="bg-zinc-800 rounded-b-lg shadow-xl p-6">
               {activeTab === '3d' && (
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">Podgląd 3D produktu</h2>
+                  <h2 className="text-xl font-semibold mb-4 text-white">Podgląd 3D produktu</h2>
                   <Expositor3D item={product} />
-                  <div className="mt-4 text-sm text-gray-600">
-                    <p>• Użyj myszki aby obrócić model</p>
-                    <p>• Scroll aby przybliżyć/oddalić</p>
-                    <p>• Przytrzymaj Shift i przeciągnij aby przesunąć</p>
+                  <div className="mt-4 text-sm text-gray-400">
+                    <p>• Najedź myszką aby zobaczyć efekt 3D</p>
+                    <p>• Model obraca się automatycznie</p>
+                    <p>• Wymiary są proporcjonalne do rzeczywistych</p>
                   </div>
                 </div>
               )}
@@ -179,20 +179,20 @@ export const ProductDetailPage: React.FC = () => {
           {/* Panel boczny - szczegóły */}
           <div className="space-y-6">
             {/* Cena */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">Kalkulacja</h3>
+            <div className="bg-zinc-800 rounded-lg shadow-xl p-6">
+              <h3 className="text-lg font-semibold mb-4 text-white">Kalkulacja</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Cena jednostkowa:</span>
-                  <span className="font-semibold">{product.unitPrice.toFixed(2)} zł</span>
+                  <span className="text-gray-400">Cena jednostkowa:</span>
+                  <span className="font-semibold text-white">{product.unitPrice.toFixed(2)} zł</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Ilość:</span>
-                  <span className="font-semibold">{product.quantity} szt.</span>
+                  <span className="text-gray-400">Ilość:</span>
+                  <span className="font-semibold text-white">{product.quantity} szt.</span>
                 </div>
-                <div className="border-t pt-3">
+                <div className="border-t border-zinc-700 pt-3">
                   <div className="flex justify-between text-lg">
-                    <span className="font-semibold">Razem netto:</span>
+                    <span className="font-semibold text-white">Razem netto:</span>
                     <span className="font-bold text-orange-500">{product.totalPrice.toFixed(2)} zł</span>
                   </div>
                   <p className="text-sm text-gray-500 mt-1">+ VAT 23%</p>
@@ -201,37 +201,37 @@ export const ProductDetailPage: React.FC = () => {
             </div>
 
             {/* Parametry techniczne */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">Parametry techniczne</h3>
+            <div className="bg-zinc-800 rounded-lg shadow-xl p-6">
+              <h3 className="text-lg font-semibold mb-4 text-white">Parametry techniczne</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between py-1">
-                  <span className="text-gray-600">Powierzchnia:</span>
-                  <span>{product.calculations.surface.toFixed(3)} m²</span>
+                  <span className="text-gray-400">Powierzchnia:</span>
+                  <span className="text-gray-200">{product.calculations.surface.toFixed(3)} m²</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-gray-600">Waga:</span>
-                  <span>{product.calculations.weight.toFixed(2)} kg</span>
+                  <span className="text-gray-400">Waga:</span>
+                  <span className="text-gray-200">{product.calculations.weight.toFixed(2)} kg</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-gray-600">Szt. na palecie:</span>
-                  <span>{product.calculations.piecesPerPallet}</span>
+                  <span className="text-gray-400">Szt. na palecie:</span>
+                  <span className="text-gray-200">{product.calculations.piecesPerPallet}</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-gray-600">Szt. w kartonie:</span>
-                  <span>{product.calculations.piecesPerBox}</span>
+                  <span className="text-gray-400">Szt. w kartonie:</span>
+                  <span className="text-gray-200">{product.calculations.piecesPerBox}</span>
                 </div>
               </div>
             </div>
 
             {/* Opcje dodatkowe */}
             {Object.entries(product.options).filter(([_, value]) => value).length > 0 && (
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">Opcje dodatkowe</h3>
+              <div className="bg-zinc-800 rounded-lg shadow-xl p-6">
+                <h3 className="text-lg font-semibold mb-4 text-white">Opcje dodatkowe</h3>
                 <ul className="space-y-2 text-sm">
                   {Object.entries(product.options)
                     .filter(([_, value]) => value)
                     .map(([option]) => (
-                      <li key={option} className="flex items-center gap-2">
+                      <li key={option} className="flex items-center gap-2 text-gray-300">
                         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                         {option.replace(/_/g, ' ')}
                       </li>
@@ -247,7 +247,7 @@ export const ProductDetailPage: React.FC = () => {
               </button>
               <button 
                 onClick={() => navigate(`/configurator/public/${product.id}`)}
-                className="w-full px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                className="w-full px-6 py-3 bg-zinc-700 text-white rounded-lg hover:bg-zinc-600 transition-colors font-medium"
               >
                 Otwórz w konfiguratorze
               </button>

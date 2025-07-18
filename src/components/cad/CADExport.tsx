@@ -75,24 +75,34 @@ export const CADExport: React.FC<CADExportProps> = ({ item }) => {
     }
   };
 
-  const getColorClasses = (color: string, isActive: boolean) => {
+  const getColorClasses = (color: string) => {
     const colors = {
-      blue: isActive ? 'border-blue-500 bg-blue-50' : 'border-blue-200 hover:border-blue-400 hover:bg-blue-50',
-      green: isActive ? 'border-green-500 bg-green-50' : 'border-green-200 hover:border-green-400 hover:bg-green-50',
-      purple: isActive ? 'border-purple-500 bg-purple-50' : 'border-purple-200 hover:border-purple-400 hover:bg-purple-50',
-      orange: isActive ? 'border-orange-500 bg-orange-50' : 'border-orange-200 hover:border-orange-400 hover:bg-orange-50'
+      blue: 'bg-blue-500 hover:bg-blue-600',
+      green: 'bg-green-500 hover:bg-green-600',
+      purple: 'bg-purple-500 hover:bg-purple-600',
+      orange: 'bg-orange-500 hover:bg-orange-600'
     };
     return colors[color as keyof typeof colors] || colors.blue;
   };
 
+  const getIconColor = (color: string) => {
+    const colors = {
+      blue: 'text-blue-400',
+      green: 'text-green-400',
+      purple: 'text-purple-400',
+      orange: 'text-orange-400'
+    };
+    return colors[color as keyof typeof colors] || 'text-blue-400';
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-        <Download className="w-6 h-6 text-blue-600" />
+    <div className="bg-zinc-700 rounded-xl shadow-lg p-6">
+      <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+        <Download className="w-6 h-6 text-blue-500" />
         Eksport do CAD
       </h3>
 
-      <p className="text-gray-600 mb-6">
+      <p className="text-gray-300 mb-6">
         Pobierz plik techniczny do swojego programu CAD lub maszyny CNC
       </p>
 
@@ -103,48 +113,48 @@ export const CADExport: React.FC<CADExportProps> = ({ item }) => {
             onClick={() => handleExport(format as any)}
             disabled={isExporting !== null}
             className={`
-              relative p-4 rounded-lg border-2 transition-all
+              relative p-4 rounded-lg border-2 border-zinc-600 transition-all
               ${isExporting === format 
-                ? 'border-gray-400 bg-gray-100' 
-                : getColorClasses(color, false)}
+                ? 'bg-zinc-800 opacity-50' 
+                : 'bg-zinc-800 hover:border-zinc-500 hover:bg-zinc-700'}
               ${isExporting !== null && isExporting !== format ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
           >
             {isExporting === format && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-lg">
+              <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/80 rounded-lg">
                 <div className="w-6 h-6 border-3 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
             
-            <Icon className={`w-8 h-8 mb-2 mx-auto text-${color}-600`} />
-            <h4 className="font-semibold">{name}</h4>
-            <p className="text-xs text-gray-500 mt-1">{description}</p>
+            <Icon className={`w-8 h-8 mb-2 mx-auto ${getIconColor(color)}`} />
+            <h4 className="font-semibold text-white">{name}</h4>
+            <p className="text-xs text-gray-400 mt-1">{description}</p>
           </button>
         ))}
       </div>
 
       {/* Informacje techniczne */}
-      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-        <h4 className="font-semibold mb-2 text-sm">Parametry eksportu:</h4>
-        <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+      <div className="mt-6 p-4 bg-zinc-800 rounded-lg">
+        <h4 className="font-semibold mb-2 text-sm text-white">Parametry eksportu:</h4>
+        <div className="grid grid-cols-2 gap-2 text-xs text-gray-400">
           <div>
-            <span className="font-medium">Jednostki:</span> milimetry (mm)
+            <span className="font-medium text-gray-300">Jednostki:</span> milimetry (mm)
           </div>
           <div>
-            <span className="font-medium">Skala:</span> 1:1
+            <span className="font-medium text-gray-300">Skala:</span> 1:1
           </div>
           <div>
-            <span className="font-medium">Dokładność:</span> 0.01 mm
+            <span className="font-medium text-gray-300">Dokładność:</span> 0.01 mm
           </div>
           <div>
-            <span className="font-medium">Współrzędne:</span> Kartezjańskie
+            <span className="font-medium text-gray-300">Współrzędne:</span> Kartezjańskie
           </div>
         </div>
       </div>
 
       {/* Dodatkowe info o produkcie */}
-      <div className="mt-4 text-xs text-gray-500">
-        <p>Plik zawiera:</p>
+      <div className="mt-4 text-xs text-gray-400">
+        <p className="text-gray-300">Plik zawiera:</p>
         <ul className="list-disc list-inside mt-1 space-y-1">
           <li>Dokładne wymiary: {item.dimensions.width} × {item.dimensions.height} × {item.dimensions.depth} mm</li>
           <li>Grubość materiału: {item.thickness} mm</li>
