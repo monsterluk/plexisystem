@@ -51,6 +51,7 @@ interface NestingResult {
   partsLayout: { partId: string; x: number; y: number; rotation: number }[];
   materialCost: number;
   estimatedCutTime: number;
+  totalCuttingLength: number;
 }
 
 export function AIAssistant() {
@@ -88,8 +89,8 @@ export function AIAssistant() {
     const newPart: NestingPart = {
       id: `part_${Date.now()}`,
       name: `Część ${nestingParts.length + 1}`,
-      width: 100,
-      height: 100,
+      width: 200,  // bardziej realistyczny rozmiar
+      height: 300, // bardziej realistyczny rozmiar
       quantity: 1,
       material: 'PMMA 3mm',
       thickness: 3,
@@ -116,23 +117,43 @@ export function AIAssistant() {
     setLoading(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Obliczanie powierzchni z uwzględnieniem marginesu cięcia (5mm)
-    const cuttingMargin = 5; // margines cięcia w mm
+    // Parametry cięcia
+    const cuttingMargin = 5; // margines między detalami w mm
+    const toolOffset = 3; // offset na średnicę freza w mm (frez 6mm)
+    const cuttingSpeed = 1250; // prędkość frezowania mm/min (1.25 m/min)
+    const hourlyRate = 170; // stawka roboczogodziny w zł
+    
+    // Obliczanie powierzchni z uwzględnieniem marginesów
     const totalPartsArea = nestingParts.reduce((sum, part) => 
-      sum + ((part.width + cuttingMargin * 2) * (part.height + cuttingMargin * 2) * part.quantity), 0
+      sum + ((part.width + (cuttingMargin + toolOffset) * 2) * (part.height + (cuttingMargin + toolOffset) * 2) * part.quantity), 0
     );
+
+    // Obliczanie obwodu do cięcia (dla czasu cięcia)
+    const totalCuttingLength = nestingParts.reduce((sum, part) => {
+      const perimeter = 2 * (part.width + part.height);
+      return sum + (perimeter * part.quantity);
+    }, 0);
 
     const sheetArea = selectedSheet.width * selectedSheet.height;
     
-    // Realistyczna efektywność (70-85% w zależności od wypełnienia)
+    // Realistyczna efektywność (65-80% w zależności od wypełnienia)
     const fillRatio = totalPartsArea / sheetArea;
-    const estimatedEfficiency = Math.min(85, Math.max(50, 70 + fillRatio * 15));
+    const estimatedEfficiency = Math.min(80, Math.max(45, 65 + fillRatio * 15));
     
     // Rzeczywista powierzchnia użyta (z marginesami)
     const usedArea = totalPartsArea;
     const totalSheets = Math.ceil(usedArea / (sheetArea * (estimatedEfficiency / 100)));
     const totalUsedSheetArea = totalSheets * sheetArea;
     const wasteArea = totalUsedSheetArea - totalPartsArea;
+
+    // Czas cięcia w minutach
+    const cuttingTime = totalCuttingLength / cuttingSpeed;
+    const setupTime = 15; // czas przygotowania na arkusz
+    const totalTime = cuttingTime + (setupTime * totalSheets);
+    
+    // Koszt materiału (45 zł/m²) + koszt cięcia
+    const materialCost = totalSheets * 45 * (sheetArea / 1000000);
+    const cuttingCost = (totalTime / 60) * hourlyRate;
 
     const result: NestingResult = {
       sheetSize: selectedSheet,
@@ -142,13 +163,14 @@ export function AIAssistant() {
       partsLayout: nestingParts.flatMap(part => 
         Array.from({ length: part.quantity }, (_, i) => ({
           partId: `${part.id}_${i}`,
-          x: Math.random() * Math.max(0, selectedSheet.width - part.width - cuttingMargin * 2),
-          y: Math.random() * Math.max(0, selectedSheet.height - part.height - cuttingMargin * 2),
+          x: Math.random() * Math.max(0, selectedSheet.width - part.width - (cuttingMargin + toolOffset) * 2),
+          y: Math.random() * Math.max(0, selectedSheet.height - part.height - (cuttingMargin + toolOffset) * 2),
           rotation: Math.random() > 0.7 ? 90 : 0
         }))
       ),
-      materialCost: totalSheets * 45 * ((selectedSheet.width * selectedSheet.height) / 1000000),
-      estimatedCutTime: (totalPartsArea / 100) / 150 // mm²/min -> min
+      materialCost: materialCost + cuttingCost,
+      estimatedCutTime: totalTime,
+      totalCuttingLength: totalCuttingLength
     };
 
     setNestingResults([result]);
@@ -514,7 +536,19 @@ export function AIAssistant() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Koszt materiału:</span>
+                      <span className="font-medium text-gray-200">{((result.totalSheets * 45 * (result.sheetSize.width * result.sheetSize.height / 1000000))).toFixed(0)} zł</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Koszt cięcia:</span>
+                      <span className="font-medium text-gray-200">{(result.materialCost - (result.totalSheets * 45 * (result.sheetSize.width * result.sheetSize.height / 1000000))).toFixed(0)} zł</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Koszt całkowity:</span>
                       <span className="font-medium text-gray-200">{result.materialCost.toFixed(0)} zł</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Długość cięcia:</span>
+                      <span className="font-medium text-gray-200">{(result.totalCuttingLength / 1000).toFixed(2)} m</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Czas cięcia:</span>
@@ -524,42 +558,105 @@ export function AIAssistant() {
 
                   {/* Wizualizacja arkusza */}
                   <div className="border border-gray-600 rounded-lg p-3 bg-gray-700/30">
-                    <div className="text-xs text-gray-400 mb-2">Podgląd nestingu:</div>
-                    <div 
-                      className="relative border-2 border-gray-500 bg-gray-800"
-                      style={{ 
-                        width: '100%', 
-                        height: '120px',
-                        aspectRatio: `${result.sheetSize.width} / ${result.sheetSize.height}`
-                      }}
-                    >
-                      {result.partsLayout.slice(0, 10).map((layout, i) => {
-                        const part = nestingParts.find(p => layout.partId.startsWith(p.id));
-                        if (!part) return null;
+                    <div className="text-xs text-gray-400 mb-2">Podgląd nestingu (skala {(300 / Math.max(result.sheetSize.width, result.sheetSize.height)).toFixed(2)}:1):</div>
+                    <div className="overflow-auto">
+                      <div 
+                        className="relative border-2 border-gray-500 bg-gray-900 mx-auto"
+                        style={{ 
+                          width: `${Math.min(300, result.sheetSize.width * 300 / Math.max(result.sheetSize.width, result.sheetSize.height))}px`,
+                          height: `${Math.min(300, result.sheetSize.height * 300 / Math.max(result.sheetSize.width, result.sheetSize.height))}px`
+                        }}
+                      >
+                        {/* Siatka pomocnicza */}
+                        <div className="absolute inset-0 opacity-10">
+                          {Array.from({ length: 10 }, (_, i) => (
+                            <div key={`h-${i}`} className="absolute w-full border-b border-gray-400" style={{ top: `${i * 10}%` }} />
+                          ))}
+                          {Array.from({ length: 10 }, (_, i) => (
+                            <div key={`v-${i}`} className="absolute h-full border-r border-gray-400" style={{ left: `${i * 10}%` }} />
+                          ))}
+                        </div>
                         
-                        const scaleX = 100 / result.sheetSize.width;
-                        const scaleY = 120 / result.sheetSize.height;
-                        
-                        return (
-                          <div
-                            key={layout.partId}
-                            className="absolute border border-blue-400 bg-blue-100 opacity-75"
-                            style={{
-                              left: `${layout.x * scaleX}%`,
-                              top: `${layout.y * scaleY}%`,
-                              width: `${part.width * scaleX}%`,
-                              height: `${part.height * scaleY}%`,
-                              transform: `rotate(${layout.rotation}deg)`,
-                              fontSize: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                          >
-                            {part.name.substring(0, 3)}
-                          </div>
-                        );
-                      })}
+                        {/* Detale */}
+                        {result.partsLayout.map((layout, i) => {
+                          const part = nestingParts.find(p => layout.partId.startsWith(p.id));
+                          if (!part) return null;
+                          
+                          const scale = Math.min(300, Math.max(result.sheetSize.width, result.sheetSize.height)) / Math.max(result.sheetSize.width, result.sheetSize.height);
+                          const cuttingMargin = 5;
+                          const toolOffset = 3;
+                          
+                          return (
+                            <div key={layout.partId} className="absolute group">
+                              {/* Obszar z offsetem freza */}
+                              <div
+                                className="absolute border border-red-400/50 bg-red-500/10"
+                                style={{
+                                  left: `${(layout.x - toolOffset) * scale}px`,
+                                  top: `${(layout.y - toolOffset) * scale}px`,
+                                  width: `${(part.width + (cuttingMargin + toolOffset) * 2) * scale}px`,
+                                  height: `${(part.height + (cuttingMargin + toolOffset) * 2) * scale}px`,
+                                  transform: layout.rotation ? `rotate(${layout.rotation}deg)` : undefined,
+                                  transformOrigin: 'center'
+                                }}
+                              />
+                              {/* Obszar z marginesem */}
+                              <div
+                                className="absolute border border-yellow-400/50 bg-yellow-500/10"
+                                style={{
+                                  left: `${layout.x * scale}px`,
+                                  top: `${layout.y * scale}px`,
+                                  width: `${(part.width + cuttingMargin * 2) * scale}px`,
+                                  height: `${(part.height + cuttingMargin * 2) * scale}px`,
+                                  transform: layout.rotation ? `rotate(${layout.rotation}deg)` : undefined,
+                                  transformOrigin: 'center'
+                                }}
+                              />
+                              {/* Faktyczny detal */}
+                              <div
+                                className="absolute border-2 border-blue-400 bg-blue-500/30 flex items-center justify-center text-white font-bold transition-all hover:bg-blue-500/50 hover:z-10"
+                                style={{
+                                  left: `${(layout.x + cuttingMargin) * scale}px`,
+                                  top: `${(layout.y + cuttingMargin) * scale}px`,
+                                  width: `${part.width * scale}px`,
+                                  height: `${part.height * scale}px`,
+                                  fontSize: `${Math.max(8, Math.min(12, part.width * scale / 8))}px`,
+                                  transform: layout.rotation ? `rotate(${layout.rotation}deg)` : undefined,
+                                  transformOrigin: 'center'
+                                }}
+                              >
+                                <span className="drop-shadow-lg">{part.name.substring(0, 8)}</span>
+                              </div>
+                              {/* Tooltip */}
+                              <div className="absolute hidden group-hover:block z-20 bg-gray-800 text-white text-xs p-2 rounded shadow-lg whitespace-nowrap"
+                                style={{
+                                  left: `${(layout.x + part.width / 2) * scale}px`,
+                                  top: `${(layout.y - 30) * scale}px`,
+                                  transform: 'translateX(-50%)'
+                                }}
+                              >
+                                {part.name}: {part.width}×{part.height}mm
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    
+                    {/* Legenda */}
+                    <div className="mt-3 flex flex-wrap gap-3 text-xs">
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 border-2 border-blue-400 bg-blue-500/30"></div>
+                        <span className="text-gray-400">Detal</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 border border-yellow-400/50 bg-yellow-500/10"></div>
+                        <span className="text-gray-400">Margines 5mm</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 border border-red-400/50 bg-red-500/10"></div>
+                        <span className="text-gray-400">Offset freza 3mm</span>
+                      </div>
                     </div>
                   </div>
 
@@ -593,9 +690,13 @@ export function AIAssistant() {
             {nestingResults[0].efficiency > 85 && (
               <p>• Doskonała efektywność ({nestingResults[0].efficiency.toFixed(1)}%) - układ jest optymalny!</p>
             )}
-            <p>• Zastosowano 5mm margines bezpieczeństwa między detalami</p>
+            <p>• Zastosowano 5mm margines bezpieczeństwa + 3mm offset freza (frez φ6mm)</p>
+            <p>• Prędkość frezowania: 1.25 m/min, koszt roboczogodziny: 170 zł</p>
             <p>• Odpad wynosi {((nestingResults[0].wasteArea / (nestingResults[0].totalSheets * nestingResults[0].sheetSize.width * nestingResults[0].sheetSize.height)) * 100).toFixed(1)}% całkowitej powierzchni</p>
-            <p>• Przy większej liczbie detali efektywność może wzrosnąć</p>
+            <p>• Optymalne układanie detali z rotacją 90° może poprawić efektywność</p>
+            {nestingResults[0].totalSheets > 1 && (
+              <p>• Rozważ produkcję seryjna dla lepszego wykorzystania materiału</p>
+            )}
           </div>
         </div>
       )}
