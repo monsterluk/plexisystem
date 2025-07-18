@@ -213,6 +213,71 @@ const articles: Article[] = [
     tags: ['API', 'integracja', 'programowanie'],
     author: 'Dev Team',
     date: '2024-02-12'
+  },
+  {
+    id: '11',
+    title: 'Parametry frezowania dla różnych materiałów',
+    excerpt: 'Kompletne tabele parametrów frezowania dla PMMA, PETG, PC, PCV i innych. RPM, posuwy, typy frezów.',
+    category: 'advanced',
+    readTime: '15 min',
+    views: 856,
+    helpful: 124,
+    icon: <Settings className="w-5 h-5" />,
+    tags: ['frezowanie', 'parametry', 'CNC'],
+    author: 'Operator CNC',
+    date: '2024-02-15'
+  },
+  {
+    id: '12',
+    title: 'Kompendium tworzyw - porównanie i zastosowania',
+    excerpt: 'Pełne porównanie właściwości PMMA, PETG, PC, PCV, Dibond. Kiedy stosować każdy materiał.',
+    category: 'products',
+    readTime: '12 min',
+    views: 723,
+    helpful: 98,
+    icon: <Layers className="w-5 h-5" />,
+    tags: ['materiały', 'tworzywa', 'porównanie'],
+    author: 'Technolog',
+    date: '2024-02-18'
+  },
+  {
+    id: '13',
+    title: 'Dobór freza do materiału i zadania',
+    excerpt: 'Jak wybrać odpowiedni frez: 1-ostrzowy do tworzyw, 2/3-ostrzowy do drewna, kompresyjny, V-bit.',
+    category: 'advanced',
+    readTime: '8 min',
+    views: 567,
+    helpful: 89,
+    icon: <Zap className="w-5 h-5" />,
+    tags: ['frezy', 'narzędzia', 'CNC'],
+    author: 'Mistrz Produkcji',
+    date: '2024-02-20'
+  },
+  {
+    id: '14',
+    title: 'Rozwiązywanie problemów podczas frezowania',
+    excerpt: 'Topienie materiału, postrzępione krawędzie, wibracje - przyczyny i skuteczne rozwiązania.',
+    category: 'troubleshooting',
+    readTime: '10 min',
+    views: 445,
+    helpful: 178,
+    icon: <AlertCircle className="w-5 h-5" />,
+    tags: ['problemy', 'frezowanie', 'rozwiązania'],
+    author: 'Support Techniczny',
+    date: '2024-02-22'
+  },
+  {
+    id: '15',
+    title: 'Szyldy i litery 3D - od projektu do realizacji',
+    excerpt: 'Kompletny przewodnik: dobór materiałów, techniki produkcji, podświetlenie LED, montaż.',
+    category: 'products',
+    readTime: '14 min',
+    views: 892,
+    helpful: 145,
+    icon: <Award className="w-5 h-5" />,
+    tags: ['szyldy', 'litery 3D', 'reklama'],
+    author: 'Projektant',
+    date: '2024-02-25'
   }
 ];
 
@@ -586,6 +651,430 @@ export function KnowledgeBase() {
                             <li>Popularna w kasetonach reklamowych</li>
                             <li>Cena bazowa: 33 zł/kg</li>
                           </ul>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '3' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Obliczanie kosztów transportu</h3>
+                          <p className="text-gray-300 mb-4">
+                            System automatycznie kalkuluje koszty transportu na podstawie wagi zamówienia i regionu dostawy.
+                          </p>
+                          <div className="bg-zinc-700/30 rounded-lg p-4 mb-4">
+                            <h4 className="text-white font-semibold mb-2">Regiony dostawy:</h4>
+                            <ul className="list-disc list-inside text-gray-300 space-y-1">
+                              <li>Trójmiasto i okolice (do 50km) - 0.5 zł/kg, min. 30 zł</li>
+                              <li>Pomorskie - 0.8 zł/kg, min. 50 zł</li>
+                              <li>Polska północna - 1.2 zł/kg, min. 80 zł</li>
+                              <li>Pozostałe regiony - 1.5 zł/kg, min. 100 zł</li>
+                              <li>Odbiór osobisty - 0 zł</li>
+                            </ul>
+                          </div>
+                          <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-4">
+                            <p className="text-sm text-amber-300">
+                              <strong>Uwaga:</strong> Waga obliczana jest automatycznie na podstawie wymiarów, grubości i gęstości materiału.
+                            </p>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '4' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Automatyczne pobieranie danych z GUS</h3>
+                          <p className="text-gray-300 mb-4">
+                            System integruje się z bazą REGON, umożliwiając automatyczne uzupełnianie danych firmy po wpisaniu NIP.
+                          </p>
+                          <ol className="list-decimal list-inside text-gray-300 space-y-3">
+                            <li>W formularzu dodawania klienta wpisz NIP</li>
+                            <li>Kliknij przycisk "Pobierz z GUS"</li>
+                            <li>System automatycznie uzupełni:
+                              <ul className="list-disc list-inside ml-6 mt-2">
+                                <li>Nazwę firmy</li>
+                                <li>Adres siedziby</li>
+                                <li>REGON</li>
+                                <li>Formę prawną</li>
+                              </ul>
+                            </li>
+                            <li>Zweryfikuj dane i zapisz klienta</li>
+                          </ol>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '5' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Wykorzystaj moc Marketplace</h3>
+                          <p className="text-gray-300 mb-4">
+                            Marketplace to biblioteka gotowych szablonów produktów, które możesz wykorzystać w swoich ofertach.
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-white font-semibold mb-2">Jak korzystać:</h4>
+                              <ol className="list-decimal list-inside text-gray-300 space-y-2 text-sm">
+                                <li>Wejdź w zakładkę Marketplace</li>
+                                <li>Przeglądaj kategorie lub użyj wyszukiwarki</li>
+                                <li>Kliknij "Użyj w kalkulatorze"</li>
+                                <li>Produkt zostanie automatycznie skonfigurowany</li>
+                                <li>Dostosuj wymiary i dodaj do oferty</li>
+                              </ol>
+                            </div>
+                            <div className="bg-emerald-900/20 border border-emerald-600/30 rounded-lg p-4">
+                              <h4 className="text-emerald-300 font-semibold mb-2">Korzyści:</h4>
+                              <ul className="list-disc list-inside text-gray-300 space-y-2 text-sm">
+                                <li>Oszczędność czasu - do 70%</li>
+                                <li>Sprawdzone konfiguracje</li>
+                                <li>Profesjonalne opisy produktów</li>
+                                <li>Optymalne parametry materiałowe</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '6' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Typy ekspozytorów</h3>
+                          <div className="space-y-4">
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-purple-300 font-semibold mb-2">Podstawkowy</h4>
+                              <p className="text-gray-300 text-sm">Podstawa + plecy + boki + opcjonalny topper. Idealny na lady sklepowe.</p>
+                            </div>
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-purple-300 font-semibold mb-2">Schodkowy</h4>
+                              <p className="text-gray-300 text-sm">3-5 półek stopniowanych. Maksymalizuje widoczność produktów.</p>
+                            </div>
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-purple-300 font-semibold mb-2">Z haczykami</h4>
+                              <p className="text-gray-300 text-sm">Płyta perforowana pod haczyki. Do produktów w blistrach.</p>
+                            </div>
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-purple-300 font-semibold mb-2">Kosmetyczny</h4>
+                              <p className="text-gray-300 text-sm">Półki z ogranicznikami. Specjalnie do lakierów, pomadek itp.</p>
+                            </div>
+                          </div>
+                        </section>
+
+                        <section className="mt-6">
+                          <h3 className="text-xl font-semibold text-white mb-3">Dobór materiału</h3>
+                          <div className="bg-zinc-700/30 rounded-lg p-4">
+                            <p className="text-gray-300 mb-3">Rekomendacje materiałowe:</p>
+                            <ul className="list-disc list-inside text-gray-300 space-y-2">
+                              <li><strong className="text-white">Plexi bezbarwna</strong> - elegancja, przezroczystość</li>
+                              <li><strong className="text-white">Plexi mleczna</strong> - dyfuzja światła, podświetlenie LED</li>
+                              <li><strong className="text-white">PCV spienione</strong> - lekkie, ekonomiczne na duże ekspozytory</li>
+                              <li><strong className="text-white">Dibond</strong> - premium, na elementy brandingowe</li>
+                            </ul>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '7' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Role i uprawnienia</h3>
+                          <div className="space-y-4">
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-amber-300 font-semibold mb-2">Administrator</h4>
+                              <ul className="list-disc list-inside text-gray-300 space-y-1 text-sm">
+                                <li>Pełny dostęp do systemu</li>
+                                <li>Zarządzanie użytkownikami</li>
+                                <li>Dostęp do raportów finansowych</li>
+                                <li>Konfiguracja systemu</li>
+                              </ul>
+                            </div>
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-blue-300 font-semibold mb-2">Handlowiec</h4>
+                              <ul className="list-disc list-inside text-gray-300 space-y-1 text-sm">
+                                <li>Tworzenie i edycja ofert</li>
+                                <li>Zarządzanie własnymi klientami</li>
+                                <li>Dostęp do kalkulatora</li>
+                                <li>Podgląd własnych statystyk</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '8' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Kluczowe wskaźniki KPI</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-emerald-300 font-semibold mb-2">Konwersja ofert</h4>
+                              <p className="text-gray-300 text-sm">Stosunek ofert zaakceptowanych do wysłanych. Cel: >30%</p>
+                            </div>
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-emerald-300 font-semibold mb-2">Średnia wartość zamówienia</h4>
+                              <p className="text-gray-300 text-sm">Monitoruj trend. Rosnący = rozwój biznesu</p>
+                            </div>
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-emerald-300 font-semibold mb-2">Czas realizacji</h4>
+                              <p className="text-gray-300 text-sm">Od oferty do dostawy. Cel: <7 dni</p>
+                            </div>
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-emerald-300 font-semibold mb-2">Retencja klientów</h4>
+                              <p className="text-gray-300 text-sm">% powracających klientów. Cel: >60%</p>
+                            </div>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '9' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Częste problemy z generowaniem PDF</h3>
+                          <div className="space-y-4">
+                            <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                              <h4 className="text-red-300 font-semibold mb-2">Problem: Brak danych klienta</h4>
+                              <p className="text-gray-300 text-sm mb-2">PDF nie generuje się, gdy brakuje wymaganych danych.</p>
+                              <p className="text-emerald-300 text-sm"><strong>Rozwiązanie:</strong> Upewnij się, że klient ma uzupełnione: NIP, nazwę, adres.</p>
+                            </div>
+                            <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                              <h4 className="text-red-300 font-semibold mb-2">Problem: Pusta oferta</h4>
+                              <p className="text-gray-300 text-sm mb-2">System nie generuje PDF dla ofert bez produktów.</p>
+                              <p className="text-emerald-300 text-sm"><strong>Rozwiązanie:</strong> Dodaj przynajmniej jeden produkt do oferty.</p>
+                            </div>
+                            <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                              <h4 className="text-red-300 font-semibold mb-2">Problem: Błąd formatowania</h4>
+                              <p className="text-gray-300 text-sm mb-2">Specjalne znaki mogą powodować błędy.</p>
+                              <p className="text-emerald-300 text-sm"><strong>Rozwiązanie:</strong> Unikaj znaków specjalnych w opisach. Używaj podstawowych znaków.</p>
+                            </div>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '10' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Podstawy API PlexiSystem</h3>
+                          <div className="bg-zinc-700/30 rounded-lg p-4 mb-4">
+                            <h4 className="text-purple-300 font-semibold mb-2">Autoryzacja</h4>
+                            <pre className="bg-zinc-900 p-3 rounded text-sm text-gray-300 overflow-x-auto">
+{`headers: {
+  'Authorization': 'Bearer YOUR_API_KEY',
+  'Content-Type': 'application/json'
+}`}
+                            </pre>
+                          </div>
+                          <div className="bg-zinc-700/30 rounded-lg p-4 mb-4">
+                            <h4 className="text-purple-300 font-semibold mb-2">Główne endpointy</h4>
+                            <ul className="list-disc list-inside text-gray-300 space-y-2 text-sm">
+                              <li><code className="bg-zinc-900 px-2 py-1 rounded">GET /api/offers</code> - lista ofert</li>
+                              <li><code className="bg-zinc-900 px-2 py-1 rounded">POST /api/offers</code> - nowa oferta</li>
+                              <li><code className="bg-zinc-900 px-2 py-1 rounded">GET /api/clients</code> - lista klientów</li>
+                              <li><code className="bg-zinc-900 px-2 py-1 rounded">GET /api/products</code> - katalog produktów</li>
+                            </ul>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '11' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Parametry frezowania PMMA (Plexi)</h3>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-gray-300">
+                              <thead>
+                                <tr className="border-b border-zinc-700">
+                                  <th className="text-left p-2">Śr. [mm]</th>
+                                  <th className="text-left p-2">RPM</th>
+                                  <th className="text-left p-2">Posuw [mm/min]</th>
+                                  <th className="text-left p-2">Typ freza</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-b border-zinc-800"><td className="p-2">3</td><td className="p-2">20000-24000</td><td className="p-2">800-1500</td><td className="p-2">1-ostrzowy</td></tr>
+                                <tr className="border-b border-zinc-800"><td className="p-2">6</td><td className="p-2">16000-20000</td><td className="p-2">1500-2800</td><td className="p-2">1-ostrzowy</td></tr>
+                                <tr className="border-b border-zinc-800"><td className="p-2">10</td><td className="p-2">12000-16000</td><td className="p-2">2000-3500</td><td className="p-2">1-ostrzowy/MCD</td></tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-4 mt-4">
+                            <p className="text-sm text-blue-300">
+                              <strong>Pro-tip:</strong> Utrzymuj wysoką prędkość posuwu, by uniknąć topienia materiału!
+                            </p>
+                          </div>
+                        </section>
+
+                        <section className="mt-6">
+                          <h3 className="text-xl font-semibold text-white mb-3">Parametry frezowania PETG</h3>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-gray-300">
+                              <thead>
+                                <tr className="border-b border-zinc-700">
+                                  <th className="text-left p-2">Śr. [mm]</th>
+                                  <th className="text-left p-2">RPM</th>
+                                  <th className="text-left p-2">Posuw [mm/min]</th>
+                                  <th className="text-left p-2">Uwagi</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-b border-zinc-800"><td className="p-2">3</td><td className="p-2">16000-20000</td><td className="p-2">600-1200</td><td className="p-2">Kontrola temperatury</td></tr>
+                                <tr className="border-b border-zinc-800"><td className="p-2">6</td><td className="p-2">14000-18000</td><td className="p-2">1000-2000</td><td className="p-2">Tendencja do topienia</td></tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '12' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Porównanie tworzyw</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-purple-300 font-semibold mb-3">PMMA (Plexi)</h4>
+                              <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Przezroczystość:</span>
+                                  <span className="text-yellow-400">★★★★★</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Odporność UV:</span>
+                                  <span className="text-yellow-400">★★★★★</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Udarośc:</span>
+                                  <span className="text-yellow-400">★★☆☆☆</span>
+                                </div>
+                                <p className="text-emerald-300 mt-3">Najlepszy do: szyldów, gablot, displayów</p>
+                              </div>
+                            </div>
+                            <div className="bg-zinc-700/30 rounded-lg p-4">
+                              <h4 className="text-purple-300 font-semibold mb-3">PC Lity (Poliwęglan)</h4>
+                              <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Przezroczystość:</span>
+                                  <span className="text-yellow-400">★★★★☆</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Odporność UV:</span>
+                                  <span className="text-yellow-400">★★★★☆</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Udarośc:</span>
+                                  <span className="text-yellow-400">★★★★★</span>
+                                </div>
+                                <p className="text-emerald-300 mt-3">Najlepszy do: osłon maszyn, szyb bezpiecznych</p>
+                              </div>
+                            </div>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '13' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Rodzaje frezów i ich zastosowanie</h3>
+                          <div className="space-y-4">
+                            <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-lg p-4 border border-purple-600/30">
+                              <h4 className="text-purple-300 font-semibold mb-2">Frez 1-ostrzowy</h4>
+                              <p className="text-gray-300 text-sm mb-2">Idealny do: Plexi, PCV, PETG, HIPS</p>
+                              <p className="text-emerald-300 text-sm">Zalety: Doskonałe odprowadzanie wióra, minimalizuje topienie, gładka krawędź</p>
+                            </div>
+                            <div className="bg-gradient-to-r from-blue-900/20 to-indigo-900/20 rounded-lg p-4 border border-blue-600/30">
+                              <h4 className="text-blue-300 font-semibold mb-2">Frez 2/3-ostrzowy</h4>
+                              <p className="text-gray-300 text-sm mb-2">Idealny do: MDF, sklejka, drewno lite</p>
+                              <p className="text-emerald-300 text-sm">Zalety: Większa szybkość posuwu, dobra jakość wykończenia</p>
+                            </div>
+                            <div className="bg-gradient-to-r from-emerald-900/20 to-teal-900/20 rounded-lg p-4 border border-emerald-600/30">
+                              <h4 className="text-emerald-300 font-semibold mb-2">Frez kompresyjny</h4>
+                              <p className="text-gray-300 text-sm mb-2">Idealny do: Płyta meblowa, sklejka, Dibond</p>
+                              <p className="text-emerald-300 text-sm">Zalety: Eliminuje wyrwania na górnej i dolnej krawędzi</p>
+                            </div>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '14' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Najczęstsze problemy i rozwiązania</h3>
+                          <div className="space-y-4">
+                            <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-4">
+                              <h4 className="text-red-300 font-semibold mb-2">Problem: Topienie się materiału</h4>
+                              <p className="text-gray-300 text-sm mb-2">Przyczyny: Za wysokie obroty, za wolny posuw, tępy frez</p>
+                              <div className="bg-zinc-800 rounded p-3 mt-2">
+                                <p className="text-emerald-300 text-sm font-semibold mb-2">Rozwiązania:</p>
+                                <ol className="list-decimal list-inside text-gray-300 text-sm space-y-1">
+                                  <li>Zmniejsz obroty o 10-20%</li>
+                                  <li>Zwiększ posuw</li>
+                                  <li>Wymień frez na nowy/ostry</li>
+                                  <li>Sprawdź chłodzenie/odciąg</li>
+                                </ol>
+                              </div>
+                            </div>
+                            <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-4">
+                              <h4 className="text-amber-300 font-semibold mb-2">Problem: Postrzępione krawędzie</h4>
+                              <p className="text-gray-300 text-sm mb-2">Przyczyny: Niewłaściwy frez, zbyt agresywne parametry</p>
+                              <div className="bg-zinc-800 rounded p-3 mt-2">
+                                <p className="text-emerald-300 text-sm font-semibold mb-2">Rozwiązania:</p>
+                                <ol className="list-decimal list-inside text-gray-300 text-sm space-y-1">
+                                  <li>Użyj frezu kompresyjnego</li>
+                                  <li>Zmniejsz głębokość skrawania</li>
+                                  <li>Zastosuj strategię obróbki zgrubnej i wykańczającej</li>
+                                </ol>
+                              </div>
+                            </div>
+                          </div>
+                        </section>
+                      </>
+                    )}
+
+                    {selectedArticle.id === '15' && (
+                      <>
+                        <section>
+                          <h3 className="text-xl font-semibold text-white mb-3">Proces produkcji szyldów i liter 3D</h3>
+                          <ol className="list-decimal list-inside text-gray-300 space-y-4">
+                            <li>
+                              <strong className="text-white">Projekt i przygotowanie plików</strong>
+                              <ul className="list-disc list-inside ml-6 mt-2 text-sm space-y-1">
+                                <li>Konwersja logo do wektorów</li>
+                                <li>Dobór wielkości i proporcji</li>
+                                <li>Przygotowanie ścieżek do frezowania</li>
+                              </ul>
+                            </li>
+                            <li>
+                              <strong className="text-white">Dobór materiałów</strong>
+                              <ul className="list-disc list-inside ml-6 mt-2 text-sm space-y-1">
+                                <li>Dibond - na tła i szyldy płaskie</li>
+                                <li>Plexi - na fronty liter (lico)</li>
+                                <li>PCV spienione - na "plecy" liter</li>
+                              </ul>
+                            </li>
+                            <li>
+                              <strong className="text-white">Frezowanie CNC</strong>
+                              <ul className="list-disc list-inside ml-6 mt-2 text-sm space-y-1">
+                                <li>Wycinanie konturów liter</li>
+                                <li>Fazowanie krawędzi (opcjonalnie)</li>
+                                <li>Otwory montażowe</li>
+                              </ul>
+                            </li>
+                            <li>
+                              <strong className="text-white">Podświetlenie LED (opcjonalnie)</strong>
+                              <ul className="list-disc list-inside ml-6 mt-2 text-sm space-y-1">
+                                <li>Montaż taśm LED wewnątrz liter</li>
+                                <li>Efekt halo - podświetlenie od tyłu</li>
+                                <li>Zasilacz i sterowanie</li>
+                              </ul>
+                            </li>
+                          </ol>
                         </section>
                       </>
                     )}
