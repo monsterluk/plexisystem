@@ -1826,7 +1826,7 @@ export function KnowledgeBase() {
                         </ul>
                         <h3 className="text-xl font-semibold text-blue-400 mt-6 mb-3">Kiedy użyć frezarki:</h3>
                         <ul className="space-y-2 list-disc list-inside ml-4">
-                          <li>Grube materiały (>20mm)</li>
+                          <li>Grube materiały (&gt;20mm)</li>
                           <li>Fazowanie krawędzi</li>
                           <li>Frezowanie kieszeni i rowków</li>
                           <li>Obróbka 3D</li>
