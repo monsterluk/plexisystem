@@ -179,6 +179,7 @@ const AppContent: React.FC = () => {
                         NEW
                       </span>
                     </a>
+                  </nav>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 lg:gap-4">
