@@ -8,43 +8,54 @@ export interface AIProvider {
   model: string;
   maxTokens: number;
   temperature: number;
+  headers?: Record<string, string>;
 }
+
+// Funkcja pomocnicza do pobierania zmiennych środowiskowych
+const getEnvVar = (key: string): string => {
+  // W Vite używamy import.meta.env zamiast process.env
+  return (import.meta.env[key] || '') as string;
+};
 
 // Przykładowe konfiguracje różnych dostawców AI
 export const AI_PROVIDERS = {
   // Claude AI (Anthropic)
   claude: {
     name: 'Claude AI',
-    apiKey: process.env.VITE_CLAUDE_API_KEY || '',
+    apiKey: getEnvVar('VITE_CLAUDE_API_KEY'),
     baseUrl: 'https://api.anthropic.com/v1',
     model: 'claude-3-opus-20240229', // lub claude-3-sonnet-20240229 dla szybszych odpowiedzi
     maxTokens: 4096,
     temperature: 0.7,
-    headers: {
-      'anthropic-version': '2023-06-01',
-      'x-api-key': process.env.VITE_CLAUDE_API_KEY || '',
-      'content-type': 'application/json'
+    get headers() {
+      return {
+        'anthropic-version': '2023-06-01',
+        'x-api-key': this.apiKey,
+        'content-type': 'application/json'
+      };
     }
   },
 
   // OpenAI GPT
   openai: {
     name: 'OpenAI GPT',
-    apiKey: process.env.VITE_OPENAI_API_KEY || '',
+    apiKey: getEnvVar('VITE_OPENAI_API_KEY'),
     baseUrl: 'https://api.openai.com/v1',
     model: 'gpt-4-turbo-preview', // lub gpt-3.5-turbo dla niższych kosztów
     maxTokens: 4096,
     temperature: 0.7,
-    headers: {
-      'Authorization': `Bearer ${process.env.VITE_OPENAI_API_KEY || ''}`,
-      'Content-Type': 'application/json'
+    get headers() {
+      return {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json'
+      };
     }
   },
 
   // Google Gemini
   gemini: {
     name: 'Google Gemini',
-    apiKey: process.env.VITE_GEMINI_API_KEY || '',
+    apiKey: getEnvVar('VITE_GEMINI_API_KEY'),
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
     model: 'gemini-pro',
     maxTokens: 2048,
@@ -57,14 +68,16 @@ export const AI_PROVIDERS = {
   // Perplexity AI
   perplexity: {
     name: 'Perplexity AI',
-    apiKey: process.env.VITE_PERPLEXITY_API_KEY || '',
+    apiKey: getEnvVar('VITE_PERPLEXITY_API_KEY'),
     baseUrl: 'https://api.perplexity.ai',
     model: 'pplx-70b-online', // Model z dostępem do internetu
     maxTokens: 4096,
     temperature: 0.7,
-    headers: {
-      'Authorization': `Bearer ${process.env.VITE_PERPLEXITY_API_KEY || ''}`,
-      'Content-Type': 'application/json'
+    get headers() {
+      return {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json'
+      };
     }
   }
 };
@@ -158,6 +171,11 @@ export class AIServiceAPI {
 
   async sendRequest(prompt: string): Promise<any> {
     try {
+      // Sprawdź czy API key jest ustawiony
+      if (!this.provider.apiKey) {
+        throw new Error(`Brak klucza API dla ${this.provider.name}. Ustaw zmienną środowiskową.`);
+      }
+
       let endpoint = '';
       let body: any = {};
 
