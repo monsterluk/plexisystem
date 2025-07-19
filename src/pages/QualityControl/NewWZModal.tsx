@@ -168,6 +168,7 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
         total: item.total
       }))
     };
+    console.log('Zapisywanie dokumentu:', document);
     onSave(document);
     // Nie zamykaj modaluOd razu - niech to zrobi rodzic po zapisie
   };

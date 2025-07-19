@@ -76,7 +76,7 @@ export function WZDocumentView({ document, isOpen, onClose }: WZDocumentViewProp
               <div className="flex justify-between items-start">
                 <div>
                   <h1 className="text-2xl font-bold text-gray-800 mb-2">DOKUMENT WYDANIA WZ</h1>
-                  <p className="text-lg font-semibold text-gray-600">{document.documentNumber}</p>
+                  <p className="text-lg font-semibold text-gray-600">{document.document_number || document.documentNumber}</p>
                 </div>
                 <div className="text-right">
                   <div className="mb-4">
@@ -97,20 +97,20 @@ export function WZDocumentView({ document, isOpen, onClose }: WZDocumentViewProp
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 mb-2 uppercase">Odbiorca</h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="font-semibold text-gray-800">{document.clientName}</p>
-                  <p className="text-gray-600">{document.clientAddress}</p>
-                  <p className="text-gray-600">NIP: {document.clientNIP}</p>
+                  <p className="font-semibold text-gray-800">{document.client_name || document.clientName}</p>
+                  <p className="text-gray-600">{document.client_address || document.clientAddress}</p>
+                  <p className="text-gray-600">NIP: {document.client_nip || document.clientNIP}</p>
                 </div>
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 mb-2 uppercase">Dostawa</h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-600">{document.deliveryAddress || document.clientAddress}</p>
+                  <p className="text-gray-600">{document.delivery_address || document.deliveryAddress || document.client_address || document.clientAddress}</p>
                   <p className="text-gray-600 mt-2">
-                    <span className="font-semibold">Data wydania:</span> {new Date(document.deliveryDate).toLocaleDateString('pl-PL')}
+                    <span className="font-semibold">Data wydania:</span> {document.delivery_date ? new Date(document.delivery_date).toLocaleDateString('pl-PL') : document.deliveryDate ? new Date(document.deliveryDate).toLocaleDateString('pl-PL') : 'Brak daty'}
                   </p>
                   <p className="text-gray-600">
-                    <span className="font-semibold">Nr zamówienia:</span> {document.orderNumber}
+                    <span className="font-semibold">Nr zamówienia:</span> {document.order_number || document.orderNumber}
                   </p>
                 </div>
               </div>
@@ -136,8 +136,8 @@ export function WZDocumentView({ document, isOpen, onClose }: WZDocumentViewProp
                     <tr key={item.id}>
                       <td className="border border-gray-300 px-4 py-2 text-sm">{index + 1}</td>
                       <td className="border border-gray-300 px-4 py-2">
-                        <p className="font-medium text-gray-800">{item.productName}</p>
-                        <p className="text-xs text-gray-500">{item.productCode}</p>
+                        <p className="font-medium text-gray-800">{item.product_name || item.productName}</p>
+                        <p className="text-xs text-gray-500">{item.product_code || item.productCode}</p>
                       </td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{item.quantity}</td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{item.unit}</td>
@@ -150,15 +150,15 @@ export function WZDocumentView({ document, isOpen, onClose }: WZDocumentViewProp
                 <tfoot>
                   <tr>
                     <td colSpan={6} className="border border-gray-300 px-4 py-2 text-right font-semibold">Wartość netto:</td>
-                    <td className="border border-gray-300 px-4 py-2 text-right font-semibold">{formatCurrency(document.netTotal || 0)}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-right font-semibold">{formatCurrency(document.net_total || document.netTotal || 0)}</td>
                   </tr>
                   <tr>
                     <td colSpan={6} className="border border-gray-300 px-4 py-2 text-right font-semibold">VAT:</td>
-                    <td className="border border-gray-300 px-4 py-2 text-right font-semibold">{formatCurrency(document.vatTotal || 0)}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-right font-semibold">{formatCurrency(document.vat_total || document.vatTotal || 0)}</td>
                   </tr>
                   <tr className="bg-gray-100">
                     <td colSpan={6} className="border border-gray-300 px-4 py-3 text-right font-bold text-lg">Razem do zapłaty:</td>
-                    <td className="border border-gray-300 px-4 py-3 text-right font-bold text-lg text-blue-600">{formatCurrency(document.grossTotal || 0)}</td>
+                    <td className="border border-gray-300 px-4 py-3 text-right font-bold text-lg text-blue-600">{formatCurrency(document.gross_total || document.grossTotal || 0)}</td>
                   </tr>
                 </tfoot>
               </table>
