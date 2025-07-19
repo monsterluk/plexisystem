@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Mail, Clock, Zap, Save, Plus, Trash2, Calendar, AlertCircle, CheckCircle, Settings, Toggle, X, ChevronRight, Sparkles } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { useUser } from '@/context/UserContext';
+import { TestDataReset } from '@/components/TestDataReset';
 
 interface AutomationRule {
   id: string;
@@ -31,7 +33,8 @@ interface NotificationSettings {
 }
 
 export function AutomationSettings() {
-  const [activeTab, setActiveTab] = useState<'rules' | 'notifications' | 'templates'>('rules');
+  const { isAdmin } = useUser();
+  const [activeTab, setActiveTab] = useState<'rules' | 'notifications' | 'templates' | 'admin'>('rules');
   const [rules, setRules] = useState<AutomationRule[]>([
     {
       id: '1',
@@ -402,6 +405,20 @@ export function AutomationSettings() {
     </div>
   );
 
+  const renderAdminSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-white">Ustawienia administratora</h3>
+        <p className="text-sm text-gray-400 mt-1">Zarządzaj ustawieniami systemu i danymi testowymi</p>
+      </div>
+
+      {/* Resetowanie danych testowych */}
+      <TestDataReset />
+      
+      {/* Dodatkowe ustawienia administratora mogą być dodane tutaj */}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Nagłówek */}
@@ -424,7 +441,8 @@ export function AutomationSettings() {
             {[
               { id: 'rules', label: 'Reguły', icon: Zap },
               { id: 'notifications', label: 'Powiadomienia', icon: Bell },
-              { id: 'templates', label: 'Szablony', icon: Mail }
+              { id: 'templates', label: 'Szablony', icon: Mail },
+              ...(isAdmin ? [{ id: 'admin', label: 'Administracja', icon: Settings }] : [])
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -448,6 +466,7 @@ export function AutomationSettings() {
         {activeTab === 'rules' && renderRules()}
         {activeTab === 'notifications' && renderNotifications()}
         {activeTab === 'templates' && renderTemplates()}
+        {activeTab === 'admin' && isAdmin && renderAdminSettings()}
       </div>
 
       {/* Modal dodawania/edycji reguły */}
