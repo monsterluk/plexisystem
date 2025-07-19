@@ -24,6 +24,8 @@ import { KnowledgeBase } from '@/pages/KnowledgeBase';
 import { Marketplace } from '@/pages/Marketplace';
 import { MachiningParameters } from '@/components/MachiningParameters';
 import { QualityControl } from '@/pages/QualityControl';
+import { UserManagementPage } from '@/pages/UserManagement';
+import UnauthorizedPage from '@/pages/UnauthorizedPage';
 // import { LoginPage } from '@/pages/LoginPage';
 
 interface Notification {
@@ -214,6 +216,13 @@ const AppContent: React.FC = () => {
                     >
                       <Book className="w-5 h-5 mb-1" />
                       <span className="text-xs">Wiedza</span>
+                    </a>
+                    <a
+                      href="/users"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                    >
+                      <Users className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Użytkownicy</span>
                     </a>
                     <a
                       href="/settings"
@@ -506,6 +515,14 @@ const AppContent: React.FC = () => {
                   </span>
                 </a>
                 <a
+                  href="/users"
+                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  <Users className="w-4 h-4" />
+                  Użytkownicy
+                </a>
+                <a
                   href="/settings"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
                   onClick={() => setShowMobileMenu(false)}
@@ -536,6 +553,7 @@ const AppContent: React.FC = () => {
               <Route path="/ai" element={<AIAssistant />} />
               <Route path="/knowledge" element={<KnowledgeBase />} />
               <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/users" element={<UserManagementPage />} />
               <Route path="/settings" element={<AutomationSettings />} />
               <Route path="/offer/new" element={<OfferView />} />
               <Route path="/offer/:id" element={<OfferView />} />
@@ -557,6 +575,7 @@ const AppContent: React.FC = () => {
               <Route path="/offer/accept/:shareId" element={<OfferAcceptance />} />
               <Route path="/oferta/:token" element={<PublicOffer />} />
               <Route path="/panel/:token" element={<ClientPanel />} />
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
