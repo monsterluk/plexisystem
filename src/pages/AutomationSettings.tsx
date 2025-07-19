@@ -71,11 +71,23 @@ export function AutomationSettings() {
 
   const [showRuleModal, setShowRuleModal] = useState(false);
   const [editingRule, setEditingRule] = useState<AutomationRule | null>(null);
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
-    email: true,
-    push: false,
-    inApp: true,
-    digest: 'instant'
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>(() => {
+    // Spróbuj załadować zapisane ustawienia z localStorage
+    const saved = localStorage.getItem('notificationSettings');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Błąd parsowania zapisanych ustawień:', e);
+      }
+    }
+    // Domyślne ustawienia
+    return {
+      email: true,
+      push: false,
+      inApp: true,
+      digest: 'instant'
+    };
   });
 
   const [emailTemplates] = useState([
@@ -84,20 +96,53 @@ export function AutomationSettings() {
     { id: 'weekly_report', name: 'Raport tygodniowy', variables: ['week_number', 'offers_count', 'revenue'] },
     { id: 'client_inactive', name: 'Nieaktywny klient', variables: ['client_name', 'last_activity', 'days_inactive'] }
   ]);
+  
+  // Załaduj reguły z localStorage przy starcie
+  useEffect(() => {
+    const savedRules = localStorage.getItem('automationRules');
+    if (savedRules) {
+      try {
+        setRules(JSON.parse(savedRules));
+      } catch (e) {
+        console.error('Błąd ładowania zapisanych reguł:', e);
+      }
+    }
+  }, []);
 
   const toggleRule = (ruleId: string) => {
-    setRules(rules.map(rule => 
+    const updatedRules = rules.map(rule => 
       rule.id === ruleId ? { ...rule, isActive: !rule.isActive } : rule
-    ));
+    );
+    setRules(updatedRules);
+    // Zapisz reguły w localStorage
+    localStorage.setItem('automationRules', JSON.stringify(updatedRules));
   };
 
   const deleteRule = (ruleId: string) => {
-    setRules(rules.filter(rule => rule.id !== ruleId));
+    const updatedRules = rules.filter(rule => rule.id !== ruleId);
+    setRules(updatedRules);
+    // Zapisz reguły w localStorage
+    localStorage.setItem('automationRules', JSON.stringify(updatedRules));
   };
 
-  const saveNotificationSettings = () => {
-    // Zapisz ustawienia
-    console.log('Saving notification settings:', notificationSettings);
+  const saveNotificationSettings = async () => {
+    try {
+      // Na razie zapisz w localStorage
+      localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
+      
+      // TODO: W przyszłości zapisz do Supabase
+      // const { error } = await supabase
+      //   .from('user_settings')
+      //   .upsert({
+      //     user_id: user.id,
+      //     notification_settings: notificationSettings
+      //   });
+      
+      alert('Ustawienia zostały zapisane!');
+    } catch (error) {
+      console.error('Błąd zapisywania ustawień:', error);
+      alert('Błąd podczas zapisywania ustawień');
+    }
   };
 
   const renderRules = () => (

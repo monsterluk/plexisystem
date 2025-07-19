@@ -1,8 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Te wartości powinny być w zmiennych środowiskowych
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Brakuje konfiguracji Supabase!');
+  console.error('VITE_SUPABASE_URL:', supabaseUrl);
+  console.error('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? 'Jest ustawiony' : 'Brak');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

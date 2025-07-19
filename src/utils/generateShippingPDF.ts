@@ -2,15 +2,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { ShippingDocument } from '../hooks/useShippingDocuments';
 
-// Rozszerzenie typu dla autoTable
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-    lastAutoTable: {
-      finalY: number;
-    };
-  }
-}
+// Typy są już zadeklarowane w src/types/jspdf-autotable.d.ts
 
 export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
   const pdf = new jsPDF('p', 'mm', 'a4');

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, Plus, Minus, Save, Printer, Edit } from 'lucide-react';
 import { useShippingDocuments } from '@/hooks/useShippingDocuments';
+import { PDFPreviewModal } from '@/components/PDFPreviewModal';
 
 interface NewWZModalProps {
   isOpen: boolean;
@@ -43,6 +44,11 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
     quantity: 1,
     unit: 'szt'
   });
+  
+  // Stan dla podglądu PDF
+  const [showPDFPreview, setShowPDFPreview] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [pdfFileName, setPdfFileName] = useState('');
 
   // Przykładowe dane klientów
   const clients = [
@@ -140,14 +146,30 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
   const handleSave = () => {
     const totals = calculateTotals();
     const document = {
-      ...formData,
-      items,
-      ...totals,
-      status: 'draft',
-      createdAt: new Date().toISOString()
+      document_number: formData.documentNumber,
+      order_number: formData.orderNumber,
+      client_name: formData.clientName,
+      client_address: formData.clientAddress,
+      client_nip: formData.clientNIP,
+      delivery_address: formData.deliveryAddress || formData.clientAddress,
+      delivery_date: formData.deliveryDate,
+      notes: formData.notes,
+      status: 'draft' as const,
+      net_total: totals.netTotal,
+      vat_total: totals.vatTotal,
+      gross_total: totals.grossTotal,
+      items: items.map(item => ({
+        product_name: item.productName,
+        product_code: item.productCode,
+        quantity: item.quantity,
+        unit: item.unit,
+        price: item.price,
+        vat: item.vat,
+        total: item.total
+      }))
     };
     onSave(document);
-    onClose();
+    // Nie zamykaj modaluOd razu - niech to zrobi rodzic po zapisie
   };
 
   if (!isOpen) return null;
@@ -544,7 +566,42 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
           </button>
           <div className="flex gap-3">
             <button
-              onClick={() => {/* TODO: Implementacja podglądu */}}
+              onClick={() => {
+                const { netTotal, vatTotal, grossTotal } = calculateTotals();
+                const previewDoc = {
+                  document_number: formData.documentNumber || 'WZ/2024/07/001',
+                  order_number: formData.orderNumber,
+                  client_name: formData.clientName,
+                  client_address: formData.clientAddress,
+                  client_nip: formData.clientNIP,
+                  delivery_address: formData.deliveryAddress || formData.clientAddress,
+                  delivery_date: formData.deliveryDate,
+                  status: 'draft' as const,
+                  net_total: netTotal,
+                  vat_total: vatTotal,
+                  gross_total: grossTotal,
+                  notes: formData.notes,
+                  items: items.map(item => ({
+                    ...item,
+                    product_name: item.productName,
+                    product_code: item.productCode
+                  }))
+                };
+                
+                // Importuj funkcję generowania PDF
+                import('@/utils/generateShippingPDF').then(({ generateShippingPDF }) => {
+                  const pdf = generateShippingPDF(previewDoc);
+                  // Utwórz URL dla podglądu
+                  const pdfBlob = pdf.output('blob');
+                  const url = URL.createObjectURL(pdfBlob);
+                  setPdfUrl(url);
+                  setPdfFileName(`WZ_${formData.documentNumber || 'podglad'}.pdf`);
+                  setShowPDFPreview(true);
+                }).catch(error => {
+                  console.error('Błąd generowania PDF:', error);
+                  alert('Błąd podczas generowania podglądu PDF');
+                });
+              }}
               className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all"
             >
               <Printer className="w-4 h-4" />
@@ -561,6 +618,21 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
           </div>
         </div>
       </div>
+      
+      {/* Modal podglądu PDF */}
+      <PDFPreviewModal
+        isOpen={showPDFPreview}
+        onClose={() => {
+          setShowPDFPreview(false);
+          // Wyczyść URL po zamknięciu
+          if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+            setPdfUrl('');
+          }
+        }}
+        pdfUrl={pdfUrl}
+        fileName={pdfFileName}
+      />
     </div>
   );
 }
