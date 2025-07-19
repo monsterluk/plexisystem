@@ -102,8 +102,8 @@ export function AutomationSettings() {
       {/* Nagłówek z przyciskiem dodawania */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Reguły automatyzacji</h3>
-          <p className="text-sm text-gray-500 mt-1">Zarządzaj automatycznymi akcjami w systemie</p>
+          <h3 className="text-lg font-semibold text-white">Reguły automatyzacji</h3>
+          <p className="text-sm text-gray-400 mt-1">Zarządzaj automatycznymi akcjami w systemie</p>
         </div>
         <button
           onClick={() => setShowRuleModal(true)}
@@ -119,31 +119,31 @@ export function AutomationSettings() {
         {rules.map((rule) => (
           <div
             key={rule.id}
-            className={`bg-white rounded-lg border p-6 transition-all ${
-              rule.isActive ? 'border-green-200 shadow-sm' : 'border-gray-200 opacity-75'
+            className={`bg-gray-800/50 backdrop-blur-sm rounded-lg border p-6 transition-all ${
+              rule.isActive ? 'border-green-500/30 shadow-sm' : 'border-gray-700 opacity-75'
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${
-                    rule.isActive ? 'bg-green-100' : 'bg-gray-100'
+                    rule.isActive ? 'bg-green-500/10' : 'bg-gray-700'
                   }`}>
-                    {rule.type === 'offer_expiry' && <Clock className="w-5 h-5 text-orange-600" />}
-                    {rule.type === 'offer_status' && <Bell className="w-5 h-5 text-blue-600" />}
-                    {rule.type === 'scheduled' && <Calendar className="w-5 h-5 text-purple-600" />}
-                    {rule.type === 'client_activity' && <Zap className="w-5 h-5 text-yellow-600" />}
+                    {rule.type === 'offer_expiry' && <Clock className="w-5 h-5 text-orange-400" />}
+                    {rule.type === 'offer_status' && <Bell className="w-5 h-5 text-blue-400" />}
+                    {rule.type === 'scheduled' && <Calendar className="w-5 h-5 text-purple-400" />}
+                    {rule.type === 'client_activity' && <Zap className="w-5 h-5 text-yellow-400" />}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                    <h4 className="font-semibold text-white flex items-center gap-2">
                       {rule.name}
                       {rule.isActive && (
-                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full animate-pulse">
+                        <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full animate-pulse">
                           Aktywna
                         </span>
                       )}
                     </h4>
-                    <p className="text-sm text-gray-600 mt-1">{rule.description}</p>
+                    <p className="text-sm text-gray-400 mt-1">{rule.description}</p>
                   </div>
                 </div>
 
@@ -254,27 +254,27 @@ export function AutomationSettings() {
   const renderNotifications = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900">Ustawienia powiadomień</h3>
-        <p className="text-sm text-gray-500 mt-1">Wybierz jak chcesz otrzymywać powiadomienia</p>
+        <h3 className="text-lg font-semibold text-white">Ustawienia powiadomień</h3>
+        <p className="text-sm text-gray-400 mt-1">Wybierz jak chcesz otrzymywać powiadomienia</p>
       </div>
 
       {/* Kanały powiadomień */}
-      <div className="bg-white rounded-lg border p-6 space-y-6">
-        <h4 className="font-medium text-gray-900">Kanały powiadomień</h4>
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6 space-y-6">
+        <h4 className="font-medium text-white">Kanały powiadomień</h4>
         
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Mail className="w-5 h-5 text-gray-600" />
+              <Mail className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="font-medium">Email</p>
-                <p className="text-sm text-gray-500">Otrzymuj powiadomienia na adres email</p>
+                <p className="font-medium text-white">Email</p>
+                <p className="text-sm text-gray-400">Otrzymuj powiadomienia na adres email</p>
               </div>
             </div>
             <button
               onClick={() => setNotificationSettings({ ...notificationSettings, email: !notificationSettings.email })}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                notificationSettings.email ? 'bg-green-500' : 'bg-gray-300'
+                notificationSettings.email ? 'bg-green-500' : 'bg-gray-600'
               }`}
             >
               <span
@@ -287,16 +287,16 @@ export function AutomationSettings() {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-gray-600" />
+              <Bell className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="font-medium">Powiadomienia push</p>
-                <p className="text-sm text-gray-500">Powiadomienia w przeglądarce</p>
+                <p className="font-medium text-white">Powiadomienia push</p>
+                <p className="text-sm text-gray-400">Powiadomienia w przeglądarce</p>
               </div>
             </div>
             <button
               onClick={() => setNotificationSettings({ ...notificationSettings, push: !notificationSettings.push })}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                notificationSettings.push ? 'bg-green-500' : 'bg-gray-300'
+                notificationSettings.push ? 'bg-green-500' : 'bg-gray-600'
               }`}
             >
               <span
@@ -309,16 +309,16 @@ export function AutomationSettings() {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-gray-600" />
+              <AlertCircle className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="font-medium">Powiadomienia w aplikacji</p>
-                <p className="text-sm text-gray-500">Pokazuj powiadomienia w systemie</p>
+                <p className="font-medium text-white">Powiadomienia w aplikacji</p>
+                <p className="text-sm text-gray-400">Pokazuj powiadomienia w systemie</p>
               </div>
             </div>
             <button
               onClick={() => setNotificationSettings({ ...notificationSettings, inApp: !notificationSettings.inApp })}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                notificationSettings.inApp ? 'bg-green-500' : 'bg-gray-300'
+                notificationSettings.inApp ? 'bg-green-500' : 'bg-gray-600'
               }`}
             >
               <span
@@ -332,8 +332,8 @@ export function AutomationSettings() {
       </div>
 
       {/* Częstotliwość */}
-      <div className="bg-white rounded-lg border p-6">
-        <h4 className="font-medium text-gray-900 mb-4">Częstotliwość powiadomień</h4>
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
+        <h4 className="font-medium text-white mb-4">Częstotliwość powiadomień</h4>
         <div className="space-y-3">
           {(['instant', 'daily', 'weekly'] as const).map((frequency) => (
             <label key={frequency} className="flex items-center gap-3 cursor-pointer">
@@ -343,15 +343,15 @@ export function AutomationSettings() {
                 value={frequency}
                 checked={notificationSettings.digest === frequency}
                 onChange={(e) => setNotificationSettings({ ...notificationSettings, digest: e.target.value as any })}
-                className="w-4 h-4 text-orange-600"
+                className="w-4 h-4 text-orange-500 bg-gray-700 border-gray-600"
               />
               <div>
-                <p className="font-medium">
+                <p className="font-medium text-white">
                   {frequency === 'instant' && 'Natychmiast'}
                   {frequency === 'daily' && 'Podsumowanie dzienne'}
                   {frequency === 'weekly' && 'Podsumowanie tygodniowe'}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-400">
                   {frequency === 'instant' && 'Otrzymuj powiadomienia od razu'}
                   {frequency === 'daily' && 'Jedno podsumowanie każdego dnia o 9:00'}
                   {frequency === 'weekly' && 'Jedno podsumowanie w poniedziałki o 9:00'}
@@ -374,26 +374,26 @@ export function AutomationSettings() {
   const renderTemplates = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900">Szablony wiadomości</h3>
-        <p className="text-sm text-gray-500 mt-1">Zarządzaj szablonami emaili i powiadomień</p>
+        <h3 className="text-lg font-semibold text-white">Szablony wiadomości</h3>
+        <p className="text-sm text-gray-400 mt-1">Zarządzaj szablonami emaili i powiadomień</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {emailTemplates.map((template) => (
-          <div key={template.id} className="bg-white rounded-lg border p-6 hover:shadow-md transition-shadow cursor-pointer">
-            <h4 className="font-semibold text-gray-900">{template.name}</h4>
-            <p className="text-sm text-gray-600 mt-2">ID: {template.id}</p>
+          <div key={template.id} className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6 hover:border-gray-600 transition-all cursor-pointer">
+            <h4 className="font-semibold text-white">{template.name}</h4>
+            <p className="text-sm text-gray-400 mt-2">ID: {template.id}</p>
             <div className="mt-4">
               <p className="text-xs text-gray-500 font-medium mb-2">Dostępne zmienne:</p>
               <div className="flex flex-wrap gap-2">
                 {template.variables.map((variable) => (
-                  <span key={variable} className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-mono">
+                  <span key={variable} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs font-mono">
                     {`{{${variable}}}`}
                   </span>
                 ))}
               </div>
             </div>
-            <button className="mt-4 text-sm text-orange-600 hover:text-orange-700 font-medium">
+            <button className="mt-4 text-sm text-orange-400 hover:text-orange-300 font-medium transition-colors">
               Edytuj szablon →
             </button>
           </div>
@@ -403,14 +403,17 @@ export function AutomationSettings() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Nagłówek */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-gray-800/50 backdrop-blur-lg shadow-xl border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Automatyzacja</h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                <Settings className="w-8 h-8 text-orange-500" />
+                Automatyzacja
+              </h1>
+              <p className="mt-1 text-sm text-gray-300">
                 Skonfiguruj automatyczne akcje i powiadomienia
               </p>
             </div>
@@ -428,8 +431,8 @@ export function AutomationSettings() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2 ${
                   activeTab === tab.id
-                    ? 'border-orange-500 text-orange-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-orange-500 text-orange-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-200'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -449,10 +452,10 @@ export function AutomationSettings() {
 
       {/* Modal dodawania/edycji reguły */}
       {showRuleModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 animate-scaleIn">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg max-w-md w-full p-6 animate-scaleIn border border-gray-700">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-lg font-semibold text-white">
                 {editingRule ? 'Edytuj regułę' : 'Nowa reguła automatyzacji'}
               </h3>
               <button
@@ -460,26 +463,26 @@ export function AutomationSettings() {
                   setShowRuleModal(false);
                   setEditingRule(null);
                 }}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-1 hover:bg-gray-700 rounded transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>
 
             {/* Formularz reguły */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nazwa reguły</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Nazwa reguły</label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="np. Przypomnienie o fakturze"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Typ wyzwalacza</label>
-                <select className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+                <label className="block text-sm font-medium text-gray-300 mb-1">Typ wyzwalacza</label>
+                <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                   <option value="offer_expiry">Wygaśnięcie oferty</option>
                   <option value="offer_status">Zmiana statusu oferty</option>
                   <option value="scheduled">Harmonogram</option>
@@ -488,8 +491,8 @@ export function AutomationSettings() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Akcja</label>
-                <select className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+                <label className="block text-sm font-medium text-gray-300 mb-1">Akcja</label>
+                <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                   <option value="email">Wyślij email</option>
                   <option value="notification">Pokaż powiadomienie</option>
                   <option value="task">Utwórz zadanie</option>
@@ -502,11 +505,11 @@ export function AutomationSettings() {
                     setShowRuleModal(false);
                     setEditingRule(null);
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
                 >
                   Anuluj
                 </button>
-                <button className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">
+                <button className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
                   {editingRule ? 'Zapisz zmiany' : 'Dodaj regułę'}
                 </button>
               </div>

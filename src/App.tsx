@@ -22,6 +22,7 @@ import { AutomationSettings } from '@/pages/AutomationSettings';
 import { AIAssistant } from '@/pages/AIAssistant';
 import { KnowledgeBase } from '@/pages/KnowledgeBase';
 import { Marketplace } from '@/pages/Marketplace';
+import { MachiningParameters } from '@/components/MachiningParameters';
 // import { LoginPage } from '@/pages/LoginPage';
 
 interface Notification {
@@ -154,6 +155,13 @@ const AppContent: React.FC = () => {
                     >
                       <Settings className="w-5 h-5 mb-1" />
                       <span className="text-xs">Produkcja</span>
+                    </a>
+                    <a
+                      href="/machining"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                    >
+                      <Settings className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Frezowanie</span>
                     </a>
                     <a
                       href="/clients"
@@ -436,6 +444,14 @@ const AppContent: React.FC = () => {
                   Produkcja
                 </a>
                 <a
+                  href="/machining"
+                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  <Settings className="w-4 h-4" />
+                  Frezowanie
+                </a>
+                <a
                   href="/reports"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
                   onClick={() => setShowMobileMenu(false)}
@@ -498,6 +514,7 @@ const AppContent: React.FC = () => {
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/product/:id" element={<ProductDetailPage />} />
               <Route path="/production" element={<ProductionPage />} />
+              <Route path="/machining" element={<MachiningParameters />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/ai" element={<AIAssistant />} />
               <Route path="/knowledge" element={<KnowledgeBase />} />
