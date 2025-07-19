@@ -7,6 +7,30 @@ export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
   // Czcionka i kodowanie dla polskich znaków
   pdf.setFont('helvetica');
   
+  // Funkcja do bezpiecznego wyświetlania tekstu z polskimi znakami
+  const safeText = (text: string): string => {
+    if (!text) return '';
+    return text
+      .replace(/ł/g, 'l')
+      .replace(/Ł/g, 'L')
+      .replace(/ą/g, 'a')
+      .replace(/ę/g, 'e')
+      .replace(/ś/g, 's')
+      .replace(/ć/g, 'c')
+      .replace(/ń/g, 'n')
+      .replace(/ż/g, 'z')
+      .replace(/ź/g, 'z')
+      .replace(/ó/g, 'o')
+      .replace(/Ą/g, 'A')
+      .replace(/Ę/g, 'E')
+      .replace(/Ś/g, 'S')
+      .replace(/Ć/g, 'C')
+      .replace(/Ń/g, 'N')
+      .replace(/Ż/g, 'Z')
+      .replace(/Ź/g, 'Z')
+      .replace(/Ó/g, 'O');
+  };
+  
   // Logo i nagłówek firmy
   const pageWidth = pdf.internal.pageSize.getWidth();
   
@@ -17,8 +41,8 @@ export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
   
   pdf.setFontSize(10);
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Ks. Dr. Leona Heyke 11', 20, 27);
-  pdf.text('84-206 Nowy Dwór Wejherowski', 20, 32);
+  pdf.text(safeText('Ks. Dr. Leona Heyke 11'), 20, 27);
+  pdf.text(safeText('84-206 Nowy Dwor Wejherowski'), 20, 32);
   pdf.text('NIP: 588-239-62-72', 20, 37);
   pdf.text('Tel: 884 042 107', 20, 42);
   
@@ -39,16 +63,16 @@ export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
   pdf.setFont('helvetica', 'normal');
   
   yPos += 6;
-  pdf.text(document.client_name, 20, yPos);
+  pdf.text(safeText(document.client_name || ''), 20, yPos);
   yPos += 5;
-  const clientAddressLines = pdf.splitTextToSize(document.client_address, 80);
+  const clientAddressLines = pdf.splitTextToSize(safeText(document.client_address || ''), 80);
   clientAddressLines.forEach((line: string) => {
     pdf.text(line, 20, yPos);
     yPos += 5;
   });
   
   if (document.client_nip) {
-    pdf.text(`NIP: ${document.client_nip}`, 20, yPos);
+    pdf.text(safeText(`NIP: ${document.client_nip}`), 20, yPos);
     yPos += 5;
   }
   
@@ -59,7 +83,7 @@ export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
   pdf.setFont('helvetica', 'normal');
   
   yPosRight += 6;
-  const deliveryAddressLines = pdf.splitTextToSize(document.delivery_address, 80);
+  const deliveryAddressLines = pdf.splitTextToSize(safeText(document.delivery_address || ''), 80);
   deliveryAddressLines.forEach((line: string) => {
     pdf.text(line, 110, yPosRight);
     yPosRight += 5;
@@ -123,14 +147,15 @@ export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
       pdf.text((index + 1).toString(), 22, yPos + 5);
       
       // Nazwa produktu (może być długa)
-      const productName = item.product_name.substring(0, 40) + (item.product_name.length > 40 ? '...' : '');
-      pdf.text(productName, 34, yPos + 5);
+      const productName = safeText(item.product_name || item.productName || '');
+      const displayName = productName.substring(0, 40) + (productName.length > 40 ? '...' : '');
+      pdf.text(displayName, 34, yPos + 5);
       
       pdf.text(item.quantity.toString(), 106, yPos + 5, { align: 'right' });
       pdf.text(item.unit, 118, yPos + 5);
-      pdf.text(`${item.price.toFixed(2)} zł`, 155, yPos + 5, { align: 'right' });
+      pdf.text(safeText(`${item.price.toFixed(2)} zl`), 155, yPos + 5, { align: 'right' });
       pdf.text(`${item.vat}%`, 169, yPos + 5, { align: 'center' });
-      pdf.text(`${item.total.toFixed(2)} zł`, 187, yPos + 5, { align: 'right' });
+      pdf.text(safeText(`${item.total.toFixed(2)} zl`), 187, yPos + 5, { align: 'right' });
       
       netTotal += item.price * item.quantity;
       vatTotal += item.price * item.quantity * item.vat / 100;
