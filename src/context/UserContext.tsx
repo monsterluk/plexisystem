@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { salespeople } from '@/constants/materials';
 
 interface User {
@@ -10,9 +10,10 @@ interface User {
 
 interface UserContextType {
   currentUser: User;
-  setCurrentUser: (user: User) => void;
+  setCurrentUser: (user: User | null) => void;
   isAdmin: boolean;
   isSalesperson: boolean;
+  isLoggedIn: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -34,13 +35,43 @@ const defaultUser: User = {
 };
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [currentUser, setCurrentUser] = useState<User>(defaultUser);
+  // Sprawdź czy jest zapisana sesja
+  const getInitialUser = () => {
+    const savedSession = localStorage.getItem('plexisystem_session');
+    if (savedSession) {
+      try {
+        const session = JSON.parse(savedSession);
+        // Sprawdź czy sesja nie wygasła
+        if (new Date(session.expiresAt) > new Date()) {
+          return session.user;
+        }
+      } catch (e) {
+        console.error('Błąd parsowania sesji:', e);
+      }
+    }
+    return null;
+  };
+
+  const [currentUser, setCurrentUser] = useState<User | null>(getInitialUser());
+
+  // Aktualizuj sesję gdy zmienia się użytkownik
+  useEffect(() => {
+    if (currentUser) {
+      const session = {
+        user: currentUser,
+        timestamp: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      };
+      localStorage.setItem('plexisystem_session', JSON.stringify(session));
+    }
+  }, [currentUser]);
 
   const value = {
-    currentUser,
+    currentUser: currentUser || defaultUser,
     setCurrentUser,
-    isAdmin: currentUser.role === 'admin',
-    isSalesperson: currentUser.role === 'salesperson'
+    isAdmin: currentUser?.role === 'admin',
+    isSalesperson: currentUser?.role === 'salesperson',
+    isLoggedIn: !!currentUser
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

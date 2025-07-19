@@ -27,7 +27,7 @@ import { QualityControl } from '@/pages/QualityControl';
 import { UserManagementPage } from '@/pages/UserManagement';
 import UnauthorizedPage from '@/pages/UnauthorizedPage';
 import { MockProtectedRoute } from '@/components/MockProtectedRoute';
-// import { LoginPage } from '@/pages/LoginPage';
+import { LoginPage } from '@/pages/LoginPage';
 
 interface Notification {
   id: number;
@@ -38,7 +38,7 @@ interface Notification {
 
 const AppContent: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
-  const { currentUser, setCurrentUser } = useUser();
+  const { currentUser, setCurrentUser, isLoggedIn } = useUser();
   const [viewMode, setViewMode] = useState<'salesperson' | 'client'>('salesperson');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -73,15 +73,6 @@ const AppContent: React.FC = () => {
     window.location.pathname.startsWith('/configurator/public/');
 
   useEffect(() => {
-    // Register service worker for PWA - wyłączone tymczasowo
-    // if ('serviceWorker' in navigator) {
-    //   window.addEventListener('load', () => {
-    //     navigator.serviceWorker.register('/service-worker.js')
-    //       .then(registration => console.log('SW registered: ', registration))
-    //       .catch(registrationError => console.log('SW registration failed: ', registrationError));
-    //   });
-    // }
-
     fetchQuickStats();
     checkExpiringOffers();
   }, []);
@@ -107,6 +98,17 @@ const AppContent: React.FC = () => {
       console.error('Błąd sprawdzania wygasających ofert:', error);
     }
   };
+
+  // Jeśli nie zalogowany, pokaż tylko stronę logowania
+  if (!isLoggedIn && !isPublicRoute) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="*" element={<LoginPage />} />
+        </Routes>
+      </Router>
+    );
+  }
 
   // Dla publicznych linków nie pokazuj nawigacji
   if (isPublicRoute) {
@@ -314,14 +316,31 @@ const AppContent: React.FC = () => {
                     </button>
                   </div>
 
-                  <div className="text-right hidden sm:block">
-                    <p className="text-xs text-gray-400">
-                      Tryb:{' '}
-                      <span className="font-semibold">
-                        {viewMode === 'salesperson' ? 'Handlowiec' : 'Klient'}
-                      </span>
-                    </p>
-                    <p className="font-semibold text-sm">{currentUser.name}</p>
+                  {/* Informacje o użytkowniku i wylogowanie */}
+                  <div className="flex items-center gap-2">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-xs text-gray-400">
+                        Tryb:{' '}
+                        <span className="font-semibold">
+                          {viewMode === 'salesperson' ? 'Handlowiec' : 'Klient'}
+                        </span>
+                      </p>
+                      <p className="font-semibold text-sm">{currentUser.name}</p>
+                    </div>
+                    
+                    {/* Przycisk wylogowania */}
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('plexisystem_session');
+                        setCurrentUser(null);
+                        window.location.href = '/login';
+                      }}
+                      className="p-2 hover:bg-zinc-700 rounded-lg transition-all flex items-center gap-2"
+                      title="Wyloguj"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="text-sm hidden md:inline">Wyloguj</span>
+                    </button>
                   </div>
 
                   {/* Powiadomienia */}
@@ -383,8 +402,8 @@ const AppContent: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Wybór użytkownika */}
-                  <div className="flex items-center gap-2 bg-zinc-700 rounded-lg px-2 lg:px-3 py-1 lg:py-2">
+                  {/* Ukryty wybór użytkownika */}
+                  <div className="hidden">
                     <User className="w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0" />
                     <select
                       value={currentUser.id}
@@ -392,15 +411,6 @@ const AppContent: React.FC = () => {
                         const newUser = users.find((u) => u.id === e.target.value);
                         if (newUser) {
                           setCurrentUser(newUser);
-                          setNotifications((prev) => [
-                            ...prev,
-                            {
-                              id: Date.now(),
-                              type: 'info',
-                              message: `👤 Przełączono na użytkownika: ${newUser.name}`,
-                              date: new Date().toISOString(),
-                            },
-                          ]);
                         }
                       }}
                       className="bg-transparent text-xs lg:text-sm pr-8"
@@ -412,19 +422,6 @@ const AppContent: React.FC = () => {
                       ))}
                     </select>
                   </div>
-
-                  {/* Wylogowanie - tymczasowo wyłączone
-                  {user && (
-                    <button
-                      onClick={() => signOut()}
-                      className="p-2 hover:bg-zinc-700 rounded-lg transition-all flex items-center gap-2"
-                      title="Wyloguj"
-                    >
-                      <LogOut className="w-5 h-5" />
-                      <span className="text-sm">Wyloguj</span>
-                    </button>
-                  )}
-                  */}
                 </div>
               </div>
             </div>
@@ -570,6 +567,18 @@ const AppContent: React.FC = () => {
                     Ustawienia
                   </a>
                 )}
+                {/* Przycisk wylogowania w menu mobilnym */}
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('plexisystem_session');
+                    setCurrentUser(null);
+                    window.location.href = '/login';
+                  }}
+                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 text-red-400"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Wyloguj
+                </button>
               </nav>
             </div>
           )}
@@ -577,9 +586,7 @@ const AppContent: React.FC = () => {
           {/* Main content */}
           <main className="container mx-auto px-4 py-8">
             <Routes>
-              {/* Tymczasowo wyłączone dla testów
               <Route path="/login" element={<LoginPage />} />
-              */}
               <Route path="/" element={<Dashboard />} />
               <Route path="/offers" element={
                 <MockProtectedRoute module="offers" action="view">
