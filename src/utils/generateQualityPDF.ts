@@ -1,11 +1,6 @@
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import 'jspdf-autotable';
 import { QualityCheck } from '../hooks/useQualityChecks';
-
-// Upewniamy się, że autoTable jest dodane do prototypu jsPDF
-if (typeof autoTable === 'function') {
-  autoTable(jsPDF);
-}
 
 // Typy są już zadeklarowane w src/types/jspdf-autotable.d.ts
 

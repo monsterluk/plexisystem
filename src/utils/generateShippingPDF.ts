@@ -1,13 +1,5 @@
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { ShippingDocument } from '../hooks/useShippingDocuments';
-
-// Upewniamy się, że autoTable jest dodane do prototypu jsPDF
-if (typeof autoTable === 'function') {
-  autoTable(jsPDF);
-}
-
-// Typy są już zadeklarowane w src/types/jspdf-autotable.d.ts
 
 export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
   const pdf = new jsPDF('p', 'mm', 'a4');
@@ -80,76 +72,91 @@ export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
     pdf.text(`Nr zamówienia: ${document.order_number}`, 110, yPos);
   }
   
-  // Tabela produktów
+  // Tabela produktów - rysujemy ręcznie
   yPos += 15;
   
-  const tableColumns = [
-    { header: 'Lp.', dataKey: 'lp' },
-    { header: 'Nazwa produktu', dataKey: 'productName' },
-    { header: 'Kod', dataKey: 'productCode' },
-    { header: 'Ilość', dataKey: 'quantity' },
-    { header: 'Jedn.', dataKey: 'unit' },
-    { header: 'Cena netto', dataKey: 'price' },
-    { header: 'VAT %', dataKey: 'vat' },
-    { header: 'Wartość netto', dataKey: 'total' }
+  // Nagłówki tabeli
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFillColor(255, 102, 0);
+  pdf.rect(20, yPos, 170, 8, 'F');
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFontSize(9);
+  
+  const headers = [
+    { text: 'Lp.', x: 22, width: 10 },
+    { text: 'Nazwa produktu', x: 34, width: 60 },
+    { text: 'Ilość', x: 96, width: 20 },
+    { text: 'Jedn.', x: 118, width: 15 },
+    { text: 'Cena netto', x: 135, width: 25 },
+    { text: 'VAT %', x: 162, width: 15 },
+    { text: 'Wartość brutto', x: 179, width: 25 }
   ];
   
-  const tableRows = document.items?.map((item, index) => ({
-    lp: index + 1,
-    productName: item.product_name,
-    productCode: item.product_code || '-',
-    quantity: item.quantity.toString(),
-    unit: item.unit,
-    price: `${item.price.toFixed(2)} zł`,
-    vat: `${item.vat}%`,
-    total: `${item.total.toFixed(2)} zł`
-  })) || [];
-  
-  (pdf as any).autoTable({
-    columns: tableColumns,
-    body: tableRows,
-    startY: yPos,
-    theme: 'striped',
-    headStyles: {
-      fillColor: [255, 102, 0],
-      textColor: 255,
-      fontSize: 9,
-      fontStyle: 'bold'
-    },
-    bodyStyles: {
-      fontSize: 9
-    },
-    columnStyles: {
-      lp: { cellWidth: 10 },
-      productName: { cellWidth: 'auto' },
-      productCode: { cellWidth: 25 },
-      quantity: { cellWidth: 15, halign: 'right' },
-      unit: { cellWidth: 15 },
-      price: { cellWidth: 25, halign: 'right' },
-      vat: { cellWidth: 15, halign: 'center' },
-      total: { cellWidth: 25, halign: 'right' }
-    }
+  headers.forEach(header => {
+    pdf.text(header.text, header.x, yPos + 5.5);
   });
   
-  // Podsumowanie
-  yPos = (pdf as any).lastAutoTable.finalY + 10;
+  // Przywróć kolory
+  pdf.setTextColor(0, 0, 0);
+  pdf.setFont('helvetica', 'normal');
   
-  if (document.net_total && document.vat_total && document.gross_total) {
-    const summaryX = pageWidth - 70;
-    
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('Wartość netto:', summaryX, yPos);
-    pdf.text(`${document.net_total.toFixed(2)} zł`, summaryX + 50, yPos, { align: 'right' });
-    
-    yPos += 5;
-    pdf.text('Podatek VAT:', summaryX, yPos);
-    pdf.text(`${document.vat_total.toFixed(2)} zł`, summaryX + 50, yPos, { align: 'right' });
-    
-    yPos += 5;
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Wartość brutto:', summaryX, yPos);
-    pdf.text(`${document.gross_total.toFixed(2)} zł`, summaryX + 50, yPos, { align: 'right' });
+  // Pozycje
+  yPos += 8;
+  let netTotal = 0;
+  let vatTotal = 0;
+  let grossTotal = 0;
+  
+  if (document.items && document.items.length > 0) {
+    document.items.forEach((item, index) => {
+      // Tło dla nieparzystych wierszy
+      if (index % 2 === 1) {
+        pdf.setFillColor(245, 245, 245);
+        pdf.rect(20, yPos, 170, 7, 'F');
+      }
+      
+      // Ramki
+      pdf.setDrawColor(200, 200, 200);
+      pdf.rect(20, yPos, 170, 7);
+      
+      // Treść
+      pdf.setFontSize(8);
+      pdf.text((index + 1).toString(), 22, yPos + 5);
+      
+      // Nazwa produktu (może być długa)
+      const productName = item.product_name.substring(0, 40) + (item.product_name.length > 40 ? '...' : '');
+      pdf.text(productName, 34, yPos + 5);
+      
+      pdf.text(item.quantity.toString(), 106, yPos + 5, { align: 'right' });
+      pdf.text(item.unit, 118, yPos + 5);
+      pdf.text(`${item.price.toFixed(2)} zł`, 155, yPos + 5, { align: 'right' });
+      pdf.text(`${item.vat}%`, 169, yPos + 5, { align: 'center' });
+      pdf.text(`${item.total.toFixed(2)} zł`, 187, yPos + 5, { align: 'right' });
+      
+      netTotal += item.price * item.quantity;
+      vatTotal += item.price * item.quantity * item.vat / 100;
+      grossTotal += item.total;
+      
+      yPos += 7;
+    });
   }
+  
+  // Podsumowanie
+  yPos += 5;
+  
+  const summaryX = pageWidth - 70;
+  
+  pdf.setFont('helvetica', 'normal');
+  pdf.text('Wartość netto:', summaryX, yPos);
+  pdf.text(`${netTotal.toFixed(2)} zł`, summaryX + 50, yPos, { align: 'right' });
+  
+  yPos += 5;
+  pdf.text('Podatek VAT:', summaryX, yPos);
+  pdf.text(`${vatTotal.toFixed(2)} zł`, summaryX + 50, yPos, { align: 'right' });
+  
+  yPos += 5;
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('Wartość brutto:', summaryX, yPos);
+  pdf.text(`${grossTotal.toFixed(2)} zł`, summaryX + 50, yPos, { align: 'right' });
   
   // Uwagi
   if (document.notes) {
