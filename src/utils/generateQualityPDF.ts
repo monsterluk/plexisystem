@@ -112,7 +112,7 @@ export const generateQualityPDF = (check: QualityCheck): jsPDF => {
       status: m.in_tolerance ? 'OK' : 'NOK'
     }));
     
-    pdf.autoTable({
+    (pdf as any).autoTable({
       columns: measurementColumns,
       body: measurementRows,
       startY: yPos,
@@ -144,7 +144,7 @@ export const generateQualityPDF = (check: QualityCheck): jsPDF => {
       }
     });
     
-    yPos = pdf.lastAutoTable.finalY + 10;
+    yPos = (pdf as any).lastAutoTable.finalY + 10;
   }
   
   // Defekty
@@ -180,7 +180,7 @@ export const generateQualityPDF = (check: QualityCheck): jsPDF => {
       action_taken: d.action_taken || '-'
     }));
     
-    pdf.autoTable({
+    (pdf as any).autoTable({
       columns: defectColumns,
       body: defectRows,
       startY: yPos,
@@ -213,7 +213,7 @@ export const generateQualityPDF = (check: QualityCheck): jsPDF => {
       }
     });
     
-    yPos = pdf.lastAutoTable.finalY + 10;
+    yPos = (pdf as any).lastAutoTable.finalY + 10;
   }
   
   // Uwagi

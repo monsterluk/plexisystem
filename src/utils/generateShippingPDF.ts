@@ -100,7 +100,7 @@ export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
     total: `${item.total.toFixed(2)} zł`
   })) || [];
   
-  pdf.autoTable({
+  (pdf as any).autoTable({
     columns: tableColumns,
     body: tableRows,
     startY: yPos,
@@ -127,7 +127,7 @@ export const generateShippingPDF = (document: ShippingDocument): jsPDF => {
   });
   
   // Podsumowanie
-  yPos = pdf.lastAutoTable.finalY + 10;
+  yPos = (pdf as any).lastAutoTable.finalY + 10;
   
   if (document.net_total && document.vat_total && document.gross_total) {
     const summaryX = pageWidth - 70;

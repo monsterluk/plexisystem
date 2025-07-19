@@ -13,15 +13,15 @@ interface Measurement {
   nominal: number;
   tolerance: number;
   measured: number;
-  inTolerance?: boolean;
+  in_tolerance?: boolean;
 }
 
 interface Defect {
   id: string;
-  type: string;
+  defect_type: string;
   severity: 'minor' | 'major' | 'critical';
   description: string;
-  action: string;
+  action_taken: string;
   photos?: string[];
 }
 
@@ -46,10 +46,10 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
   const [defects, setDefects] = useState<Defect[]>([]);
   const [showDefectForm, setShowDefectForm] = useState(false);
   const [newDefect, setNewDefect] = useState<Partial<Defect>>({
-    type: '',
+    defect_type: '',
     severity: 'minor',
     description: '',
-    action: ''
+    action_taken: ''
   });
 
   const [overallStatus, setOverallStatus] = useState<'passed' | 'failed' | 'conditional'>('passed');
@@ -81,7 +81,7 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
         // Automatyczne sprawdzanie tolerancji
         if (field === 'measured' || field === 'nominal' || field === 'tolerance') {
           const diff = Math.abs(updated.measured - updated.nominal);
-          updated.inTolerance = diff <= updated.tolerance;
+          updated.in_tolerance = diff <= updated.tolerance;
         }
         return updated;
       }
@@ -96,7 +96,7 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
       nominal: 0,
       tolerance: 0,
       measured: 0,
-      inTolerance: true
+      in_tolerance: true
     };
     setMeasurements([...measurements, newMeasurement]);
   };
@@ -108,17 +108,17 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
   };
 
   const addDefect = () => {
-    if (newDefect.type && newDefect.description) {
+    if (newDefect.defect_type && newDefect.description) {
       const defect: Defect = {
         id: Date.now().toString(),
-        type: newDefect.type!,
+        defect_type: newDefect.defect_type!,
         severity: newDefect.severity as 'minor' | 'major' | 'critical',
         description: newDefect.description!,
-        action: newDefect.action || '',
+        action_taken: newDefect.action_taken || '',
         photos: []
       };
       setDefects([...defects, defect]);
-      setNewDefect({ type: '', severity: 'minor', description: '', action: '' });
+      setNewDefect({ defect_type: '', severity: 'minor', description: '', action_taken: '' });
       setShowDefectForm(false);
     }
   };
@@ -128,7 +128,7 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
   };
 
   const calculateOverallStatus = () => {
-    const hasFailedMeasurements = measurements.some(m => m.inTolerance === false);
+    const hasFailedMeasurements = measurements.some(m => m.in_tolerance === false);
     const hasCriticalDefects = defects.some(d => d.severity === 'critical');
     const hasMajorDefects = defects.some(d => d.severity === 'major');
 
@@ -345,7 +345,7 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
                           value={measurement.measured}
                           onChange={(e) => updateMeasurement(measurement.id, 'measured', parseFloat(e.target.value) || 0)}
                           className={`w-full px-2 py-1.5 border rounded text-sm ${
-                            measurement.inTolerance === false
+                            measurement.in_tolerance === false
                               ? 'bg-red-900/30 border-red-600 text-red-200'
                               : 'bg-gray-700 border-gray-600 text-white'
                           }`}
@@ -353,11 +353,11 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
                       </div>
                       <div className="flex items-center gap-2">
                         <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
-                          measurement.inTolerance === false
+                          measurement.in_tolerance === false
                             ? 'bg-red-500/20 text-red-400'
                             : 'bg-green-500/20 text-green-400'
                         }`}>
-                          {measurement.inTolerance === false ? (
+                          {measurement.in_tolerance === false ? (
                             <>
                               <X className="w-3 h-3" />
                               Poza tolerancją
@@ -406,8 +406,8 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
                         Typ niezgodności
                       </label>
                       <select
-                        value={newDefect.type}
-                        onChange={(e) => setNewDefect({ ...newDefect, type: e.target.value })}
+                        value={newDefect.defect_type}
+                        onChange={(e) => setNewDefect({ ...newDefect, defect_type: e.target.value })}
                         className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 text-white rounded text-sm"
                       >
                         <option value="">-- Wybierz typ --</option>
@@ -448,8 +448,8 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
                       Podjęte działanie
                     </label>
                     <textarea
-                      value={newDefect.action}
-                      onChange={(e) => setNewDefect({ ...newDefect, action: e.target.value })}
+                      value={newDefect.action_taken}
+                      onChange={(e) => setNewDefect({ ...newDefect, action_taken: e.target.value })}
                       rows={2}
                       className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 text-white rounded text-sm"
                       placeholder="Opisz podjęte działanie..."
@@ -459,7 +459,7 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
                     <button
                       onClick={() => {
                         setShowDefectForm(false);
-                        setNewDefect({ type: '', severity: 'minor', description: '', action: '' });
+                        setNewDefect({ defect_type: '', severity: 'minor', description: '', action_taken: '' });
                       }}
                       className="px-3 py-1.5 bg-gray-700 text-white rounded text-sm hover:bg-gray-600 transition-all"
                     >
@@ -467,7 +467,7 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
                     </button>
                     <button
                       onClick={addDefect}
-                      disabled={!newDefect.type || !newDefect.description}
+                      disabled={!newDefect.defect_type || !newDefect.description}
                       className="px-3 py-1.5 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-600 disabled:bg-gray-600 disabled:cursor-not-allowed transition-all"
                     >
                       Dodaj niezgodność
@@ -499,7 +499,7 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
                             {defect.severity === 'critical' ? 'Krytyczna' :
                              defect.severity === 'major' ? 'Znacząca' : 'Drobna'}
                           </span>
-                          <span className="text-sm font-medium text-white">{defect.type}</span>
+                          <span className="text-sm font-medium text-white">{defect.defect_type}</span>
                         </div>
                         <button
                           onClick={() => removeDefect(defect.id)}
@@ -509,9 +509,9 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
                         </button>
                       </div>
                       <p className="text-sm text-gray-300 mb-2">{defect.description}</p>
-                      {defect.action && (
+                      {defect.action_taken && (
                         <p className="text-sm text-gray-400">
-                          <span className="font-medium">Działanie:</span> {defect.action}
+                          <span className="font-medium">Działanie:</span> {defect.action_taken}
                         </p>
                       )}
                     </div>
