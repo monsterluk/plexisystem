@@ -143,12 +143,18 @@ export function QualityControlModal({ isOpen, onClose, onSave }: QualityControlM
   const handleSave = () => {
     const status = calculateOverallStatus();
     const check = {
-      ...formData,
+      order_number: formData.orderNumber,
+      product_name: formData.productName,
+      product_code: formData.productCode,
+      batch_number: formData.batchNumber,
+      quantity: formData.quantity,
+      inspector: formData.inspector,
+      check_date: formData.checkDate,
+      check_time: formData.checkTime,
       measurements,
       defects,
       status,
-      notes,
-      createdAt: new Date().toISOString()
+      notes
     };
     onSave(check);
     onClose();

@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { ShippingDocument } from '../hooks/useShippingDocuments';
 
 // Typy są już zadeklarowane w src/types/jspdf-autotable.d.ts
