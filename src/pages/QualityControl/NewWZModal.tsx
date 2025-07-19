@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, Plus, Minus, Save, Printer } from 'lucide-react';
+import { useShippingDocuments } from '@/hooks/useShippingDocuments';
 
 interface NewWZModalProps {
   isOpen: boolean;
@@ -19,6 +20,8 @@ interface WZItem {
 }
 
 export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
+  const { generateDocumentNumber } = useShippingDocuments();
+  
   const [formData, setFormData] = useState({
     orderNumber: '',
     clientId: '',
@@ -48,20 +51,14 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
     { id: '4', name: 'Dibond 3mm', code: 'DIB-3', unit: 'm²', price: 180 }
   ];
 
-  const generateDocumentNumber = () => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `WZ/${year}/${month}/${random}`;
-  };
-
   useEffect(() => {
     if (isOpen) {
-      setFormData(prev => ({
-        ...prev,
-        documentNumber: generateDocumentNumber()
-      }));
+      generateDocumentNumber().then(number => {
+        setFormData(prev => ({
+          ...prev,
+          documentNumber: number
+        }));
+      });
     }
   }, [isOpen]);
 

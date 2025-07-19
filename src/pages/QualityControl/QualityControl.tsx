@@ -24,6 +24,8 @@ import { QualityControlModal } from './QualityControlModal';
 import { WZDocumentView } from './WZDocumentView';
 import { QualityReportView } from './QualityReportView';
 import { QualityReports } from './QualityReports';
+import { useShippingDocuments } from '@/hooks/useShippingDocuments';
+import { useQualityChecks } from '@/hooks/useQualityChecks';
 
 interface ShippingDocument {
   id: string;
@@ -72,6 +74,9 @@ interface Defect {
 }
 
 export function QualityControl() {
+  const { documents: shippingDocuments, createDocument, loading: loadingDocs } = useShippingDocuments();
+  const { checks: qualityChecks, createCheck, getStatistics, loading: loadingChecks } = useQualityChecks();
+  
   const [activeTab, setActiveTab] = useState<'shipping' | 'quality' | 'reports'>('shipping');
   const [showNewWZModal, setShowNewWZModal] = useState(false);
   const [showQualityModal, setShowQualityModal] = useState(false);
@@ -81,87 +86,32 @@ export function QualityControl() {
   const [showQualityReportView, setShowQualityReportView] = useState(false);
 
   // Przykładowe dane
-  const handleSaveWZ = (document: any) => {
-    console.log('Zapisywanie dokumentu WZ:', document);
-    // TODO: Integracja z bazą danych
-    setShowNewWZModal(false);
+  const handleSaveWZ = async (document: any) => {
+    try {
+      await createDocument(document);
+      console.log('Dokument WZ zapisany');
+      setShowNewWZModal(false);
+    } catch (error) {
+      console.error('Błąd podczas zapisywania dokumentu WZ:', error);
+      // TODO: Pokaż komunikat o błędzie
+    }
   };
 
-  const handleSaveQuality = (check: any) => {
-    console.log('Zapisywanie kontroli jakości:', check);
-    // TODO: Integracja z bazą danych
-    setShowQualityModal(false);
+  const handleSaveQuality = async (check: any) => {
+    try {
+      await createCheck(check);
+      console.log('Kontrola jakości zapisana');
+      setShowQualityModal(false);
+    } catch (error) {
+      console.error('Błąd podczas zapisywania kontroli jakości:', error);
+      // TODO: Pokaż komunikat o błędzie
+    }
   };
 
   const handleGenerateReport = (type: string, params: any) => {
     console.log('Generowanie raportu:', type, params);
     // TODO: Implementacja generowania raportów
   };
-
-  const [shippingDocuments] = useState<ShippingDocument[]>([
-    {
-      id: '1',
-      documentNumber: 'WZ/2024/07/001',
-      orderNumber: 'ZAM/2024/07/015',
-      clientName: 'Firma ABC Sp. z o.o.',
-      date: '2024-07-19',
-      status: 'confirmed',
-      items: [
-        { id: '1', productName: 'Kaseton LED 100x50cm', quantity: 5, unit: 'szt' },
-        { id: '2', productName: 'Plexi mleczne 3mm', quantity: 10, unit: 'm²' }
-      ],
-      totalValue: 4500
-    },
-    {
-      id: '2',
-      documentNumber: 'WZ/2024/07/002',
-      orderNumber: 'ZAM/2024/07/016',
-      clientName: 'Studio Reklamy XYZ',
-      date: '2024-07-19',
-      status: 'draft',
-      items: [
-        { id: '3', productName: 'Litery przestrzenne 30cm', quantity: 8, unit: 'szt' }
-      ],
-      totalValue: 2400
-    }
-  ]);
-
-  const [qualityChecks] = useState<QualityCheck[]>([
-    {
-      id: '1',
-      orderNumber: 'ZAM/2024/07/015',
-      productName: 'Kaseton LED 100x50cm',
-      checkDate: '2024-07-19',
-      inspector: 'Jan Kowalski',
-      status: 'passed',
-      measurements: [
-        { parameter: 'Szerokość', nominal: 1000, tolerance: 2, measured: 999.5, inTolerance: true },
-        { parameter: 'Wysokość', nominal: 500, tolerance: 2, measured: 500.5, inTolerance: true },
-        { parameter: 'Grubość', nominal: 100, tolerance: 1, measured: 100.2, inTolerance: true }
-      ],
-      defects: []
-    },
-    {
-      id: '2',
-      orderNumber: 'ZAM/2024/07/014',
-      productName: 'Plexi transparentne 5mm',
-      checkDate: '2024-07-18',
-      inspector: 'Anna Nowak',
-      status: 'conditional',
-      measurements: [
-        { parameter: 'Grubość', nominal: 5, tolerance: 0.2, measured: 5.3, inTolerance: false }
-      ],
-      defects: [
-        {
-          id: '1',
-          type: 'Wymiarowa',
-          severity: 'minor',
-          description: 'Grubość przekracza tolerancję o 0.1mm',
-          action: 'Dopuszczono warunkowo po konsultacji z klientem'
-        }
-      ]
-    }
-  ]);
 
   const renderShippingDocuments = () => (
     <div className="space-y-6">
@@ -221,50 +171,62 @@ export function QualityControl() {
       </div>
 
       {/* Lista dokumentów */}
-      <div className="space-y-4">
-        {shippingDocuments.map(doc => (
-          <div key={doc.id} className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-4 mb-2">
-                  <h4 className="font-semibold text-white text-lg">{doc.documentNumber}</h4>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    doc.status === 'confirmed' ? 'bg-green-500/20 text-green-400' :
-                    doc.status === 'sent' ? 'bg-blue-500/20 text-blue-400' :
-                    'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                    {doc.status === 'confirmed' ? 'Zatwierdzone' :
-                     doc.status === 'sent' ? 'Wysłane' : 'Wersja robocza'}
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-400">Klient:</span>
-                    <p className="text-gray-200 font-medium">{doc.clientName}</p>
+      {loadingDocs ? (
+        <div className="text-center py-8 text-gray-400">
+          <p>Ładowanie dokumentów...</p>
+        </div>
+      ) : shippingDocuments.length === 0 ? (
+        <div className="text-center py-8 text-gray-400">
+          <p>Brak dokumentów WZ</p>
+          <p className="text-sm mt-1">Kliknij "Nowy dokument WZ" aby utworzyć pierwszy dokument</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {shippingDocuments.map(doc => (
+            <div key={doc.id} className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-4 mb-2">
+                    <h4 className="font-semibold text-white text-lg">{doc.document_number}</h4>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      doc.status === 'confirmed' ? 'bg-green-500/20 text-green-400' :
+                      doc.status === 'sent' ? 'bg-blue-500/20 text-blue-400' :
+                      'bg-yellow-500/20 text-yellow-400'
+                    }`}>
+                      {doc.status === 'confirmed' ? 'Zatwierdzone' :
+                       doc.status === 'sent' ? 'Wysłane' : 'Wersja robocza'}
+                    </span>
                   </div>
-                  <div>
-                    <span className="text-gray-400">Zamówienie:</span>
-                    <p className="text-gray-200 font-medium">{doc.orderNumber}</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-400">Klient:</span>
+                      <p className="text-gray-200 font-medium">{doc.client_name}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Zamówienie:</span>
+                      <p className="text-gray-200 font-medium">{doc.order_number || '-'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Data:</span>
+                      <p className="text-gray-200 font-medium">{new Date(doc.delivery_date).toLocaleDateString('pl-PL')}</p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-gray-400">Data:</span>
-                    <p className="text-gray-200 font-medium">{new Date(doc.date).toLocaleDateString('pl-PL')}</p>
-                  </div>
-                </div>
 
-                <div className="mt-4">
-                  <p className="text-sm text-gray-400 mb-2">Pozycje:</p>
-                  <div className="space-y-1">
-                    {doc.items.map(item => (
-                      <div key={item.id} className="flex justify-between text-sm">
-                        <span className="text-gray-300">{item.productName}</span>
-                        <span className="text-gray-400">{item.quantity} {item.unit}</span>
+                  {doc.items && doc.items.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-sm text-gray-400 mb-2">Pozycje:</p>
+                      <div className="space-y-1">
+                        {doc.items.map(item => (
+                          <div key={item.id} className="flex justify-between text-sm">
+                            <span className="text-gray-300">{item.product_name}</span>
+                            <span className="text-gray-400">{item.quantity} {item.unit}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
-              </div>
 
               <div className="flex items-center gap-2 ml-4">
                 <button
@@ -293,8 +255,9 @@ export function QualityControl() {
             </div>
           </div>
         ))}
-      </div>
-    </div>
+        </div>
+        )}
+        </div>
   );
 
   const renderQualityControl = () => (
@@ -358,68 +321,80 @@ export function QualityControl() {
       </div>
 
       {/* Lista kontroli */}
-      <div className="space-y-4">
-        {qualityChecks.map(check => (
-          <div key={check.id} className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-4 mb-2">
-                  <h4 className="font-semibold text-white">{check.productName}</h4>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    check.status === 'passed' ? 'bg-green-500/20 text-green-400' :
-                    check.status === 'conditional' ? 'bg-yellow-500/20 text-yellow-400' :
-                    'bg-red-500/20 text-red-400'
-                  }`}>
-                    {check.status === 'passed' ? 'Zgodne' :
-                     check.status === 'conditional' ? 'Warunkowe' : 'Niezgodne'}
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
-                  <div>
-                    <span className="text-gray-400">Zamówienie:</span>
-                    <p className="text-gray-200 font-medium">{check.orderNumber}</p>
+      {loadingChecks ? (
+        <div className="text-center py-8 text-gray-400">
+          <p>Ładowanie kontroli...</p>
+        </div>
+      ) : qualityChecks.length === 0 ? (
+        <div className="text-center py-8 text-gray-400">
+          <p>Brak kontroli jakości</p>
+          <p className="text-sm mt-1">Kliknij "Nowa kontrola" aby dodać pierwszą kontrolę</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {qualityChecks.map(check => (
+            <div key={check.id} className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-4 mb-2">
+                    <h4 className="font-semibold text-white">{check.product_name}</h4>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      check.status === 'passed' ? 'bg-green-500/20 text-green-400' :
+                      check.status === 'conditional' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-red-500/20 text-red-400'
+                    }`}>
+                      {check.status === 'passed' ? 'Zgodne' :
+                       check.status === 'conditional' ? 'Warunkowe' : 'Niezgodne'}
+                    </span>
                   </div>
-                  <div>
-                    <span className="text-gray-400">Data kontroli:</span>
-                    <p className="text-gray-200 font-medium">{new Date(check.checkDate).toLocaleDateString('pl-PL')}</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
+                    <div>
+                      <span className="text-gray-400">Zamówienie:</span>
+                      <p className="text-gray-200 font-medium">{check.order_number || '-'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Data kontroli:</span>
+                      <p className="text-gray-200 font-medium">{new Date(check.check_date).toLocaleDateString('pl-PL')}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Inspektor:</span>
+                      <p className="text-gray-200 font-medium">{check.inspector}</p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-gray-400">Inspektor:</span>
-                    <p className="text-gray-200 font-medium">{check.inspector}</p>
-                  </div>
-                </div>
 
                 {/* Pomiary */}
-                <div className="bg-gray-700/30 rounded-lg p-3 mb-3">
-                  <p className="text-sm font-medium text-gray-300 mb-2">Pomiary:</p>
-                  <div className="space-y-1">
-                    {check.measurements.map((measurement, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-sm">
-                        <span className="text-gray-300">{measurement.parameter}</span>
-                        <div className="flex items-center gap-4">
-                          <span className="text-gray-400">
-                            Nominal: {measurement.nominal}±{measurement.tolerance}
-                          </span>
-                          <span className={`font-medium ${
-                            measurement.inTolerance ? 'text-green-400' : 'text-red-400'
-                          }`}>
-                            Zmierzono: {measurement.measured}
-                          </span>
+                {check.measurements && check.measurements.length > 0 && (
+                  <div className="bg-gray-700/30 rounded-lg p-3 mb-3">
+                    <p className="text-sm font-medium text-gray-300 mb-2">Pomiary:</p>
+                    <div className="space-y-1">
+                      {check.measurements.map((measurement, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-sm">
+                          <span className="text-gray-300">{measurement.parameter}</span>
+                          <div className="flex items-center gap-4">
+                            <span className="text-gray-400">
+                              Nominal: {measurement.nominal}±{measurement.tolerance}
+                            </span>
+                            <span className={`font-medium ${
+                              measurement.in_tolerance ? 'text-green-400' : 'text-red-400'
+                            }`}>
+                              Zmierzono: {measurement.measured}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Defekty */}
-                {check.defects.length > 0 && (
+                {check.defects && check.defects.length > 0 && (
                   <div className="bg-yellow-500/10 rounded-lg p-3">
                     <p className="text-sm font-medium text-yellow-300 mb-2">Niezgodności:</p>
                     {check.defects.map(defect => (
                       <div key={defect.id} className="text-sm">
                         <p className="text-yellow-200">{defect.description}</p>
-                        <p className="text-gray-400 mt-1">Działanie: {defect.action}</p>
+                        <p className="text-gray-400 mt-1">Działanie: {defect.action_taken || 'Brak'}</p>
                       </div>
                     ))}
                   </div>
