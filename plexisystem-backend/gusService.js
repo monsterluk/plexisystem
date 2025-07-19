@@ -1,249 +1,273 @@
-// gusService.js - Serwis do komunikacji z API GUS BIR1.2
+// gusService.js - Poprawiona wersja z oficjalnym URL GUS
+const soap = require('soap');
+const xml2js = require('xml2js');
 const axios = require('axios');
-const { XMLParser, XMLBuilder } = require('fast-xml-parser');
 
 class GUSService {
   constructor() {
     this.apiKey = 'cc8f3d1743644ffc9b15';
-    this.baseUrl = 'https://wl-api.mf.gov.pl';
-    this.sessionId = null;
-    this.sessionTimestamp = null;
+    // Oficjalny URL z maila GUS
+    this.wsdlUrl = 'https://wyszukiwarkaregon.stat.gov.pl/wsBIR/UslugaBIRzewnPubl.svc?wsdl';
+    this.apiUrl = 'https://wyszukiwarkaregon.stat.gov.pl/wsBIR/UslugaBIRzewnPubl.svc';
+    this.client = null;
+    this.sid = null;
+    this.lastLoginTime = null;
   }
 
-  // Budowanie SOAP envelope
-  buildSoapEnvelope(action, body) {
-    return `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://CIS/BIR/PUBL/2014/07">
-  <soap:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
-    <wsa:To>${this.baseUrl}</wsa:To>
-    <wsa:Action>${action}</wsa:Action>
-  </soap:Header>
-  <soap:Body>
-    ${body}
-  </soap:Body>
-</soap:Envelope>`;
-  }
-
-  // Parsowanie odpowiedzi SOAP
-  parseSoapResponse(xmlResponse) {
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      removeNSPrefix: true
-    });
-    
-    const result = parser.parse(xmlResponse);
-    const envelope = result.Envelope || result['soap:Envelope'] || result['s:Envelope'];
-    const body = envelope?.Body || envelope?.['soap:Body'] || envelope?.['s:Body'];
-    
-    return body;
-  }
-
-  // Logowanie do API GUS
-  async login() {
+  async init() {
     try {
-      const loginBody = `
-        <ns:Zaloguj>
-          <ns:pKluczUzytkownika>${this.apiKey}</ns:pKluczUzytkownika>
-        </ns:Zaloguj>
-      `;
-
-      const envelope = this.buildSoapEnvelope(
-        'http://CIS/BIR/PUBL/2014/07/IUslugaBIRzewnPubl/Zaloguj',
-        loginBody
-      );
-
-      const response = await axios.post(this.baseUrl, envelope, {
-        headers: {
-          'Content-Type': 'application/soap+xml; charset=utf-8',
-          'Accept': 'application/soap+xml'
-        }
-      });
-
-      const parsed = this.parseSoapResponse(response.data);
-      const sessionId = parsed?.ZalogujResponse?.ZalogujResult;
-
-      if (sessionId) {
-        this.sessionId = sessionId;
-        this.sessionTimestamp = Date.now();
-        console.log('Zalogowano do GUS, sesja:', sessionId);
-        return sessionId;
-      } else {
-        throw new Error('Nie udało się uzyskać sesji GUS');
+      if (!this.client) {
+        console.log('Inicjalizacja klienta SOAP dla GUS...');
+        
+        // Użyj axios jako HTTP client dla lepszej kontroli
+        const soapOptions = {
+          endpoint: this.apiUrl,
+          escapeXML: false,
+          forceSoap12Headers: true,
+          httpClient: axios,
+          request: (url, data, callback, headers) => {
+            axios({
+              method: 'POST',
+              url: url,
+              data: data,
+              headers: {
+                'Content-Type': 'application/soap+xml; charset=utf-8',
+                'Accept': 'application/xop+xml',
+                ...headers
+              },
+              timeout: 30000,
+              maxContentLength: 50 * 1024 * 1024
+            })
+            .then(response => callback(null, response, response.data))
+            .catch(error => callback(error));
+          }
+        };
+        
+        this.client = await soap.createClientAsync(this.wsdlUrl, soapOptions);
+        console.log('Klient SOAP zainicjalizowany');
       }
+      return true;
     } catch (error) {
-      console.error('Błąd logowania do GUS:', error.message);
+      console.error('Błąd inicjalizacji SOAP:', error.message);
       throw error;
     }
   }
 
-  // Sprawdź i odnów sesję jeśli potrzeba
+  async login() {
+    try {
+      console.log('Logowanie do GUS z kluczem:', this.apiKey);
+      
+      // Przygotuj XML zgodnie z przykładem
+      const loginXml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://CIS/BIR/PUBL/2014/07">
+  <soap:Body>
+    <ns:Zaloguj>
+      <ns:pKluczUzytkownika>${this.apiKey}</ns:pKluczUzytkownika>
+    </ns:Zaloguj>
+  </soap:Body>
+</soap:Envelope>`;
+
+      const response = await axios.post(this.apiUrl, loginXml, {
+        headers: {
+          'Content-Type': 'application/soap+xml; charset=utf-8',
+          'Accept': 'application/xop+xml',
+          'SOAPAction': 'http://CIS/BIR/PUBL/2014/07/IUslugaBIRzewnPubl/Zaloguj'
+        },
+        timeout: 30000
+      });
+
+      // Parsuj odpowiedź
+      const parser = new xml2js.Parser({ 
+        explicitArray: false,
+        ignoreAttrs: true,
+        tagNameProcessors: [xml2js.processors.stripPrefix]
+      });
+      
+      const result = await parser.parseStringPromise(response.data);
+      
+      // Znajdź SID w różnych możliwych lokalizacjach
+      let sid = null;
+      if (result.Envelope?.Body?.ZalogujResponse?.ZalogujResult) {
+        sid = result.Envelope.Body.ZalogujResponse.ZalogujResult;
+      } else if (result.Body?.ZalogujResponse?.ZalogujResult) {
+        sid = result.Body.ZalogujResponse.ZalogujResult;
+      }
+
+      if (sid) {
+        this.sid = sid;
+        this.lastLoginTime = Date.now();
+        console.log('Zalogowano do GUS, SID:', this.sid);
+        return this.sid;
+      } else {
+        console.error('Odpowiedź GUS:', JSON.stringify(result, null, 2));
+        throw new Error('Nie otrzymano SID z GUS');
+      }
+      
+    } catch (error) {
+      console.error('Błąd logowania do GUS:', error.message);
+      if (error.response) {
+        console.error('Status:', error.response.status);
+        console.error('Headers:', error.response.headers);
+        console.error('Data:', error.response.data?.substring(0, 1000));
+      }
+      throw error;
+    }
+  }
+
   async ensureSession() {
     const SESSION_TIMEOUT = 55 * 60 * 1000; // 55 minut
-
-    if (!this.sessionId || !this.sessionTimestamp || 
-        (Date.now() - this.sessionTimestamp) > SESSION_TIMEOUT) {
+    
+    if (!this.sid || !this.lastLoginTime || 
+        (Date.now() - this.lastLoginTime) > SESSION_TIMEOUT) {
       await this.login();
     }
-
-    return this.sessionId;
+    
+    return this.sid;
   }
 
-  // Wyszukiwanie po NIP
   async searchByNIP(nip) {
     try {
-      const sessionId = await this.ensureSession();
+      const sid = await this.ensureSession();
       const cleanNip = nip.replace(/[^0-9]/g, '');
+      
+      console.log('Szukam w GUS po NIP:', cleanNip);
 
-      const searchBody = `
-        <ns:DaneSzukajPodmioty>
-          <ns:pParametryWyszukiwania>
-            <ns:Nip>${cleanNip}</ns:Nip>
-          </ns:pParametryWyszukiwania>
-        </ns:DaneSzukajPodmioty>
-      `;
+      const searchXml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://CIS/BIR/PUBL/2014/07" xmlns:dat="http://CIS/BIR/PUBL/2014/07/DataContract">
+  <soap:Body>
+    <ns:DaneSzukajPodmioty>
+      <ns:pParametryWyszukiwania>
+        <dat:Nip>${cleanNip}</dat:Nip>
+      </ns:pParametryWyszukiwania>
+    </ns:DaneSzukajPodmioty>
+  </soap:Body>
+</soap:Envelope>`;
 
-      const envelope = this.buildSoapEnvelope(
-        'http://CIS/BIR/PUBL/2014/07/IUslugaBIRzewnPubl/DaneSzukajPodmioty',
-        searchBody
-      );
-
-      const response = await axios.post(this.baseUrl, envelope, {
+      const response = await axios.post(this.apiUrl, searchXml, {
         headers: {
           'Content-Type': 'application/soap+xml; charset=utf-8',
-          'Accept': 'application/soap+xml',
-          'sid': sessionId
-        }
+          'Accept': 'application/xop+xml',
+          'sid': sid,
+          'SOAPAction': 'http://CIS/BIR/PUBL/2014/07/IUslugaBIRzewnPubl/DaneSzukajPodmioty'
+        },
+        timeout: 30000
       });
 
-      const parsed = this.parseSoapResponse(response.data);
-      const searchResult = parsed?.DaneSzukajPodmiotyResponse?.DaneSzukajPodmiotyResult;
+      // Parsuj główną odpowiedź
+      const parser = new xml2js.Parser({ 
+        explicitArray: false,
+        ignoreAttrs: true,
+        tagNameProcessors: [xml2js.processors.stripPrefix]
+      });
+      
+      const result = await parser.parseStringPromise(response.data);
+      
+      // Znajdź wyniki
+      let searchResult = null;
+      if (result.Envelope?.Body?.DaneSzukajPodmiotyResponse?.DaneSzukajPodmiotyResult) {
+        searchResult = result.Envelope.Body.DaneSzukajPodmiotyResponse.DaneSzukajPodmiotyResult;
+      } else if (result.Body?.DaneSzukajPodmiotyResponse?.DaneSzukajPodmiotyResult) {
+        searchResult = result.Body.DaneSzukajPodmiotyResponse.DaneSzukajPodmiotyResult;
+      }
 
       if (!searchResult) {
+        console.log('Brak wyników dla NIP:', cleanNip);
         return null;
       }
 
-      // Parsuj wynik (jest w formacie XML string)
-      const resultParser = new XMLParser({
-        ignoreAttributes: false,
-        removeNSPrefix: true
+      // Parsuj wyniki (są w formacie XML string)
+      const dataParser = new xml2js.Parser({ 
+        explicitArray: false,
+        ignoreAttrs: true
       });
       
-      const data = resultParser.parse(searchResult);
-      const podmiot = data?.root?.dane || data?.dane;
+      const searchData = await dataParser.parseStringPromise(searchResult);
+      const dane = searchData?.root?.dane || searchData?.dane;
 
-      if (!podmiot) {
+      if (!dane) {
+        console.log('Brak danych w odpowiedzi');
         return null;
       }
 
-      // Pobierz pełne dane podmiotu
-      const fullData = await this.getFullData(podmiot.Regon, podmiot.Typ);
+      console.log('Znaleziono firmę:', dane.Nazwa);
+
+      // Formatuj adres zgodnie z przykładem
+      const addressParts = [];
+      if (dane.Ulica) {
+        addressParts.push(dane.Ulica);
+      }
+      if (dane.NrNieruchomosci) {
+        addressParts.push(dane.NrNieruchomosci);
+      }
+      if (dane.NrLokalu) {
+        addressParts.push(`lok. ${dane.NrLokalu}`);
+      }
+      
+      const street = addressParts.join(' ');
+      const city = [dane.KodPocztowy, dane.Miejscowosc].filter(Boolean).join(' ');
+      const address = [street, city].filter(Boolean).join(', ');
 
       return {
-        nip: podmiot.Nip || cleanNip,
-        name: podmiot.Nazwa || '',
-        regon: podmiot.Regon || '',
-        wojewodztwo: podmiot.Wojewodztwo || '',
-        powiat: podmiot.Powiat || '',
-        gmina: podmiot.Gmina || '',
-        miejscowosc: podmiot.Miejscowosc || '',
-        kodPocztowy: podmiot.KodPocztowy || '',
-        ulica: podmiot.Ulica || '',
-        nrNieruchomosci: podmiot.NrNieruchomosci || '',
-        nrLokalu: podmiot.NrLokalu || '',
-        typ: podmiot.Typ || '',
-        ...fullData
+        nip: dane.Nip || cleanNip,
+        name: dane.Nazwa || '',
+        address: address,
+        regon: dane.Regon || '',
+        wojewodztwo: dane.Wojewodztwo || '',
+        powiat: dane.Powiat || '',
+        gmina: dane.Gmina || '',
+        email: '',
+        phone: '',
+        statusNip: dane.StatusNip || '',
+        typ: dane.Typ || ''
       };
+
     } catch (error) {
-      console.error('Błąd wyszukiwania w GUS:', error);
-      return null;
+      console.error('Błąd wyszukiwania w GUS:', error.message);
+      if (error.response) {
+        console.error('Response data:', error.response.data?.substring(0, 1000));
+      }
+      
+      // Jeśli sesja wygasła, spróbuj ponownie
+      if (error.response && error.response.data && 
+          (error.response.data.includes('nieaktywny') || error.response.data.includes('nieważny'))) {
+        console.log('Sesja wygasła, ponawiam...');
+        this.sid = null;
+        return this.searchByNIP(nip);
+      }
+      
+      throw error;
     }
   }
 
-  // Pobierz pełne dane podmiotu
-  async getFullData(regon, typ) {
+  async logout() {
     try {
-      const sessionId = await this.ensureSession();
-      
-      // Wybierz odpowiedni raport w zależności od typu
-      let raportName = 'BIR11OsPrawna';
-      if (typ === 'F') {
-        raportName = 'BIR11OsFizycznaDaneOgolne';
-      } else if (typ === 'LF') {
-        raportName = 'BIR11OsFizycznaDzialalnoscCeidg';
+      if (this.sid) {
+        console.log('Wylogowanie z GUS...');
+        const logoutXml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://CIS/BIR/PUBL/2014/07">
+  <soap:Body>
+    <ns:Wyloguj>
+      <ns:pIdentyfikatorSesji>${this.sid}</ns:pIdentyfikatorSesji>
+    </ns:Wyloguj>
+  </soap:Body>
+</soap:Envelope>`;
+
+        await axios.post(this.apiUrl, logoutXml, {
+          headers: {
+            'Content-Type': 'application/soap+xml; charset=utf-8',
+            'Accept': 'application/xop+xml'
+          },
+          timeout: 10000
+        });
+        
+        console.log('Wylogowano z GUS');
       }
-
-      const reportBody = `
-        <ns:DanePobierzPelnyRaport>
-          <ns:pRegon>${regon}</ns:pRegon>
-          <ns:pNazwaRaportu>${raportName}</ns:pNazwaRaportu>
-        </ns:DanePobierzPelnyRaport>
-      `;
-
-      const envelope = this.buildSoapEnvelope(
-        'http://CIS/BIR/PUBL/2014/07/IUslugaBIRzewnPubl/DanePobierzPelnyRaport',
-        reportBody
-      );
-
-      const response = await axios.post(this.baseUrl, envelope, {
-        headers: {
-          'Content-Type': 'application/soap+xml; charset=utf-8',
-          'Accept': 'application/soap+xml',
-          'sid': sessionId
-        }
-      });
-
-      const parsed = this.parseSoapResponse(response.data);
-      const reportResult = parsed?.DanePobierzPelnyRaportResponse?.DanePobierzPelnyRaportResult;
-
-      if (!reportResult) {
-        return {};
-      }
-
-      const resultParser = new XMLParser({
-        ignoreAttributes: false,
-        removeNSPrefix: true
-      });
-      
-      const data = resultParser.parse(reportResult);
-      const dane = data?.root?.dane || data?.dane || {};
-
-      // Zwróć dodatkowe dane
-      return {
-        email: dane.praw_adresEmail || dane.fiz_adresEmail || '',
-        telefon: dane.praw_numerTelefonu || dane.fiz_numerTelefonu || '',
-        dataRozpoczecia: dane.praw_dataRozpoczeciaDzialalnosci || dane.fiz_dataRozpoczeciaDzialalnosci || '',
-        formaWlasnosci: dane.praw_formaWlasnosci_Nazwa || '',
-        organRejestrowy: dane.praw_organRejestrowy_Nazwa || '',
-        numerWRejestrzeEwidencji: dane.praw_numerWRejestrzeEwidencji || dane.fiz_numerWRejestrzeEwidencji || ''
-      };
     } catch (error) {
-      console.error('Błąd pobierania pełnych danych:', error);
-      return {};
+      console.error('Błąd wylogowania:', error.message);
+    } finally {
+      this.sid = null;
+      this.lastLoginTime = null;
     }
-  }
-
-  // Formatowanie adresu
-  formatAddress(data) {
-    const parts = [];
-    
-    if (data.ulica) {
-      parts.push(data.ulica);
-    }
-    
-    if (data.nrNieruchomosci) {
-      parts.push(data.nrNieruchomosci);
-    }
-    
-    if (data.nrLokalu) {
-      parts.push(`lok. ${data.nrLokalu}`);
-    }
-    
-    const street = parts.join(' ');
-    const city = data.kodPocztowy && data.miejscowosc 
-      ? `${data.kodPocztowy} ${data.miejscowosc}` 
-      : data.miejscowosc;
-    
-    return [street, city].filter(Boolean).join(', ');
   }
 }
 

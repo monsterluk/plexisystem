@@ -2,17 +2,21 @@
   "name": "plexisystem-backend",
   "version": "1.0.0",
   "description": "PlexiSystem Backend API",
-  "main": "minimal-server-simple.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node minimal-server-simple.js",
-    "dev": "nodemon minimal-server-simple.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "nodemailer": "^6.9.7",
-    "axios": "^1.6.2"
+    "axios": "^1.6.2",
+    "soap": "^1.0.0",
+    "xml2js": "^0.6.2",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

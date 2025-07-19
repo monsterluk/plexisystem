@@ -1,4 +1,4 @@
-// minimal-server-simple.js - Backend z obsługą API GUS
+// minimal-server-simple.js - Backend z API Ministerstwa Finansów
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware - CORS dla wszystkich
-app.use(cors()); // Otwarty CORS - akceptuje wszystkie originy
+app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // Logging
@@ -23,9 +23,10 @@ app.get('/', (req, res) => {
   res.json({ 
     status: 'OK', 
     message: 'PlexiSystem Backend API',
-    version: '1.0.0',
+    version: '5.0.0',
     endpoints: ['/api/health', '/api/send-email', '/api/gus/:nip'],
-    cors: 'open'
+    cors: 'open',
+    gusApi: 'Ministerstwo Finansów - Biała Lista VAT'
   });
 });
 
@@ -37,222 +38,116 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// GUS API Service
-class GUSService {
-  constructor() {
-    this.apiKey = 'cc8f3d1743644ffc9b15';
-    this.baseUrl = 'https://wl-api.mf.gov.pl';
-    this.sessionId = null;
-    this.sessionTimestamp = null;
-  }
-
-  async login() {
-    try {
-      const loginEnvelope = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://CIS/BIR/PUBL/2014/07">
-  <soap:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
-    <wsa:To>${this.baseUrl}</wsa:To>
-    <wsa:Action>http://CIS/BIR/PUBL/2014/07/IUslugaBIRzewnPubl/Zaloguj</wsa:Action>
-  </soap:Header>
-  <soap:Body>
-    <ns:Zaloguj>
-      <ns:pKluczUzytkownika>${this.apiKey}</ns:pKluczUzytkownika>
-    </ns:Zaloguj>
-  </soap:Body>
-</soap:Envelope>`;
-
-      const response = await axios.post(this.baseUrl, loginEnvelope, {
-        headers: {
-          'Content-Type': 'application/soap+xml; charset=utf-8',
-          'Accept': 'application/soap+xml'
-        }
-      });
-
-      // Wyciągnij sesję z odpowiedzi
-      const sessionMatch = response.data.match(/<ZalogujResult>(.*?)<\/ZalogujResult>/);
-      if (sessionMatch && sessionMatch[1]) {
-        this.sessionId = sessionMatch[1];
-        this.sessionTimestamp = Date.now();
-        console.log('Zalogowano do GUS, sesja:', this.sessionId);
-        return this.sessionId;
-      }
-      
-      throw new Error('Nie udało się uzyskać sesji GUS');
-    } catch (error) {
-      console.error('Błąd logowania do GUS:', error.message);
-      throw error;
-    }
-  }
-
-  async ensureSession() {
-    const SESSION_TIMEOUT = 55 * 60 * 1000; // 55 minut
-
-    if (!this.sessionId || !this.sessionTimestamp || 
-        (Date.now() - this.sessionTimestamp) > SESSION_TIMEOUT) {
-      await this.login();
-    }
-
-    return this.sessionId;
-  }
-
-  async searchByNIP(nip) {
-    try {
-      const sessionId = await this.ensureSession();
-      const cleanNip = nip.replace(/[^0-9]/g, '');
-
-      const searchEnvelope = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://CIS/BIR/PUBL/2014/07">
-  <soap:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
-    <wsa:To>${this.baseUrl}</wsa:To>
-    <wsa:Action>http://CIS/BIR/PUBL/2014/07/IUslugaBIRzewnPubl/DaneSzukajPodmioty</wsa:Action>
-  </soap:Header>
-  <soap:Body>
-    <ns:DaneSzukajPodmioty>
-      <ns:pParametryWyszukiwania>
-        <ns:Nip>${cleanNip}</ns:Nip>
-      </ns:pParametryWyszukiwania>
-    </ns:DaneSzukajPodmioty>
-  </soap:Body>
-</soap:Envelope>`;
-
-      const response = await axios.post(this.baseUrl, searchEnvelope, {
-        headers: {
-          'Content-Type': 'application/soap+xml; charset=utf-8',
-          'Accept': 'application/soap+xml',
-          'sid': sessionId
-        }
-      });
-
-      // Parsuj odpowiedź - szukamy danych
-      const responseData = response.data;
-      
-      // Sprawdź czy są dane
-      if (!responseData.includes('<dane>')) {
-        return null;
-      }
-
-      // Wyciągnij podstawowe dane z odpowiedzi
-      const extractValue = (tag) => {
-        const match = responseData.match(new RegExp(`<${tag}>(.*?)<\/${tag}>`));
-        return match ? match[1] : '';
-      };
-
-      const companyData = {
-        nip: extractValue('Nip') || cleanNip,
-        name: extractValue('Nazwa') || '',
-        regon: extractValue('Regon') || '',
-        wojewodztwo: extractValue('Wojewodztwo') || '',
-        powiat: extractValue('Powiat') || '',
-        gmina: extractValue('Gmina') || '',
-        miejscowosc: extractValue('Miejscowosc') || '',
-        kodPocztowy: extractValue('KodPocztowy') || '',
-        ulica: extractValue('Ulica') || '',
-        nrNieruchomosci: extractValue('NrNieruchomosci') || '',
-        nrLokalu: extractValue('NrLokalu') || '',
-        typ: extractValue('Typ') || ''
-      };
-
-      // Formatuj adres
-      const addressParts = [];
-      if (companyData.ulica) {
-        addressParts.push(companyData.ulica);
-      }
-      if (companyData.nrNieruchomosci) {
-        addressParts.push(companyData.nrNieruchomosci);
-      }
-      if (companyData.nrLokalu) {
-        addressParts.push(`lok. ${companyData.nrLokalu}`);
-      }
-      
-      const street = addressParts.join(' ');
-      const city = companyData.kodPocztowy && companyData.miejscowosc 
-        ? `${companyData.kodPocztowy} ${companyData.miejscowosc}` 
-        : companyData.miejscowosc;
-      
-      const address = [street, city].filter(Boolean).join(', ');
-
-      return {
-        nip: companyData.nip,
-        name: companyData.name,
-        address: address,
-        regon: companyData.regon,
-        wojewodztwo: companyData.wojewodztwo,
-        powiat: companyData.powiat,
-        gmina: companyData.gmina,
-        email: '', // GUS nie zwraca emaila
-        phone: ''  // GUS nie zwraca telefonu
-      };
-
-    } catch (error) {
-      console.error('Błąd wyszukiwania w GUS:', error.message);
-      
-      // Jeśli to błąd sesji, spróbuj ponownie
-      if (error.response && error.response.status === 401) {
-        this.sessionId = null;
-        return this.searchByNIP(nip);
-      }
-      
-      return null;
-    }
-  }
-}
-
-// Utwórz instancję serwisu GUS
-const gusService = new GUSService();
-
-// Endpoint GUS
+// Endpoint GUS - używamy API Ministerstwa Finansów
 app.get('/api/gus/:nip', async (req, res) => {
   const { nip } = req.params;
   
   try {
-    console.log('Szukam w GUS dla NIP:', nip);
+    const cleanNip = nip.replace(/[^0-9]/g, '');
+    console.log('Wyszukiwanie w API MF dla NIP:', cleanNip);
     
-    // Spróbuj pobrać dane z API GUS
-    const gusData = await gusService.searchByNIP(nip);
+    // API Ministerstwa Finansów - Biała Lista VAT
+    const today = new Date().toISOString().split('T')[0];
+    const apiUrl = `https://wl-api.mf.gov.pl/api/search/nip/${cleanNip}?date=${today}`;
     
-    if (gusData) {
-      console.log('Znaleziono dane w GUS:', gusData.name);
-      res.json(gusData);
+    console.log('Zapytanie do API MF:', apiUrl);
+    
+    const response = await axios.get(apiUrl, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'PlexiSystem/1.0'
+      },
+      timeout: 10000
+    });
+    
+    console.log('Odpowiedź status:', response.status);
+    
+    if (response.data && response.data.result && response.data.result.subject) {
+      const subject = response.data.result.subject;
+      console.log('Znaleziono firmę:', subject.name);
+      
+      // Formatuj adres
+      let address = '';
+      if (typeof subject.workingAddress === 'string') {
+        address = subject.workingAddress;
+      } else if (subject.workingAddress) {
+        const addr = subject.workingAddress;
+        const parts = [];
+        if (addr.street) parts.push(addr.street);
+        if (addr.streetNumber) parts.push(addr.streetNumber);
+        if (addr.apartmentNumber) parts.push(`lok. ${addr.apartmentNumber}`);
+        if (addr.postCode && addr.city) {
+          parts.push(`${addr.postCode} ${addr.city}`);
+        } else if (addr.city) {
+          parts.push(addr.city);
+        }
+        address = parts.join(' ');
+      } else if (subject.residenceAddress) {
+        address = subject.residenceAddress;
+      }
+      
+      // Zwróć dane w formacie zgodnym z naszym API
+      const companyData = {
+        nip: subject.nip || cleanNip,
+        name: subject.name || '',
+        address: address || 'Brak adresu',
+        regon: subject.regon || '',
+        wojewodztwo: '', // API MF nie zwraca województwa
+        powiat: '', // API MF nie zwraca powiatu
+        gmina: '', // API MF nie zwraca gminy
+        email: '', // API MF nie zwraca emaila
+        phone: '', // API MF nie zwraca telefonu
+        statusVat: subject.statusVat || 'Nieznany',
+        krs: subject.krs || ''
+      };
+      
+      res.json(companyData);
       return;
     }
     
-    // Fallback - dane testowe
-    const testData = {
-      '5252344078': {
-        nip: '5252344078',
-        name: 'PLEXISYSTEM ŁUKASZ SIKORRA',
-        address: 'ul. Kartuska 145B lok. 1, 80-122 Gdańsk',
-        regon: '146866569',
-        wojewodztwo: 'POMORSKIE',
-        powiat: 'Gdańsk',
-        gmina: 'Gdańsk',
-        email: '',
-        phone: ''
-      },
-      '5213870274': {
-        nip: '5213870274',
-        name: 'Google Poland Sp. z o.o.',
-        address: 'ul. Emilii Plater 53, 00-113 Warszawa',
-        regon: '380871946',
-        wojewodztwo: 'mazowieckie',
-        powiat: 'warszawski',
-        gmina: 'Warszawa',
-        email: 'kontakt@google.pl',
-        phone: '22 207 19 00'
-      }
-    };
-    
-    if (testData[nip]) {
-      console.log('Używam danych testowych dla NIP:', nip);
-      res.json(testData[nip]);
-    } else {
-      res.status(404).json({ message: 'Nie znaleziono firmy' });
+    // Jeśli API MF nie znalazło, sprawdź czy to może być osoba fizyczna
+    if (response.data && response.data.result && response.data.result.entries) {
+      console.log('Nie znaleziono jako podmiot, sprawdzam wpisy...');
     }
+    
+    // Nie znaleziono
+    console.log('Nie znaleziono firmy w API MF dla NIP:', cleanNip);
+    res.status(404).json({ 
+      message: 'Nie znaleziono firmy w rejestrze',
+      nip: cleanNip,
+      source: 'Ministerstwo Finansów API'
+    });
+    
   } catch (error) {
-    console.error('Błąd endpoint GUS:', error.message);
+    console.error('Błąd API MF:', error.message);
+    
+    if (error.response) {
+      console.error('Status:', error.response.status);
+      console.error('Data:', JSON.stringify(error.response.data, null, 2));
+      
+      if (error.response.status === 404) {
+        res.status(404).json({ 
+          message: 'Nie znaleziono firmy w rejestrze',
+          nip: nip,
+          source: 'Ministerstwo Finansów API'
+        });
+        return;
+      }
+      
+      if (error.response.status === 400) {
+        res.status(400).json({ 
+          message: 'Nieprawidłowy NIP',
+          nip: nip,
+          source: 'Ministerstwo Finansów API'
+        });
+        return;
+      }
+    }
+    
     res.status(500).json({ 
-      message: 'Błąd serwera', 
-      error: error.message 
+      message: 'Błąd wyszukiwania',
+      error: error.message,
+      source: 'Ministerstwo Finansów API'
     });
   }
 });
@@ -314,6 +209,8 @@ app.listen(PORT, '0.0.0.0', () => {
   🌍 Environment: ${process.env.NODE_ENV || 'development'}
   ✉️  Email service: Ready
   🔓 CORS: Open for all origins
-  🏢 GUS API: Ready with key ${gusService.apiKey ? '✓' : '✗'}
+  🏢 GUS API: Ministerstwo Finansów - Biała Lista VAT
+  📝 API URL: https://wl-api.mf.gov.pl/api/search/nip/{nip}
+  ℹ️  Zwraca: NIP, nazwa, adres, REGON, status VAT, KRS
   `);
 });

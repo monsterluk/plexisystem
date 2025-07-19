@@ -165,12 +165,63 @@ app.post('/api/send-email', async (req, res) => {
   }
 });
 
+// Import GUS Service
+const gusService = require('./gusService');
+
+// Inicjalizacja GUS przy starcie
+gusService.init().catch(err => {
+  console.error('Błąd inicjalizacji GUS:', err);
+});
+
 // Pobierz dane z GUS po NIP
 app.get('/api/gus/:nip', async (req, res) => {
   const { nip } = req.params;
   
   try {
-    // Mock data dla testów
+    console.log('Pobieranie danych z GUS dla NIP:', nip);
+    
+    // Spróbuj pobrać z prawdziwego API
+    const gusData = await gusService.searchByNIP(nip);
+    
+    if (gusData) {
+      res.json(gusData);
+    } else {
+      // Fallback na mock data jeśli GUS nie zwróci danych
+      const mockData = {
+        '1234567890': {
+          nip: '1234567890',
+          name: 'Firma Testowa Sp. z o.o.',
+          address: 'ul. Testowa 123, 00-001 Warszawa',
+          regon: '123456789',
+          wojewodztwo: 'mazowieckie',
+          powiat: 'warszawski',
+          gmina: 'Warszawa',
+          email: 'biuro@firma-testowa.pl',
+          phone: '22 123 45 67'
+        },
+        '5213870274': {
+          nip: '5213870274',
+          name: 'Google Poland Sp. z o.o.',
+          address: 'ul. Emilii Plater 53, 00-113 Warszawa',
+          regon: '380871946',
+          wojewodztwo: 'mazowieckie',
+          powiat: 'warszawski',
+          gmina: 'Warszawa',
+          email: 'kontakt@google.pl',
+          phone: '22 207 19 00'
+        }
+      };
+      
+      if (mockData[nip]) {
+        res.json(mockData[nip]);
+      } else {
+        res.status(404).json({ message: 'Nie znaleziono firmy' });
+      }
+    }
+  } catch (error) {
+    console.error('Błąd GUS:', error.message);
+    
+    // W przypadku błędu, zwróć mock data
     const mockData = {
       '1234567890': {
         nip: '1234567890',
@@ -182,28 +233,14 @@ app.get('/api/gus/:nip', async (req, res) => {
         gmina: 'Warszawa',
         email: 'biuro@firma-testowa.pl',
         phone: '22 123 45 67'
-      },
-      '5213870274': {
-        nip: '5213870274',
-        name: 'Google Poland Sp. z o.o.',
-        address: 'ul. Emilii Plater 53, 00-113 Warszawa',
-        regon: '380871946',
-        wojewodztwo: 'mazowieckie',
-        powiat: 'warszawski',
-        gmina: 'Warszawa',
-        email: 'kontakt@google.pl',
-        phone: '22 207 19 00'
       }
     };
     
     if (mockData[nip]) {
       res.json(mockData[nip]);
     } else {
-      res.status(404).json({ message: 'Nie znaleziono firmy' });
+      res.status(500).json({ message: 'Błąd połączenia z GUS' });
     }
-  } catch (error) {
-    console.error('Błąd GUS:', error.message);
-    res.status(500).json({ message: 'Błąd serwera' });
   }
 });
 
