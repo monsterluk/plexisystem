@@ -26,6 +26,7 @@ import { MachiningParameters } from '@/components/MachiningParameters';
 import { QualityControl } from '@/pages/QualityControl';
 import { UserManagementPage } from '@/pages/UserManagement';
 import UnauthorizedPage from '@/pages/UnauthorizedPage';
+import { MockProtectedRoute } from '@/components/MockProtectedRoute';
 // import { LoginPage } from '@/pages/LoginPage';
 
 interface Notification {
@@ -42,6 +43,15 @@ const AppContent: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  
+  // Funkcja pomocnicza do sprawdzania uprawnień
+  const hasAccess = (module: string): boolean => {
+    const rolePermissions = {
+      admin: ['dashboard', 'offers', 'clients', 'products', 'production', 'quality_control', 'reports', 'users', 'settings', 'ai', 'marketplace', 'knowledge'],
+      salesperson: ['dashboard', 'offers', 'clients', 'products', 'reports', 'ai', 'marketplace', 'knowledge']
+    };
+    return rolePermissions[currentUser.role as keyof typeof rolePermissions]?.includes(module) || false;
+  };
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: 1,
@@ -138,13 +148,15 @@ const AppContent: React.FC = () => {
                       <BarChart2 className="w-5 h-5 mb-1" />
                       <span className="text-xs">Dashboard</span>
                     </a>
-                    <a
-                      href="/offers"
-                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
-                    >
-                      <FileText className="w-5 h-5 mb-1" />
-                      <span className="text-xs">Oferty</span>
-                    </a>
+                    {hasAccess('offers') && (
+                      <a
+                        href="/offers"
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                      >
+                        <FileText className="w-5 h-5 mb-1" />
+                        <span className="text-xs">Oferty</span>
+                      </a>
+                    )}
                     <a
                       href="/calculator"
                       className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
@@ -152,27 +164,33 @@ const AppContent: React.FC = () => {
                       <Calculator className="w-5 h-5 mb-1" />
                       <span className="text-xs">Kalkulator</span>
                     </a>
-                    <a
-                      href="/production"
-                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
-                    >
-                      <Settings className="w-5 h-5 mb-1" />
-                      <span className="text-xs">Produkcja</span>
-                    </a>
-                    <a
-                      href="/machining"
-                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
-                    >
-                      <Settings className="w-5 h-5 mb-1" />
-                      <span className="text-xs">Frezowanie</span>
-                    </a>
-                    <a
-                      href="/quality"
-                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
-                    >
-                      <ClipboardCheck className="w-5 h-5 mb-1" />
-                      <span className="text-xs">Jakość</span>
-                    </a>
+                    {hasAccess('production') && (
+                      <a
+                        href="/production"
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                      >
+                        <Settings className="w-5 h-5 mb-1" />
+                        <span className="text-xs">Produkcja</span>
+                      </a>
+                    )}
+                    {hasAccess('production') && (
+                      <a
+                        href="/machining"
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                      >
+                        <Settings className="w-5 h-5 mb-1" />
+                        <span className="text-xs">Frezowanie</span>
+                      </a>
+                    )}
+                    {hasAccess('quality_control') && (
+                      <a
+                        href="/quality"
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                      >
+                        <ClipboardCheck className="w-5 h-5 mb-1" />
+                        <span className="text-xs">Jakość</span>
+                      </a>
+                    )}
                     <a
                       href="/clients"
                       className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
@@ -226,13 +244,15 @@ const AppContent: React.FC = () => {
                         <span className="text-xs">Użytkownicy</span>
                       </a>
                     )}
-                    <a
-                      href="/settings"
-                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
-                    >
-                      <Settings className="w-5 h-5 mb-1" />
-                      <span className="text-xs">Ustawienia</span>
-                    </a>
+                    {hasAccess('settings') && (
+                      <a
+                        href="/settings"
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                      >
+                        <Settings className="w-5 h-5 mb-1" />
+                        <span className="text-xs">Ustawienia</span>
+                      </a>
+                    )}
                   </nav>
                 </div>
 
@@ -414,14 +434,16 @@ const AppContent: React.FC = () => {
           {showMobileMenu && (
             <div className="lg:hidden bg-zinc-800 border-b border-zinc-700">
               <nav className="flex flex-col p-4 space-y-2">
-                <a
-                  href="/offers"
-                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <FileText className="w-4 h-4" />
-                  Oferty
-                </a>
+                {hasAccess('offers') && (
+                  <a
+                    href="/offers"
+                    className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <FileText className="w-4 h-4" />
+                    Oferty
+                  </a>
+                )}
                 <a
                   href="/dashboard"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
@@ -430,14 +452,16 @@ const AppContent: React.FC = () => {
                   <BarChart2 className="w-4 h-4" />
                   Dashboard
                 </a>
-                <a
-                  href="/clients"
-                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <Users className="w-4 h-4" />
-                  Klienci
-                </a>
+                {hasAccess('clients') && (
+                  <a
+                    href="/clients"
+                    className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <Users className="w-4 h-4" />
+                    Klienci
+                  </a>
+                )}
                 <a
                   href="/calculator"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
@@ -446,46 +470,56 @@ const AppContent: React.FC = () => {
                   <Calculator className="w-4 h-4" />
                   Kalkulator
                 </a>
-                <a
-                  href="/products"
-                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <Package className="w-4 h-4" />
-                  Produkty
-                </a>
-                <a
-                  href="/production"
-                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <Settings className="w-4 h-4" />
-                  Produkcja
-                </a>
-                <a
-                  href="/machining"
-                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <Settings className="w-4 h-4" />
-                  Frezowanie
-                </a>
-                <a
-                  href="/quality"
-                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <ClipboardCheck className="w-4 h-4" />
-                  Kontrola Jakości
-                </a>
-                <a
-                  href="/reports"
-                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <Activity className="w-4 h-4" />
-                  Raporty
-                </a>
+                {hasAccess('products') && (
+                  <a
+                    href="/products"
+                    className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <Package className="w-4 h-4" />
+                    Produkty
+                  </a>
+                )}
+                {hasAccess('production') && (
+                  <>
+                    <a
+                      href="/production"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                      onClick={() => setShowMobileMenu(false)}
+                    >
+                      <Settings className="w-4 h-4" />
+                      Produkcja
+                    </a>
+                    <a
+                      href="/machining"
+                      className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                      onClick={() => setShowMobileMenu(false)}
+                    >
+                      <Settings className="w-4 h-4" />
+                      Frezowanie
+                    </a>
+                  </>
+                )}
+                {hasAccess('quality_control') && (
+                  <a
+                    href="/quality"
+                    className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <ClipboardCheck className="w-4 h-4" />
+                    Kontrola Jakości
+                  </a>
+                )}
+                {hasAccess('reports') && (
+                  <a
+                    href="/reports"
+                    className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <Activity className="w-4 h-4" />
+                    Raporty
+                  </a>
+                )}
                 <a
                   href="/ai"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2 relative"
@@ -526,14 +560,16 @@ const AppContent: React.FC = () => {
                     Użytkownicy
                   </a>
                 )}
-                <a
-                  href="/settings"
-                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
-                  onClick={() => setShowMobileMenu(false)}
-                >
-                  <Settings className="w-4 h-4" />
-                  Ustawienia
-                </a>
+                {hasAccess('settings') && (
+                  <a
+                    href="/settings"
+                    className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <Settings className="w-4 h-4" />
+                    Ustawienia
+                  </a>
+                )}
               </nav>
             </div>
           )}
@@ -545,20 +581,76 @@ const AppContent: React.FC = () => {
               <Route path="/login" element={<LoginPage />} />
               */}
               <Route path="/" element={<Dashboard />} />
-              <Route path="/offers" element={<HomePage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/clients" element={<ClientsPage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/product/:id" element={<ProductDetailPage />} />
-              <Route path="/production" element={<ProductionPage />} />
-              <Route path="/machining" element={<MachiningParameters />} />
-              <Route path="/quality" element={<QualityControl />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/ai" element={<AIAssistant />} />
-              <Route path="/knowledge" element={<KnowledgeBase />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/users" element={<UserManagementPage />} />
-              <Route path="/settings" element={<AutomationSettings />} />
+              <Route path="/offers" element={
+                <MockProtectedRoute module="offers" action="view">
+                  <HomePage />
+                </MockProtectedRoute>
+              } />
+              <Route path="/dashboard" element={
+                <MockProtectedRoute module="dashboard" action="view">
+                  <Dashboard />
+                </MockProtectedRoute>
+              } />
+              <Route path="/clients" element={
+                <MockProtectedRoute module="clients" action="view">
+                  <ClientsPage />
+                </MockProtectedRoute>
+              } />
+              <Route path="/products" element={
+                <MockProtectedRoute module="products" action="view">
+                  <ProductsPage />
+                </MockProtectedRoute>
+              } />
+              <Route path="/product/:id" element={
+                <MockProtectedRoute module="products" action="view">
+                  <ProductDetailPage />
+                </MockProtectedRoute>
+              } />
+              <Route path="/production" element={
+                <MockProtectedRoute module="production" action="view">
+                  <ProductionPage />
+                </MockProtectedRoute>
+              } />
+              <Route path="/machining" element={
+                <MockProtectedRoute module="production" action="view">
+                  <MachiningParameters />
+                </MockProtectedRoute>
+              } />
+              <Route path="/quality" element={
+                <MockProtectedRoute module="quality_control" action="view">
+                  <QualityControl />
+                </MockProtectedRoute>
+              } />
+              <Route path="/reports" element={
+                <MockProtectedRoute module="reports" action="view">
+                  <ReportsPage />
+                </MockProtectedRoute>
+              } />
+              <Route path="/ai" element={
+                <MockProtectedRoute module="ai" action="view">
+                  <AIAssistant />
+                </MockProtectedRoute>
+              } />
+              <Route path="/knowledge" element={
+                <MockProtectedRoute module="knowledge" action="view">
+                  <KnowledgeBase />
+                </MockProtectedRoute>
+              } />
+              <Route path="/marketplace" element={
+                <MockProtectedRoute module="marketplace" action="view">
+                  <Marketplace />
+                </MockProtectedRoute>
+              } />
+              <Route path="/users" element={
+                <MockProtectedRoute module="users" action="view">
+                  <UserManagementPage />
+                </MockProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <MockProtectedRoute module="settings" action="view">
+                  <AutomationSettings />
+                </MockProtectedRoute>
+              } />
               <Route path="/offer/new" element={<OfferView />} />
               <Route path="/offer/:id" element={<OfferView />} />
               <Route
