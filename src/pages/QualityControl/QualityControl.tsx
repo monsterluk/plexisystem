@@ -254,10 +254,9 @@ export function QualityControl() {
               </div>
             </div>
           </div>
-        ))}
-        </div>
-        )}
-        </div>
+        ))}        </div>
+      )}
+    </div>
   );
 
   const renderQualityControl = () => (
@@ -417,8 +416,8 @@ export function QualityControl() {
               </div>
             </div>
           </div>
-        ))}
-      </div>
+          ))}        </div>
+      )}
     </div>
   );
 

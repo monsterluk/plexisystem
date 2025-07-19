@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Plus, Minus, Save, Printer } from 'lucide-react';
+import { X, Search, Plus, Minus, Save, Printer, Edit } from 'lucide-react';
 import { useShippingDocuments } from '@/hooks/useShippingDocuments';
 
 interface NewWZModalProps {
@@ -36,6 +36,13 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
   const [items, setItems] = useState<WZItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showProductSearch, setShowProductSearch] = useState(false);
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [manualItem, setManualItem] = useState({
+    productName: '',
+    productCode: '',
+    quantity: 1,
+    unit: 'szt'
+  });
 
   // Przykładowe dane klientów
   const clients = [
@@ -90,6 +97,24 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
     setItems([...items, newItem]);
     setShowProductSearch(false);
     setSearchQuery('');
+  };
+
+  const addManualItem = () => {
+    if (manualItem.productName.trim()) {
+      const newItem: WZItem = {
+        id: Date.now().toString(),
+        productName: manualItem.productName,
+        productCode: manualItem.productCode,
+        quantity: manualItem.quantity,
+        unit: manualItem.unit,
+        price: 0, // Bez ceny dla ręcznych pozycji
+        vat: 0,
+        total: 0
+      };
+      setItems([...items, newItem]);
+      setManualItem({ productName: '', productCode: '', quantity: 1, unit: 'szt' });
+      setShowManualEntry(false);
+    }
   };
 
   const updateItemQuantity = (itemId: string, quantity: number) => {
@@ -260,14 +285,89 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
             <div>
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-lg font-medium text-white">Pozycje dokumentu</h3>
-                <button
-                  onClick={() => setShowProductSearch(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all text-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  Dodaj produkt
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowManualEntry(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-all text-sm"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Dopisz ręcznie
+                  </button>
+                  <button
+                    onClick={() => setShowProductSearch(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all text-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Dodaj z katalogu
+                  </button>
+                </div>
               </div>
+
+              {/* Formularz ręcznego dodawania */}
+              {showManualEntry && (
+                <div className="mb-4 p-4 bg-gray-700/50 rounded-lg">
+                  <h4 className="text-sm font-medium text-white mb-3">Dodaj pozycję ręcznie (bez cen)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                    <div className="md:col-span-2">
+                      <input
+                        type="text"
+                        value={manualItem.productName}
+                        onChange={(e) => setManualItem({ ...manualItem, productName: e.target.value })}
+                        placeholder="Nazwa produktu *"
+                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={manualItem.productCode}
+                        onChange={(e) => setManualItem({ ...manualItem, productCode: e.target.value })}
+                        placeholder="Kod produktu"
+                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        value={manualItem.quantity}
+                        onChange={(e) => setManualItem({ ...manualItem, quantity: parseInt(e.target.value) || 1 })}
+                        min="1"
+                        className="w-20 px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-orange-500"
+                      />
+                      <select
+                        value={manualItem.unit}
+                        onChange={(e) => setManualItem({ ...manualItem, unit: e.target.value })}
+                        className="flex-1 px-3 py-2 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-orange-500"
+                      >
+                        <option value="szt">szt</option>
+                        <option value="m">m</option>
+                        <option value="m²">m²</option>
+                        <option value="m³">m³</option>
+                        <option value="kg">kg</option>
+                        <option value="kpl">kpl</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => {
+                        setShowManualEntry(false);
+                        setManualItem({ productName: '', productCode: '', quantity: 1, unit: 'szt' });
+                      }}
+                      className="px-3 py-1.5 text-sm text-gray-400 hover:text-white"
+                    >
+                      Anuluj
+                    </button>
+                    <button
+                      onClick={addManualItem}
+                      disabled={!manualItem.productName.trim()}
+                      className="px-3 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:bg-gray-600 disabled:cursor-not-allowed transition-all text-sm"
+                    >
+                      Dodaj pozycję
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Wyszukiwarka produktów */}
               {showProductSearch && (
@@ -358,13 +458,25 @@ export function NewWZModal({ isOpen, onClose, onSave }: NewWZModalProps) {
                             </div>
                           </td>
                           <td className="py-3 text-right">
-                            <p className="text-sm text-white">{(item.price * item.quantity).toFixed(2)} zł</p>
+                            {item.price > 0 ? (
+                              <p className="text-sm text-white">{(item.price * item.quantity).toFixed(2)} zł</p>
+                            ) : (
+                              <p className="text-sm text-gray-500">-</p>
+                            )}
                           </td>
                           <td className="py-3 text-center">
-                            <p className="text-sm text-gray-400">{item.vat}%</p>
+                            {item.vat > 0 ? (
+                              <p className="text-sm text-gray-400">{item.vat}%</p>
+                            ) : (
+                              <p className="text-sm text-gray-500">-</p>
+                            )}
                           </td>
                           <td className="py-3 text-right">
-                            <p className="text-sm font-medium text-white">{item.total.toFixed(2)} zł</p>
+                            {item.total > 0 ? (
+                              <p className="text-sm font-medium text-white">{item.total.toFixed(2)} zł</p>
+                            ) : (
+                              <p className="text-sm text-gray-500">-</p>
+                            )}
                           </td>
                           <td className="py-3 text-right">
                             <button
