@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity, Book, LogOut, X, ShoppingBag } from 'lucide-react';
+import { Menu, Calculator, FileText, User, Settings, Eye, Bell, BarChart2, Users, Database, Package, Sun, Moon, Brain, Activity, Book, LogOut, X, ShoppingBag, ClipboardCheck } from 'lucide-react';
 import { OfferProvider } from '@/context/OfferContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { UserProvider, useUser, users } from '@/context/UserContext';
@@ -23,6 +23,7 @@ import { AIAssistant } from '@/pages/AIAssistant';
 import { KnowledgeBase } from '@/pages/KnowledgeBase';
 import { Marketplace } from '@/pages/Marketplace';
 import { MachiningParameters } from '@/components/MachiningParameters';
+import { QualityControl } from '@/pages/QualityControl';
 // import { LoginPage } from '@/pages/LoginPage';
 
 interface Notification {
@@ -162,6 +163,13 @@ const AppContent: React.FC = () => {
                     >
                       <Settings className="w-5 h-5 mb-1" />
                       <span className="text-xs">Frezowanie</span>
+                    </a>
+                    <a
+                      href="/quality"
+                      className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-zinc-700 transition-all min-w-[60px]"
+                    >
+                      <ClipboardCheck className="w-5 h-5 mb-1" />
+                      <span className="text-xs">Jakość</span>
                     </a>
                     <a
                       href="/clients"
@@ -452,6 +460,14 @@ const AppContent: React.FC = () => {
                   Frezowanie
                 </a>
                 <a
+                  href="/quality"
+                  className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  <ClipboardCheck className="w-4 h-4" />
+                  Kontrola Jakości
+                </a>
+                <a
                   href="/reports"
                   className="px-4 py-2 rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
                   onClick={() => setShowMobileMenu(false)}
@@ -515,6 +531,7 @@ const AppContent: React.FC = () => {
               <Route path="/product/:id" element={<ProductDetailPage />} />
               <Route path="/production" element={<ProductionPage />} />
               <Route path="/machining" element={<MachiningParameters />} />
+              <Route path="/quality" element={<QualityControl />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/ai" element={<AIAssistant />} />
               <Route path="/knowledge" element={<KnowledgeBase />} />
