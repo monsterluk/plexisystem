@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Download, Print } from 'lucide-react';
+import { X, Download, Printer } from 'lucide-react';
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
@@ -40,7 +40,7 @@ export function PDFPreviewModal({ isOpen, onClose, pdfUrl, fileName }: PDFPrevie
               className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm"
               title="Drukuj"
             >
-              <Print className="w-4 h-4" />
+              <Printer className="w-4 h-4" />
               Drukuj
             </button>
             <button
