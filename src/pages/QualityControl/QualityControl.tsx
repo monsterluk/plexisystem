@@ -26,6 +26,8 @@ import { QualityReportView } from './QualityReportView';
 import { QualityReports } from './QualityReports';
 import { useShippingDocuments } from '@/hooks/useShippingDocuments';
 import { useQualityChecks } from '@/hooks/useQualityChecks';
+import { generateShippingPDF } from '@/utils/generateShippingPDF';
+import { generateQualityPDF, generateQualityCertificate } from '@/utils/generateQualityPDF';
 
 interface ShippingDocument {
   id: string;
@@ -246,6 +248,10 @@ export function QualityControl() {
                   <Edit className="w-4 h-4 text-gray-400" />
                 </button>
                 <button
+                  onClick={() => {
+                    const pdf = generateShippingPDF(doc);
+                    pdf.save(`WZ_${doc.document_number.replace(/\//g, '_')}.pdf`);
+                  }}
                   className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
                   title="Drukuj"
                 >
@@ -410,9 +416,28 @@ export function QualityControl() {
                 >
                   <Eye className="w-4 h-4 text-gray-400" />
                 </button>
-                <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+                <button 
+                  onClick={() => {
+                    const pdf = generateQualityPDF(check);
+                    pdf.save(`Kontrola_jakosci_${check.order_number}_${check.check_date}.pdf`);
+                  }}
+                  className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                  title="Pobierz PDF"
+                >
                   <Download className="w-4 h-4 text-gray-400" />
                 </button>
+                {check.status === 'passed' && (
+                  <button 
+                    onClick={() => {
+                      const pdf = generateQualityCertificate(check);
+                      pdf.save(`Certyfikat_${check.order_number}_${check.check_date}.pdf`);
+                    }}
+                    className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                    title="Certyfikat jakości"
+                  >
+                    <FileText className="w-4 h-4 text-gray-400" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
