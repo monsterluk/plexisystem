@@ -21,6 +21,9 @@ import {
 } from 'lucide-react';
 import { NewWZModal } from './NewWZModal';
 import { QualityControlModal } from './QualityControlModal';
+import { WZDocumentView } from './WZDocumentView';
+import { QualityReportView } from './QualityReportView';
+import { QualityReports } from './QualityReports';
 
 interface ShippingDocument {
   id: string;
@@ -73,6 +76,9 @@ export function QualityControl() {
   const [showNewWZModal, setShowNewWZModal] = useState(false);
   const [showQualityModal, setShowQualityModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<ShippingDocument | null>(null);
+  const [showDocumentView, setShowDocumentView] = useState(false);
+  const [selectedQualityReport, setSelectedQualityReport] = useState<QualityCheck | null>(null);
+  const [showQualityReportView, setShowQualityReportView] = useState(false);
 
   // Przykładowe dane
   const handleSaveWZ = (document: any) => {
@@ -85,6 +91,11 @@ export function QualityControl() {
     console.log('Zapisywanie kontroli jakości:', check);
     // TODO: Integracja z bazą danych
     setShowQualityModal(false);
+  };
+
+  const handleGenerateReport = (type: string, params: any) => {
+    console.log('Generowanie raportu:', type, params);
+    // TODO: Implementacja generowania raportów
   };
 
   const [shippingDocuments] = useState<ShippingDocument[]>([
@@ -257,7 +268,10 @@ export function QualityControl() {
 
               <div className="flex items-center gap-2 ml-4">
                 <button
-                  onClick={() => setSelectedDocument(doc)}
+                  onClick={() => {
+                    setSelectedDocument(doc);
+                    setShowDocumentView(true);
+                  }}
                   className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
                   title="Podgląd"
                 >
@@ -413,7 +427,13 @@ export function QualityControl() {
               </div>
 
               <div className="flex items-center gap-2 ml-4">
-                <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+                <button 
+                  onClick={() => {
+                    setSelectedQualityReport(check);
+                    setShowQualityReportView(true);
+                  }}
+                  className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                >
                   <Eye className="w-4 h-4 text-gray-400" />
                 </button>
                 <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
@@ -428,94 +448,7 @@ export function QualityControl() {
   );
 
   const renderReports = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-white">Raporty Jakościowe</h3>
-        <p className="text-sm text-gray-400 mt-1">Analizy i statystyki kontroli jakości</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Wykres zgodności */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
-          <h4 className="font-medium text-white mb-4">Zgodność produkcji - ostatnie 30 dni</h4>
-          <div className="h-64 flex items-center justify-center text-gray-400">
-            <BarChart3 className="w-16 h-16 opacity-20" />
-            <span className="ml-2">Wykres zgodności</span>
-          </div>
-        </div>
-
-        {/* Top defekty */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
-          <h4 className="font-medium text-white mb-4">Najczęstsze niezgodności</h4>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-300">Wymiary poza tolerancją</span>
-              <div className="flex items-center gap-2">
-                <div className="w-32 bg-gray-700 rounded-full h-2">
-                  <div className="bg-orange-500 h-2 rounded-full" style={{ width: '35%' }}></div>
-                </div>
-                <span className="text-sm text-gray-400">35%</span>
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-300">Defekty powierzchni</span>
-              <div className="flex items-center gap-2">
-                <div className="w-32 bg-gray-700 rounded-full h-2">
-                  <div className="bg-orange-500 h-2 rounded-full" style={{ width: '25%' }}></div>
-                </div>
-                <span className="text-sm text-gray-400">25%</span>
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-300">Nieprawidłowy montaż</span>
-              <div className="flex items-center gap-2">
-                <div className="w-32 bg-gray-700 rounded-full h-2">
-                  <div className="bg-orange-500 h-2 rounded-full" style={{ width: '20%' }}></div>
-                </div>
-                <span className="text-sm text-gray-400">20%</span>
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-300">Inne</span>
-              <div className="flex items-center gap-2">
-                <div className="w-32 bg-gray-700 rounded-full h-2">
-                  <div className="bg-orange-500 h-2 rounded-full" style={{ width: '20%' }}></div>
-                </div>
-                <span className="text-sm text-gray-400">20%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Raporty do pobrania */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6 md:col-span-2">
-          <h4 className="font-medium text-white mb-4">Generuj raporty</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-              <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-orange-400" />
-                <span className="text-gray-200">Raport miesięczny</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-            <button className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-              <div className="flex items-center gap-3">
-                <BarChart3 className="w-5 h-5 text-blue-400" />
-                <span className="text-gray-200">Analiza trendów</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-            <button className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="w-5 h-5 text-yellow-400" />
-                <span className="text-gray-200">Rejestr niezgodności</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <QualityReports onGenerateReport={handleGenerateReport} />
   );
 
   return (
@@ -580,6 +513,18 @@ export function QualityControl() {
           isOpen={showQualityModal}
           onClose={() => setShowQualityModal(false)}
           onSave={handleSaveQuality}
+        />
+        
+        <WZDocumentView
+          document={selectedDocument}
+          isOpen={showDocumentView}
+          onClose={() => setShowDocumentView(false)}
+        />
+        
+        <QualityReportView
+          report={selectedQualityReport}
+          isOpen={showQualityReportView}
+          onClose={() => setShowQualityReportView(false)}
         />
       </div>
     </div>
